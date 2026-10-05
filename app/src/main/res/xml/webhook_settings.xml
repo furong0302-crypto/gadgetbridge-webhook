@@ -4,11 +4,6 @@
 
     <PreferenceCategory android:title="@string/webhook_pref_category_general">
 
-        <Preference
-            android:icon="@drawable/ic_vpn_key"
-            android:key="webhook_binding_code"
-            android:title="@string/webhook_pref_binding_code" />
-
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:icon="@drawable/ic_toggle_on"
@@ -26,6 +21,15 @@
             android:inputType="textUri"
             android:summary="@string/webhook_pref_server_url_summary"
             android:title="@string/webhook_pref_server_url"
+            app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+            android:dependency="webhook_enabled"
+            android:icon="@drawable/ic_vpn_key"
+            android:key="webhook_token"
+            android:inputType="textPassword"
+            android:summary="@string/webhook_pref_token_summary"
+            android:title="@string/webhook_pref_token"
             app:iconSpaceReserved="false" />
 
         <EditTextPreference

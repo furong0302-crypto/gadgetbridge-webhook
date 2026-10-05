@@ -59,18 +59,6 @@ class WebhookSettingsActivity : AbstractSettingsActivityV2() {
                 }
             }
 
-            val bindingCode = WebhookConfig.getOrCreateBindingCode()
-            val prefBindingCode = findPreference<Preference>(WebhookConfig.PREF_BINDING_CODE)
-            prefBindingCode?.summary =
-                getString(R.string.webhook_pref_binding_code_summary, "GB-$bindingCode")
-            prefBindingCode?.setOnPreferenceClickListener {
-                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                // Copy the full command so it can be pasted into chat directly.
-                clipboard.setPrimaryClip(ClipData.newPlainText("bind command", "/bind GB-$bindingCode"))
-                Toast.makeText(requireContext(), getString(R.string.webhook_binding_code_copied, bindingCode), Toast.LENGTH_SHORT).show()
-                true
-            }
-
             val prefRunNow = findPreference<Preference>(WebhookConfig.PREF_RUN_NOW)
             prefRunNow?.setOnPreferenceClickListener {
                 // Estimate the backlog: if any device has more than the default
@@ -128,6 +116,11 @@ class WebhookSettingsActivity : AbstractSettingsActivityV2() {
                 true
             }
             updateIntervalSummary(WebhookConfig.getIntervalMinutes())
+            val prefPreSync = findPreference<Preference>(WebhookConfig.PREF_PRE_SYNC)
+            prefPreSync?.setOnPreferenceChangeListener { _: Preference?, _: Any? ->
+                scheduleDelayed()
+                true
+            }
             updatePreSyncSummary()
 
             updateStatusRows()
@@ -217,13 +210,10 @@ class WebhookSettingsActivity : AbstractSettingsActivityV2() {
         }
 
         private fun updateStatusRows() {
-            // Pairing status with the binding code hint when waiting.
-            val bindingCode = WebhookConfig.getOrCreateBindingCode()
             val pairStatus = WebhookConfig.getPairStatus()
             val pairSummary = when (pairStatus) {
                 WebhookConfig.PAIR_STATUS_OK -> getString(R.string.webhook_pair_status_ok)
-                WebhookConfig.PAIR_STATUS_PENDING ->
-                    getString(R.string.webhook_pair_status_pending, "GB-$bindingCode")
+                WebhookConfig.PAIR_STATUS_PENDING -> getString(R.string.webhook_pair_status_pending, "")
                 WebhookConfig.PAIR_STATUS_FAILED -> getString(R.string.webhook_pair_status_failed)
                 else -> getString(R.string.webhook_pair_status_unknown)
             }

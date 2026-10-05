@@ -25,6 +25,7 @@ import androidx.work.WorkManager
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
@@ -42,16 +43,23 @@ object WebhookScheduler {
     const val WORK_TAG = "webhook_worker"
 
     private val LOG: Logger = LoggerFactory.getLogger(WebhookScheduler::class.java)
+    private val immediateExecutor = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "lianhuan-health-upload").apply { isDaemon = true }
+    }
 
     fun schedule(context: Context) {
+        WebhookAutoSyncScheduler.schedule(context)
         val workManager = WorkManager.getInstance(context)
         if (!WebhookConfig.isEnabled()) {
             LOG.info("Webhook upload disabled, cancelling scheduled work")
             workManager.cancelUniqueWork(UNIQUE_WORK_NAME)
             return
         }
-        val intervalMinutes = WebhookConfig.getIntervalMinutes()
-        LOG.info("Scheduling webhook upload every {} minutes", intervalMinutes)
+        // PeriodicWorkRequest has a platform-enforced 15 minute minimum. The
+        // five-minute device pull is owned by WebhookAutoSyncScheduler above;
+        // this periodic worker is only a network/upload fallback.
+        val intervalMinutes = WebhookConfig.getIntervalMinutes().coerceAtLeast(15)
+        LOG.info("Scheduling fallback webhook upload every {} minutes", intervalMinutes)
 
         val request = PeriodicWorkRequest.Builder(
             WebhookWorker::class.java,
@@ -82,20 +90,37 @@ object WebhookScheduler {
         val now = System.currentTimeMillis()
         val last = WebhookConfig.getLastImmediate()
         if (now - last < WebhookConfig.MIN_IMMEDIATE_INTERVAL_MS) {
-            LOG.debug("Skipping immediate webhook upload (rate limited)")
+            LOG.debug("Skipping immediate Lianhuan upload (rate limited)")
             return
         }
         WebhookConfig.setLastImmediate(now)
 
-        val request = OneTimeWorkRequest.Builder(WebhookWorker::class.java)
-            .addTag(WORK_TAG)
-            .build()
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            UNIQUE_WORK_NAME + "_immediate",
-            ExistingWorkPolicy.KEEP,
-            request,
-        )
-        LOG.info("Enqueued immediate webhook upload")
+        // Do not hand the fresh-data path back to Android's scheduler. We are
+        // already inside Gadgetbridge immediately after samples were committed,
+        // so upload on our own IO thread. WorkManager remains the fallback below.
+        val appContext = context.applicationContext
+        immediateExecutor.execute {
+            val result = try {
+                WebhookUploader.uploadAll()
+            } catch (e: Throwable) {
+                LOG.warn("Immediate Lianhuan health upload crashed", e)
+                WebhookUploader.Result(false, e.message ?: e.javaClass.simpleName)
+            }
+            if (result.success) {
+                LOG.info("Immediate Lianhuan health upload finished: {}", result.message)
+            } else {
+                LOG.warn("Immediate Lianhuan upload failed, enqueueing WorkManager fallback: {}", result.message)
+                val request = OneTimeWorkRequest.Builder(WebhookWorker::class.java)
+                    .setInitialDelay(1L, TimeUnit.MINUTES)
+                    .addTag(WORK_TAG)
+                    .build()
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    UNIQUE_WORK_NAME + "_immediate_fallback",
+                    ExistingWorkPolicy.REPLACE,
+                    request,
+                )
+            }
+        }
     }
 
     /** Trigger an upload from the settings screen ("upload now" button). */

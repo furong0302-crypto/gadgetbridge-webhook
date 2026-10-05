@@ -77,7 +77,7 @@ jobs:
           SHORT_SHA="${GITHUB_SHA:0:7}"
           VARIANT_LOWER=$(echo '${{ inputs.variant }}' | tr 'A-Z' 'a-z')
           find app/build/outputs/apk/mainline -name "*.apk" -exec \
-            cp {} "apk-dist/gadgetbridge-webhook-${VARIANT_LOWER}-${{ inputs.branch }}-${SHORT_SHA}.apk" \;
+            cp {} "apk-dist/gadgetbridge-lianhuan-${VARIANT_LOWER}-${{ inputs.branch }}-${SHORT_SHA}.apk" \;
           ls -la apk-dist/
 
       - name: Upload APK

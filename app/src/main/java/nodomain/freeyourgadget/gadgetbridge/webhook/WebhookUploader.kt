@@ -157,9 +157,12 @@ object WebhookUploader {
         if (serverUrl.isEmpty()) {
             return Result(false, "Server URL not configured")
         }
-        // Token is optional: the standalone endpoint needs no token, the binding
-        // code is the gate. A token is only sent when configured (old AstrBot-route URLs).
+        // Lianhuan direct-health uses its narrow bearer token. The token can only
+        // write wearable health data; it is not accepted by chat, memory or MCP APIs.
         val token = WebhookConfig.getToken()
+        if (token.isEmpty()) {
+            return Result(false, "Lianhuan health sync token not configured")
+        }
 
         val nowSeconds = System.currentTimeMillis() / 1000
         var anyFailure = false

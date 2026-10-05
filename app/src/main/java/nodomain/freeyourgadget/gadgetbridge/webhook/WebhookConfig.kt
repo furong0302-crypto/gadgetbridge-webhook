@@ -112,7 +112,7 @@ object WebhookConfig {
 
     /** Minimum gap between pre-upload sync requests, to keep BLE traffic (and battery
      *  drain on the band) reasonable. */
-    const val PRE_SYNC_MIN_INTERVAL_MINUTES = 60
+    const val PRE_SYNC_MIN_INTERVAL_MINUTES = 5
 
     const val PRE_SYNC_MIN_INTERVAL_MS = PRE_SYNC_MIN_INTERVAL_MINUTES * 60 * 1000L
 
@@ -152,8 +152,8 @@ object WebhookConfig {
         editor.apply()
     }
 
-    /** Default upload path on the server (standalone webhook endpoint, no token needed). */
-    const val DEFAULT_UPLOAD_PATH = "/upload"
+    /** Default Lianhuan direct-health endpoint. */
+    const val DEFAULT_UPLOAD_PATH = "/api/health/gadgetbridge"
 
     fun isEnabled(): Boolean = GBApplication.getPrefs().getBoolean(PREF_ENABLED, false)
 
@@ -166,8 +166,7 @@ object WebhookConfig {
      * The user only enters the root address (e.g. "example.com" or "http://192.168.1.5"),
      * everything else is completed automatically:
      * - "https://" is prepended when no scheme was given;
-     * - "/upload" is appended (standalone plugin endpoint), unless the entered value
-     *   already contains "/api/" (backwards compatible with old AstrBot-route URLs).
+     * - "/api/health/gadgetbridge" is appended unless a full /api/ URL was entered.
      */
     fun getUploadEndpoint(): String {
         var url = getServerUrl()

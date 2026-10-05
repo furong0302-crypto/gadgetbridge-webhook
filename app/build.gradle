@@ -180,9 +180,9 @@ android {
             getIsDefault().set(true)
             // the default build product flavor
             dimension "device_type"
-            // Webhook fork: keep the official package name as the base, only a
-            // discreet suffix marks this fork (installable alongside the official build).
-            applicationIdSuffix ".webhook"
+            // Lianhuan build: keep the official package name as the base and use a
+            // dedicated suffix so it can live beside the user's current Gadgetbridge.
+            applicationIdSuffix ".lianhuan"
             //applicationIdSuffix ""
             //versionNameSuffix ""
         }
