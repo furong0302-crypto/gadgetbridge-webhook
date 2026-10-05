@@ -327,6 +327,9 @@ object WebhookUploader {
         body.put("samples", samplesJson)
 
         val extended = if (pendingOnly) JSONObject() else readExtended(db, gbDevice, from, to, enabledTypes)
+        if (!pendingOnly) {
+            addStandardHealthMetrics(extended, gbDevice, db, from, to, enabledTypes)
+        }
         if (extended.length() > 0) {
             body.put("extended", extended)
         }
@@ -379,6 +382,63 @@ object WebhookUploader {
             ?: "no response from server"
         LOG.warn("Webhook rejected for {}: {}", gbDevice.name, serverMessage)
         return Result(false, "Server: $serverMessage")
+    }
+
+    /**
+     * Prefer Gadgetbridge's public TimeSampleProvider API for metrics that have one.
+     * This is especially important for Huawei: SpO2 is backed by HuaweiActivitySample
+     * rather than a dedicated table, and HRV storage is vendor-specific. The provider
+     * abstracts those details and keeps this fork resilient to schema changes.
+     */
+    private fun addStandardHealthMetrics(
+        target: JSONObject,
+        gbDevice: GBDevice,
+        db: DBHandler,
+        from: Long,
+        to: Long,
+        enabledTypes: Set<String>,
+    ) {
+        val coordinator = gbDevice.deviceCoordinator
+        val msFrom = from * 1000L
+        val msTo = to * 1000L
+
+        if (WebhookConfig.TYPE_SPO2 in enabledTypes) {
+            try {
+                val provider = coordinator.getSpo2SampleProvider(gbDevice, db.daoSession)
+                val arr = JSONArray()
+                provider?.getAllSamples(msFrom, msTo)?.forEach { sample ->
+                    val value = sample.spo2
+                    if (value in 1..100) {
+                        arr.put(JSONObject().apply {
+                            put("timestamp", sample.timestamp / 1000L)
+                            put("spo2", value)
+                        })
+                    }
+                }
+                if (arr.length() > 0) target.put(WebhookConfig.TYPE_SPO2, arr)
+            } catch (e: Exception) {
+                LOG.warn("Failed to read normalized SpO2 samples for {}: {}", gbDevice.name, e.message)
+            }
+        }
+
+        if (WebhookConfig.TYPE_HRV in enabledTypes) {
+            try {
+                val provider = coordinator.getHrvValueSampleProvider(gbDevice, db.daoSession)
+                val arr = JSONArray()
+                provider?.getAllSamples(msFrom, msTo)?.forEach { sample ->
+                    val value = sample.value
+                    if (value > 0) {
+                        arr.put(JSONObject().apply {
+                            put("timestamp", sample.timestamp / 1000L)
+                            put("hrv_ms", value)
+                        })
+                    }
+                }
+                if (arr.length() > 0) target.put(WebhookConfig.TYPE_HRV, arr)
+            } catch (e: Exception) {
+                LOG.warn("Failed to read normalized HRV samples for {}: {}", gbDevice.name, e.message)
+            }
+        }
     }
 
     /**
