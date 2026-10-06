@@ -157,8 +157,6 @@ object WebhookUploader {
         if (serverUrl.isEmpty()) {
             return Result(false, "Server URL not configured")
         }
-        // Lianhuan direct-health uses its narrow bearer token. The token can only
-        // write wearable health data; it is not accepted by chat, memory or MCP APIs.
         val token = WebhookConfig.getToken()
         if (token.isEmpty()) {
             return Result(false, "Lianhuan health sync token not configured")
@@ -173,31 +171,54 @@ object WebhookUploader {
         try {
             GBApplication.acquireDB().use { db ->
                 for (gbDevice in DeviceHelper.getInstance().availableDevices) {
-                    if (!gbDevice.type.isSupported) {
-                        continue
+                    if (!gbDevice.type.isSupported) continue
+
+                    val address = gbDevice.address
+                    val storedCursor = WebhookConfig.getCursor(address)
+                    var scanFrom = if (storedCursor > 0) {
+                        maxOf(0L, storedCursor - WebhookConfig.REPLAY_OVERLAP_SECONDS)
+                    } else {
+                        nowSeconds - WebhookConfig.INITIAL_BACKFILL_SECONDS
                     }
-                    val result = uploadDevice(gbDevice, db, serverUrl, token, nowSeconds, maxRangeSeconds)
-                    totalSamples += result.uploadedSamples
-                    if (result.pendingBind) {
-                        anyPending = true
-                    } else if (!result.success) {
-                        anyFailure = true
-                        lastMessage = result.message
+                    val requestedEnd = if (maxRangeSeconds >= Long.MAX_VALUE / 4) {
+                        nowSeconds
+                    } else {
+                        minOf(nowSeconds, scanFrom + maxRangeSeconds)
+                    }
+                    var chunks = 0
+
+                    while (scanFrom < requestedEnd && chunks < WebhookConfig.MAX_CHUNKS_PER_RUN) {
+                        val scanTo = minOf(requestedEnd, scanFrom + WebhookConfig.UPLOAD_CHUNK_SECONDS)
+                        val result = uploadDeviceRange(gbDevice, db, serverUrl, token, scanFrom, scanTo)
+                        totalSamples += result.uploadedSamples
+                        if (result.pendingBind) {
+                            anyPending = true
+                            break
+                        }
+                        if (!result.success) {
+                            anyFailure = true
+                            lastMessage = result.message
+                            break
+                        }
+                        scanFrom = scanTo
+                        chunks++
+                    }
+                    if (chunks >= WebhookConfig.MAX_CHUNKS_PER_RUN && scanFrom < requestedEnd) {
+                        LOG.info("Chunk cap reached for {}; remaining history will continue next run", gbDevice.name)
                     }
                 }
             }
         } catch (e: Exception) {
             LOG.error("Webhook upload failed", e)
             WebhookConfig.setPairStatus(WebhookConfig.PAIR_STATUS_FAILED)
+            WebhookConfig.setLastError(e.message ?: e.javaClass.simpleName)
             return Result(false, e.message ?: "Exception during upload")
         }
 
         WebhookConfig.setLastExecution(System.currentTimeMillis())
         val message = if (anyFailure) "Partial failure: $lastMessage" else "OK, $totalSamples samples uploaded"
         WebhookConfig.setLastStatus(message)
-        if (!anyFailure) {
-            WebhookConfig.setLastError("")
-        }
+        if (!anyFailure) WebhookConfig.setLastError("")
         WebhookConfig.setPairStatus(
             when {
                 anyFailure -> WebhookConfig.PAIR_STATUS_FAILED
@@ -209,178 +230,98 @@ object WebhookUploader {
         return Result(!anyFailure, message, totalSamples)
     }
 
-    private fun uploadDevice(
+    private fun uploadDeviceRange(
         gbDevice: GBDevice,
         db: DBHandler,
         serverUrl: String,
         token: String,
-        nowSeconds: Long,
-        maxRangeSeconds: Long,
+        from: Long,
+        to: Long,
     ): Result {
         val address = gbDevice.address
         val coordinator = gbDevice.deviceCoordinator
         val provider = coordinator.getSampleProvider(gbDevice, db.daoSession)
-        if (provider == null) {
-            return Result(true, "No sample provider for ${gbDevice.name}")
-        }
-
-        var from = WebhookConfig.getCursor(address)
-        if (from <= 0) {
-            from = nowSeconds - WebhookConfig.INITIAL_BACKFILL_SECONDS
-        }
-        // Re-scan window: at least the last 24h, but if the cursor is old (the
-        // band and phone were disconnected for a while, so the band only synced
-        // its locally stored history when reconnected), scan back by the cursor
-        // age — capped at 7 days, the typical on-device storage period.
-        // The server upserts idempotently, so re-uploading is harmless.
-        val cursorAge = nowSeconds - from
-        val lookbackSeconds = minOf(
-            WebhookConfig.INITIAL_BACKFILL_SECONDS,
-            maxOf(24 * 60 * 60L, cursorAge),
-        )
-        from = minOf(from, nowSeconds - lookbackSeconds)
-        if (from >= nowSeconds) {
-            return Result(true, "Nothing new for ${gbDevice.name}")
-        }
-        val to = minOf(nowSeconds, from + maxRangeSeconds)
+            ?: return Result(true, "No sample provider for " + gbDevice.name)
+        if (from >= to) return Result(true, "Nothing new for " + gbDevice.name)
 
         val enabledTypes = WebhookConfig.getEnabledDataTypes()
-
-        // While the device is waiting for pairing, only send a light heartbeat
-        // (device info + binding code, no samples) — the server rejects the data
-        // anyway, and large payloads over a slow link would just time out.
         val pendingOnly = WebhookConfig.isPendingBind(address)
-        val samples = if (pendingOnly) {
-            emptyList()
-        } else {
-            provider.getAllActivitySamples(from.toInt(), to.toInt())
-        }
+        val samples = if (pendingOnly) emptyList() else provider.getAllActivitySamples(from.toInt(), to.toInt())
 
-                // Live battery level, if the device is currently managed by the DeviceManager.
         val liveDevice = GBApplication.app().deviceManager.getDeviceByAddress(address)
         val battery = (liveDevice ?: gbDevice).getBatteryLevel(0)
 
-        // Diagnostics: what the provider actually returned (first samples).
         LOG.info(
-            "Webhook: {} provider={} range=[{}..{}] samples={}",
-            address,
-            provider.javaClass.simpleName,
-            from,
-            to,
-            samples.size,
+            "Webhook chunk: {} provider={} range=[{}..{}] samples={}",
+            address, provider.javaClass.simpleName, from, to, samples.size,
         )
-        samples.take(5).forEach { s ->
-            LOG.info(
-                "Webhook: sample ts={} kind={} rawKind={} steps={} hr={} intensity={}",
-                s.timestamp,
-                provider.normalizeType(s.rawKind).name,
-                s.rawKind,
-                s.steps,
-                s.heartRate,
-                s.intensity,
-            )
-        }
 
-        val deviceJson = JSONObject()
-        deviceJson.put("address", address)
-        deviceJson.put("name", gbDevice.name)
-        deviceJson.put("type", gbDevice.type.name)
-        // Binding code lets the server bind this device to a chat session (/bind command).
-        deviceJson.put("binding_code", WebhookConfig.getOrCreateBindingCode())
-        if (battery in 0..100 && WebhookConfig.TYPE_BATTERY in enabledTypes) {
-            deviceJson.put("battery", battery)
+        val deviceJson = JSONObject().apply {
+            put("address", address)
+            put("name", gbDevice.name)
+            put("type", gbDevice.type.name)
+            put("binding_code", WebhookConfig.getOrCreateBindingCode())
+            if (battery in 0..100 && WebhookConfig.TYPE_BATTERY in enabledTypes) put("battery", battery)
         }
 
         val samplesJson = JSONArray()
+        var newestSampleTs = 0L
         for (sample in samples) {
+            newestSampleTs = maxOf(newestSampleTs, sample.timestamp.toLong())
             val entry = JSONObject()
             entry.put("ts", sample.timestamp)
             entry.put("kind", provider.normalizeType(sample.rawKind).name)
-            val steps = sample.steps
-            if (steps >= 0) {
-                entry.put("steps", steps)
-            }
-            val hr = sample.heartRate
-            if (hr > 0) {
-                entry.put("hr", hr)
-            }
+            if (sample.steps >= 0) entry.put("steps", sample.steps)
+            if (sample.heartRate > 0) entry.put("hr", sample.heartRate)
             val intensity = provider.normalizeIntensity(sample.rawIntensity)
-            if (intensity >= 0) {
-                entry.put("intensity", intensity)
-            }
+            if (intensity >= 0) entry.put("intensity", intensity)
             if (WebhookConfig.TYPE_DISTANCE in enabledTypes) {
-                val distanceCm = sample.distanceCm
-                if (distanceCm >= 0) {
-                    entry.put("distance_cm", distanceCm)
-                }
-                val calories = sample.activeCalories
-                if (calories >= 0) {
-                    entry.put("calories", calories)
-                }
+                if (sample.distanceCm >= 0) entry.put("distance_cm", sample.distanceCm)
+                if (sample.activeCalories >= 0) entry.put("calories", sample.activeCalories)
             }
             samplesJson.put(entry)
         }
 
-        val body = JSONObject()
-        body.put("device", deviceJson)
-        body.put("since", from)
-        body.put("samples", samplesJson)
-
+        val body = JSONObject().apply {
+            put("device", deviceJson)
+            put("since", from)
+            put("samples", samplesJson)
+        }
         val extended = if (pendingOnly) JSONObject() else readExtended(db, gbDevice, from, to, enabledTypes)
-        if (!pendingOnly) {
-            addStandardHealthMetrics(extended, gbDevice, db, from, to, enabledTypes)
-        }
-        if (extended.length() > 0) {
-            body.put("extended", extended)
-        }
+        if (!pendingOnly) addStandardHealthMetrics(extended, gbDevice, db, from, to, enabledTypes)
+        if (extended.length() > 0) body.put("extended", extended)
 
-        val headers = mutableMapOf("Content-Type" to "application/json")
-        if (token.isNotEmpty()) {
-            headers["Authorization"] = "Bearer $token"
-        }
+        val headers = mutableMapOf("Content-Type" to "application/json", "X-Lianhuan-Chunk" to "$from-$to")
+        headers["Authorization"] = "Bearer $token"
 
-        // Use our own client with long timeouts: Cloudflare edges are often slow
-        // (multi-second TLS handshakes), and the default 10s OkHttp timeout would
-        // fail even though the endpoint is reachable.
+        WebhookConfig.setLastError("")
         val response = postJson(serverUrl, headers, body.toString())
 
         if (response != null && response.optString("status") == "ok") {
-            WebhookConfig.setCursor(address, to)
+            val oldCursor = WebhookConfig.getCursor(address)
+            if (newestSampleTs > 0) {
+                WebhookConfig.setCursor(address, maxOf(oldCursor, newestSampleTs))
+            }
             WebhookConfig.setPendingBind(address, false)
             LOG.info(
-                "Uploaded {} samples + {} extended categories for {} ({})",
-                samplesJson.length(),
-                extended.length(),
-                gbDevice.name,
-                address
+                "Uploaded chunk {}..{}: {} samples + {} extended categories for {}",
+                from, to, samplesJson.length(), extended.length(), gbDevice.name,
             )
             return Result(true, "OK", samplesJson.length())
         }
 
-        // Device not bound yet: server rejected the data, phone enters "waiting for
-        // pairing". Reported as success so the worker does not retry in a tight loop;
-        // the next periodic run re-checks and starts uploading once paired.
         if (response != null && response.optString("status") == "pending_bind") {
             val message = response.optString("message", "等待配对")
-            LOG.info("Device {} is not paired yet: {}", gbDevice.name, message)
             WebhookConfig.setPairStatus(WebhookConfig.PAIR_STATUS_PENDING)
-            val wasPending = WebhookConfig.isPendingBind(address)
-            // From now on only send light heartbeats for this device until it is paired.
             WebhookConfig.setPendingBind(address, true)
-            // Notify once when first entering the waiting state.
-            if (!wasPending) {
-                WebhookNotifier.notifyPendingBind(
-                    GBApplication.getContext(),
-                    gbDevice.name,
-                    WebhookConfig.getOrCreateBindingCode(),
-                )
-            }
             return Result(true, message, pendingBind = true)
         }
 
         val serverMessage = response?.optString("message")?.takeIf { it.isNotBlank() }
+            ?: response?.optString("error")?.takeIf { it.isNotBlank() }
+            ?: WebhookConfig.getLastError().takeIf { it.isNotBlank() }
             ?: "no response from server"
-        LOG.warn("Webhook rejected for {}: {}", gbDevice.name, serverMessage)
+        LOG.warn("Webhook rejected for {} chunk {}..{}: {}", gbDevice.name, from, to, serverMessage)
         return Result(false, "Server: $serverMessage")
     }
 
