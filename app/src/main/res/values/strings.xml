@@ -42,6 +42,7 @@
     <string name="range_percentage">%1$d%% – %2$d%%</string>
     <string name="range_percentage_float">%1$.1f%% – %2$.1f%%</string>
     <string name="range_degrees">%1$dº – %2$dº</string>
+    <string name="range_integer">%1$d – %2$d</string>
     <string name="controlcenter_take_screenshot">Take Screenshot</string>
     <string name="controlcenter_power_off">Power Off</string>
     <string name="controlcenter_power_off_confirm_title">Power Off</string>
@@ -237,6 +238,16 @@
     <string name="pref_summary_mb_intents">Enable if device media control is not working for certain applications</string>
     <string name="pref_title_audio_player">Preferred Audioplayer</string>
     <string name="pref_title_nagivation_apps">Navigation apps</string>
+    <string name="pref_title_allow_unsupported_devices">Allow unsupported devices</string>
+    <string name="pref_summary_navigation_allow_unsupported_devices">Send navigation instructions as notifications to devices that do not support navigation</string>
+    <string name="pref_title_navigation_right_hand_driving">Right-hand traffic</string>
+    <string name="pref_description_navigation_right_hand_driving">Controls which navigation icon is shown for roundabouts.</string>
+    <string name="pref_title_navigation_continuous_updates">Send continuous updates</string>
+    <string name="pref_description_navigation_continuous_updates">If enabled, updates are sent continuously to the gadget. If disabled, updates are sent at each turn.</string>
+    <string name="pref_title_navigation_update_rate">Update rate for continuous mode (in milliseconds)</string>
+    <string name="navigation_destination_reached">Destination reached</string>
+    <string name="navigation_eta">ETA: %1$s</string>
+    <string name="navigation_distance_left">%1$s left</string>
     <string name="pref_header_external_integrations">External Integrations</string>
     <string name="pref_header_automations">Automations</string>
     <string name="pref_description_general">Startup, language, region, location</string>
@@ -2329,6 +2340,7 @@
     <string name="devicetype_waspos" translatable="false">Wasp-OS</string>
     <string name="devicetype_smaq2oss" translatable="false">SMA-Q2 OSS</string>
     <string name="devicetype_fitpro" translatable="false">FitPro</string>
+    <string name="devicetype_nx_wear_b8" translatable="false">Nx Wear B8</string>
     <string name="devicetype_colacao21" translatable="false">ColaCao 2021</string>
     <string name="devicetype_colacao23" translatable="false">ColaCao 2023</string>
     <string name="devicetype_ak102" translatable="false">AK102</string>
@@ -5433,6 +5445,26 @@
     <string name="toast_error_unexpected_response">Unexpected response from server.</string>
     <string name="internet_helper_error_no_internet_helper">This feature requires the Internet Helper</string>
     <string name="internet_helper_error_permission">Internet Helper doesn\'t have internet permission</string>
+    <string name="internet_helper_error_old_version">This feature requires a newer version of the Internet Helper</string>
+    <string name="wifi_ftp_error_wifi_disabled">Wi-Fi is off. Turn on Wi-Fi on the phone.</string>
+    <string name="wifi_ftp_error_hotspot">The device did not start the Wi-Fi hotspot</string>
+    <string name="wifi_ftp_error_ftp_server">The device did not start the FTP server</string>
+    <string name="ftp_file_browser">FTP File browser</string>
+    <string name="ftp_file_browser_summary">Browse the files on the device</string>
+    <string name="ftp_file_browser_upload">Upload</string>
+    <string name="ftp_file_browser_download">Download</string>
+    <string name="ftp_file_browser_download_complete">Download complete</string>
+    <string name="wifi_ftp_error_closed">The Wi-Fi connection to the device was closed</string>
+    <string name="wifi_ftp_notification_title">Wi-Fi connection to %1$s</string>
+    <string name="wifi_ftp_state_stopped">Not connected</string>
+    <string name="wifi_ftp_state_starting_hotspot">Starting the Wi-Fi hotspot on the device…</string>
+    <string name="wifi_ftp_state_connecting_wifi">Connecting the phone to the Wi-Fi hotspot…</string>
+    <string name="wifi_ftp_state_starting_ftp_server">Starting the FTP file server on the device…</string>
+    <string name="wifi_ftp_state_connected">Connected</string>
+    <string name="wifi_ftp_explainer_title">Wi-Fi file transfer</string>
+    <string name="wifi_ftp_explainer">To transfer files, Gadgetbridge starts a Wi-Fi hotspot on the device, and the Internet Helper connects the phone to it. Android asks you to confirm this connection.\n\nWhile the connection is open, the phone can disconnect from other Wi-Fi networks, and the device uses more battery. The connection will be closed automatically when you leave the screen. You can also close it from the notification.</string>
+    <string name="wifi_ftp_turn_on_wifi">Turn on Wi-Fi</string>
+    <string name="wifi_ftp_progress_step">%1$s (%2$d/%3$d)</string>
     <string name="toast_error_invalid_api_key">Invalid API key</string>
     <string name="eco">Eco</string>
     <string name="prefs_title_offgrid_mode">Off-grid mode</string>
@@ -5551,6 +5583,8 @@
     <string name="health_connect_permission_denied">Permission denied: %1$s. Please check Health Connect permissions.</string>
     <string name="health_connect_sleep_session_title">Sleep Session from %1$s</string>
     <string name="health_connect_sleep_session_notes">Sleep data from Gadgetbridge device: %1$s.</string>
+    <string name="health_connect_workout_sync_failed">Health Connect sync failed</string>
+    <string name="health_connect_workout_sync_failed_reason">Health Connect sync failed (%1$s): %2$s</string>
     <string name="infinitime_filesystem_access_disabled">Filesystem access is disabled in InfiniTime</string>
     <string name="infinitime_resource_upload_progress_status">Performing action %1$d of %2$d\n%3$s %4$s</string>
     <string name="pref_title_qhybrid_top_button_function">Top button function</string>
@@ -6022,6 +6056,15 @@
     <string name="workout_error_min_above_max">Min must not be above max.</string>
     <string name="workout_error_value_out_of_range">Value is out of range.</string>
     <string name="workout_error_exercise_not_supported">An exercise is not supported by this device.</string>
+
+    <string name="nx_wear_b8_measure_stress">Measure stress</string>
+    <string name="nx_wear_b8_stress_result">Stress: %1$d</string>
+    <string name="nx_wear_b8_measure_spo2">Measure blood oxygen</string>
+    <string name="nx_wear_b8_spo2_result">Blood oxygen: %1$d%%</string>
+    <string name="nx_wear_b8_measurement_in_progress">Measuring…</string>
+    <string name="nx_wear_b8_measurement_failed">Measurement failed. Wear the band securely and try again.</string>
+    <string name="nx_wear_b8_measurement_result">Measurement result</string>
+    <string name="nx_wear_b8_shake_to_take_picture">Shake to take a picture</string>
 
     <string name="workout_exercise_picker_title">Choose an exercise</string>
     <string name="workout_exercise_picker_search_hint">Search exercises</string>

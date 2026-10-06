@@ -110,7 +110,7 @@ public class GBDaoGenerator {
             outputDir.mkdirs();
         }
 
-        final Schema schema = new Schema(148, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(151, MAIN_PACKAGE + ".entities");
 
         final List<Entity> sampleProvidersToGenerate = new LinkedList<>();
         final List<Entity> batterySampleProvidersToGenerate = new LinkedList<>();
@@ -122,8 +122,10 @@ public class GBDaoGenerator {
         Entity device = addDevice(schema, deviceAttributes);
         addHealthConnectSyncState(schema, device);
         addHealthConnectSleepSession(schema, device);
+        addHealthConnectWorkoutSyncFailure(schema, device);
         addInternetFirewallRule(schema, device);
         addXiaomiHipeeP1Reading(schema, device);
+        addNxWearSportSample(schema, user, device);
 
         // yeah deep shit, has to be here (after device) for db upgrade and column order
         // because addDevice adds a property to deviceAttributes also....
@@ -276,6 +278,7 @@ public class GBDaoGenerator {
         addAppSpecificNotificationSettings(schema, device);
         sampleProvidersToGenerate.add(addCyclingSample(schema, user, device));
         addAudioRecordings(schema, device);
+        addDeviceMusicFile(schema, device);
         addPebbleAppstoreIdEntry(schema);
 
         Entity weightSampleF8 = addWeightSampleF8(schema, user, device);
@@ -1160,6 +1163,16 @@ public class GBDaoGenerator {
         return downloadedFitFile;
     }
 
+    private static Entity addNxWearSportSample(Schema schema, Entity user, Entity device) {
+        Entity sample = addEntity(schema, "NxWearSportSample");
+        addCommonTimeSampleProperties("AbstractTimeSample", sample, user, device);
+        sample.addIntProperty(SAMPLE_STEPS).notNull();
+        sample.addIntProperty("distance").notNull();
+        sample.addIntProperty("calories").notNull();
+        sample.addIntProperty("duration").notNull();
+        return sample;
+    }
+
     private static Entity addGarminActivitySample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "GarminActivitySample");
         addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
@@ -1606,6 +1619,15 @@ public class GBDaoGenerator {
         healthConnectSleepSession.addIndex(indexUnique);
     }
 
+    private static void addHealthConnectWorkoutSyncFailure(Schema schema, Entity device) {
+        Entity failure = addEntity(schema, "HealthConnectWorkoutSyncFailure");
+        failure.addLongProperty("summaryId").primaryKey().notNull();
+        Property deviceId = failure.addLongProperty("deviceId").notNull().index().getProperty();
+        failure.addToOne(device, deviceId);
+        failure.addLongProperty("failedAt").notNull();
+        failure.addStringProperty("error");
+    }
+
     private static void addInternetFirewallRule(Schema schema, Entity device) {
         Entity firewall = addEntity(schema, "InternetFirewallRule");
         firewall.addIdProperty().autoincrement();
@@ -1735,6 +1757,27 @@ public class GBDaoGenerator {
         recording.addIntProperty("duration");
 
         recording.addToOne(device, deviceId);
+    }
+
+    private static void addDeviceMusicFile(Schema schema, Entity device) {
+        Entity musicFile = addEntity(schema, "DeviceMusicFile");
+        musicFile.addIdProperty().autoincrement();
+
+        Property deviceId = musicFile.addLongProperty("deviceId").notNull().getProperty();
+        Property hash = musicFile.addStringProperty("hash").notNull().getProperty();
+
+        Index indexUnique = new Index();
+        indexUnique.addProperty(deviceId);
+        indexUnique.addProperty(hash);
+        indexUnique.makeUnique();
+        musicFile.addIndex(indexUnique);
+
+        musicFile.addStringProperty("title");
+        musicFile.addStringProperty("album");
+        musicFile.addStringProperty("artist");
+        musicFile.addLongProperty("size").notNull();
+
+        musicFile.addToOne(device, deviceId);
     }
 
     private static void addNotificationFilterEntry(Schema schema, Entity notificationFilterEntity) {
