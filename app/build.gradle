@@ -180,6 +180,11 @@ android {
             getIsDefault().set(true)
             // the default build product flavor
             dimension "device_type"
+            // Lianhuan direct-health needs real network access; the fork also declares
+            // android.permission.INTERNET in the manifest. Keep Gadgetbridge's runtime
+            // network abstraction aligned with that permission instead of routing through
+            // the separate Internet Helper app.
+            buildConfigField "boolean", "INTERNET_ACCESS", "true"
             // Lianhuan build: keep the official package name as the base and use a
             // dedicated suffix so it can live beside the user's current Gadgetbridge.
             applicationIdSuffix ".lianhuan"
