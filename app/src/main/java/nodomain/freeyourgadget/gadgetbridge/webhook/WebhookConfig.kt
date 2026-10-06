@@ -191,7 +191,7 @@ object WebhookConfig {
         return url
     }
 
-    fun getToken(): String = GBApplication.getPrefs().getString(PREF_TOKEN, "").trim()
+    fun getToken(): String = GBApplication.getPrefs().getString(PREF_TOKEN, "").filterNot { it.isWhitespace() }
 
     fun getIntervalMinutes(): Int =
         GBApplication.getPrefs().getInt(PREF_INTERVAL_MINUTES, DEFAULT_INTERVAL_MINUTES).coerceAtLeast(1)
@@ -277,3 +277,4 @@ object WebhookConfig {
         return code
     }
 }
+
