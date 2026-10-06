@@ -46,7 +46,7 @@ public class PebbleContentProvider extends ContentProvider {
     // this is only needed for the MatrixCursor constructor
     public static final String[] columnNames = new String[]{"0", "1", "2", "3", "4", "5", "6"};
 
-    static final String PROVIDER_NAME = "com.getpebble.android.provider";
+    static final String PROVIDER_NAME = "nodomain.freeyourgadget.gadgetbridge.lianhuan.pebble.provider";
     static final String URL = "content://" + PROVIDER_NAME + "/state";
     static final Uri CONTENT_URI = Uri.parse(URL);
 
