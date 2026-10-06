@@ -123,8 +123,17 @@ object WebhookConfig {
      *  Bands keep several days of data on the device, so backfill a week. */
     const val INITIAL_BACKFILL_SECONDS = 7 * 24 * 60 * 60L
 
-    /** Safety cap for a single upload request, in seconds (one week). */
+    /** Total catch-up window allowed for one manual/worker run. */
     const val MAX_RANGE_SECONDS = 7 * 24 * 60 * 60L
+
+    /** One HTTP request is intentionally small; large 7-day JSON bodies are fragile on mobile. */
+    const val UPLOAD_CHUNK_SECONDS = 12 * 60 * 60L
+
+    /** Small replay overlap catches late-arriving band samples without resending a full day. */
+    const val REPLAY_OVERLAP_SECONDS = 30 * 60L
+
+    /** Prevent an accidental ancient cursor from creating an unbounded foreground upload loop. */
+    const val MAX_CHUNKS_PER_RUN = 64
 
     /** Per-device upload cursor key: last successfully uploaded timestamp (epoch seconds). */
     fun cursorKey(address: String): String = "webhook_cursor_$address"
