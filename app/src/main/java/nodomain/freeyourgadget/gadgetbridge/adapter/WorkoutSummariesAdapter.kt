@@ -52,6 +52,9 @@ class WorkoutSummariesAdapter(
      */
     var uploadStatuses: Map<Long, WorkoutUploadStatus> = emptyMap()
 
+    /** Ids of the summaries whose Health Connect sync failed, resolved like [uploadStatuses]. */
+    var healthConnectFailures: Set<Long> = emptySet()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -103,6 +106,7 @@ class WorkoutSummariesAdapter(
         private val subtitleView: TextView = itemView.findViewById(R.id.workout_row_subtitle)
         private val photoView: ImageView = itemView.findViewById(R.id.workout_row_photo)
         private val uploadView: ImageView = itemView.findViewById(R.id.workout_row_upload)
+        private val healthConnectView: ImageView = itemView.findViewById(R.id.workout_row_health_connect)
         private val gpsView: ImageView = itemView.findViewById(R.id.workout_row_gps)
         private val dateView: TextView = itemView.findViewById(R.id.workout_row_date)
         private val timeView: TextView = itemView.findViewById(R.id.workout_row_time)
@@ -148,6 +152,8 @@ class WorkoutSummariesAdapter(
             } else {
                 uploadView.visibility = View.GONE
             }
+
+            healthConnectView.visibility = if (summary.id in healthConnectFailures) View.VISIBLE else View.GONE
 
             // The last activity is followed by the end spacer, and gets no separator.
             separatorView.visibility = if (position == itemCount - 2) View.GONE else View.VISIBLE

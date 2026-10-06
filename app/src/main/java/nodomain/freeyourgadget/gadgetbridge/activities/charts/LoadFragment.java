@@ -73,6 +73,7 @@ import java.util.Locale;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.GaugeDrawer;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.SectionHeaderView;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -154,7 +155,7 @@ public class LoadFragment extends AbstractChartFragment<LoadFragment.LoadsData> 
             gaugeDrawer = new GaugeDrawer();
             showChronicLoad = supportsTrainingLoadChronic();
             if (!showChronicLoad) {
-                ((TextView) rootView.findViewById(R.id.acute_load_header)).setText(R.string.pref_header_training_load);
+                ((SectionHeaderView) rootView.findViewById(R.id.acute_load_header)).setTitle(getString(R.string.pref_header_training_load));
             }
             setupLoadDataTypeChips(inflater);
             setupAcuteLoadChart();
