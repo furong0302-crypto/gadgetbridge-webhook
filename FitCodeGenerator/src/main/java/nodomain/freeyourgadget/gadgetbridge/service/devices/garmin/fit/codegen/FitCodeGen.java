@@ -531,7 +531,6 @@ public enum FitCodeGen {
             for (int i = 0; i < fields.length; i++) {
                 final FitField field = fields[i];
                 // TODO: offset - add support for non-int in Java stage
-                // TODO: scale - add support for non-int in Java stage
                 // TODO: support - add support for string arrays in Java stage
                 // TODO: dynamically calculate string size in Java stage
                 int size = field.stringLen > 0 ? field.stringLen : 0;
@@ -970,6 +969,9 @@ public enum FitCodeGen {
             o.setSerializeNulls(true);
             o.setIndent("  ");
             o.beginObject();
+
+            o.name("description");
+            o.value("Gadgedbridge community maintained description of the Flexible and Interoperable Data Transfer (FIT) file format, used to enable interoperability with Garmin and iGPSPORT manufactured gadgets.");
 
             o.name("messages");
             o.beginArray();

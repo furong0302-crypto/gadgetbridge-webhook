@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -67,6 +68,8 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
     private TextView fwAppInstallTextView;
     private ImageView previewImage;
     private Button installButton;
+    private CheckBox installConfirmationCheckBox;
+    private boolean installRequested;
     private Button closeButton;
     private Uri uri;
     private GBDevice device;
@@ -167,6 +170,7 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
 
     private void validateInstallation() {
         if (installHandler != null) {
+            setInstallConfirmation(null);
             installHandler.validateInstallation(this, device);
         }
     }
@@ -201,6 +205,8 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
         fwAppInstallTextView = findViewById(R.id.infoTextView);
         previewImage = findViewById(R.id.previewImage);
         installButton = findViewById(R.id.installButton);
+        installConfirmationCheckBox = findViewById(R.id.installConfirmationCheckBox);
+        installConfirmationCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> setInstallEnabled(installRequested));
         closeButton = findViewById(R.id.closeButton);
         progressBar = findViewById(R.id.installProgressBar);
         progressText = findViewById(R.id.installProgressText);
@@ -306,12 +312,22 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
 
     @Override
     public void setInstallEnabled(boolean enable) {
-        boolean enabled = device != null && device.isConnected() && enable;
+        installRequested = enable;
+        final boolean confirmed = installConfirmationCheckBox.getVisibility() == View.GONE || installConfirmationCheckBox.isChecked();
+        boolean enabled = device != null && device.isConnected() && enable && confirmed;
         installButton.setEnabled(enabled);
         installButton.setVisibility(enabled ? View.VISIBLE : View.GONE);
         if (enabled) {
             setCloseEnabled(false);
         }
+    }
+
+    @Override
+    public void setInstallConfirmation(@Nullable final String text) {
+        installConfirmationCheckBox.setChecked(false);
+        installConfirmationCheckBox.setText(text);
+        installConfirmationCheckBox.setVisibility(text == null ? View.GONE : View.VISIBLE);
+        setInstallEnabled(installRequested);
     }
 
     @Override
