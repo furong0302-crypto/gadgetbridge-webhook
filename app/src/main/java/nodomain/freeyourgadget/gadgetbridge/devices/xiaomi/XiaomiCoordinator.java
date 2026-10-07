@@ -24,6 +24,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.util.Size;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -285,6 +287,21 @@ public abstract class XiaomiCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public boolean supportsWatchfaceManagement(@NonNull final GBDevice device) {
         return supportsAppsManagement(device);
+    }
+
+    /**
+     * Returns the known watchface preview sizes that match the device. Empty when the sizes are not known.
+     */
+    public List<Size> getWatchfacePreviewSizes() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns the screen resolution of the device, or null if it is not known.
+     */
+    @Nullable
+    public Size getScreenSize() {
+        return null;
     }
 
     @Override
