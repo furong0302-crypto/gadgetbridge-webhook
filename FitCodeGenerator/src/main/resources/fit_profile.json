@@ -3864,9 +3864,25 @@
       "name": "GEAR_ITEM",
       "fields": [
         {"num":0,"name":"UUID","base":"STRING","stringLen":37},
-        {"num":2,"name":"name","base":"STRING","stringLen":17},
-        {"num":3,"name":"brand","base":"STRING","stringLen":10},
-        {"num":4,"name":"model","base":"STRING","stringLen":7},
+        {"num":1,"name":"gear_type","base":"ENUM"},
+        {"num":2,"name":"name","base":"STRING"},
+        {"num":3,"name":"brand","base":"STRING"},
+        {"num":4,"name":"model","base":"STRING"},
+        {"num":5,"name":"usage_tracking","base":"ENUM"},
+        {"num":6,"name":"max_use_threshold","base":"UINT32"},
+        {"num":9,"name":"sports","base":"UINT8","arrayLen":0},
+        {"num":10,"name":"sub_sports","base":"UINT8","arrayLen":0},
+        {"num":254,"name":"message_index","base":"UINT16"}
+      ]
+    },
+    {
+      "num": 527,
+      "name": "GEAR_COLLECTION",
+      "fields": [
+        {"num":0,"name":"gear_items","base":"UINT16","arrayLen":0},
+        {"num":1,"name":"name","base":"STRING"},
+        {"num":2,"name":"sports","base":"UINT8","arrayLen":0},
+        {"num":3,"name":"sub_sports","base":"UINT8","arrayLen":0},
         {"num":254,"name":"message_index","base":"UINT16"}
       ]
     }
@@ -7703,6 +7719,7 @@
     {"manufacturer":1,"product":5056,"name":"D2 Mach 2 Pro","type":"DeviceType.GARMIN_D2_MACH_2_PRO"},
     {"manufacturer":1,"product":5133,"name":"Fenix 9","type":"DeviceType.GARMIN_FENIX_9"},
     {"manufacturer":1,"product":5134,"name":"Fenix 9","type":"DeviceType.GARMIN_FENIX_9"},
+    {"manufacturer":1,"product":5169,"name":"Enduro 4","type":"DeviceType.GARMIN_ENDURO_4"},
     {"manufacturer":1,"product":5214,"name":"Forerunner 70","type":"DeviceType.GARMIN_FORERUNNER_70"},
     {"manufacturer":1,"product":10007,"name":"SDM4 Pod"},
     {"manufacturer":1,"product":10014,"name":"Edge Remote"},

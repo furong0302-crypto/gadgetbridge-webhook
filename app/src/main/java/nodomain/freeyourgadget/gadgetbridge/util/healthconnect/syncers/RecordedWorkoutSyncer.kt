@@ -375,6 +375,7 @@ internal object RecordedWorkoutSyncer {
         addDetailedHeartRateRecords(activityPoints, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
         addDetailedSpeedRecords(activityPoints, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
         addDetailedPowerRecords(activityPoints, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
+        val hasDetailedCadence = addDetailedCadenceRecords(activityPoints, activityKind, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
 
         val summaryData = parseSummaryData(workout.summaryData)
         if (summaryData != null) {
@@ -382,7 +383,9 @@ internal object RecordedWorkoutSyncer {
                 addCaloriesRecords(summaryData, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
             }
             addElevationGainedRecord(summaryData, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
-            addCadenceRecords(summaryData, activityKind, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
+            if (!hasDetailedCadence) {
+                addCadenceRecords(summaryData, activityKind, workoutStartInstant, workoutEndInstant, startOffset, endOffset, metadata, grantedPermissions, recordsToInsert, deviceName)
+            }
         }
 
         // If the summary carried no elevation gain, derive it from per-sample altitude in the
@@ -641,6 +644,83 @@ internal object RecordedWorkoutSyncer {
             )
             LOG.debug("Added detailed PowerRecord with ${powerSamples.size} samples for workout on device '$deviceName'.")
         }
+    }
+
+    /**
+     * Per-point cadence as (time, rate) pairs inside the workout: steps/min for STEPS, rpm for
+     * REVOLUTIONS. Empty for any other [cycleUnit], which has no Health Connect cadence record.
+     */
+    internal fun cadenceSamples(
+        activityPoints: List<ActivityPoint>,
+        cycleUnit: ActivityKind.CycleUnit,
+        startTime: Instant,
+        endTime: Instant
+    ): List<Pair<Instant, Double>> {
+        if (cycleUnit != ActivityKind.CycleUnit.STEPS && cycleUnit != ActivityKind.CycleUnit.REVOLUTIONS) {
+            return emptyList()
+        }
+        return activityPoints
+            .filter { it.cadence > 0 && it.time != null }
+            .map { it.time.toInstant() to it.cadence.toDouble() }
+            .filter { (time, _) -> !time.isBefore(startTime) && !time.isAfter(endTime) }
+    }
+
+    /** Returns whether a cadence series was added. */
+    private fun addDetailedCadenceRecords(
+        activityPoints: List<ActivityPoint>,
+        activityKind: ActivityKind,
+        startTime: Instant,
+        endTime: Instant,
+        startOffset: ZoneOffset,
+        endOffset: ZoneOffset,
+        metadata: Metadata,
+        grantedPermissions: Set<String>,
+        recordsToInsert: MutableList<Record>,
+        deviceName: String
+    ): Boolean {
+        val cycleUnit = ActivityKind.getCycleUnit(activityKind)
+        val record: Record = when (cycleUnit) {
+            ActivityKind.CycleUnit.STEPS -> {
+                if (HealthPermission.getWritePermission(StepsCadenceRecord::class) !in grantedPermissions) {
+                    return false
+                }
+                val samples = cadenceSamples(activityPoints, cycleUnit, startTime, endTime)
+                    .map { (time, rate) -> StepsCadenceRecord.Sample(time = time, rate = rate) }
+                if (samples.isEmpty()) {
+                    return false
+                }
+                StepsCadenceRecord(
+                    startTime = startTime,
+                    startZoneOffset = startOffset,
+                    endTime = endTime,
+                    endZoneOffset = endOffset,
+                    samples = samples,
+                    metadata = metadata
+                )
+            }
+            ActivityKind.CycleUnit.REVOLUTIONS -> {
+                if (HealthPermission.getWritePermission(CyclingPedalingCadenceRecord::class) !in grantedPermissions) {
+                    return false
+                }
+                val samples = cadenceSamples(activityPoints, cycleUnit, startTime, endTime)
+                    .map { (time, rpm) -> CyclingPedalingCadenceRecord.Sample(time = time, revolutionsPerMinute = rpm) }
+                if (samples.isEmpty()) {
+                    return false
+                }
+                CyclingPedalingCadenceRecord(
+                    startTime = startTime,
+                    startZoneOffset = startOffset,
+                    endTime = endTime,
+                    endZoneOffset = endOffset,
+                    samples = samples,
+                    metadata = metadata
+                )
+            }
+            else -> return false
+        }
+        recordsToInsert.add(record)
+        LOG.debug("Added detailed {} for workout on device '{}'.", record::class.simpleName, deviceName)
+        return true
     }
 
     private fun parseSummaryData(summaryDataJson: String?): ActivitySummaryData? {
