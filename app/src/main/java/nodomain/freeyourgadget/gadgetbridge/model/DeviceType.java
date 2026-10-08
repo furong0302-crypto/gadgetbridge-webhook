@@ -126,6 +126,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.descent.Garmi
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.descent.GarminDescentMk3iCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.enduro.GarminEnduro2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.enduro.GarminEnduro3Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.enduro.GarminEnduro4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.enduro.GarminEnduroCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.epix.GarminEpixCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.watches.epix.GarminEpixGen2Coordinator;
@@ -862,6 +863,7 @@ public enum DeviceType {
     GARMIN_ENDURO(GarminEnduroCoordinator.class),
     GARMIN_ENDURO_2(GarminEnduro2Coordinator.class),
     GARMIN_ENDURO_3(GarminEnduro3Coordinator.class),
+    GARMIN_ENDURO_4(GarminEnduro4Coordinator.class),
     GARMIN_EPIX(GarminEpixCoordinator.class),
     GARMIN_EPIX_GEN2(GarminEpixGen2Coordinator.class),
     GARMIN_EPIX_PRO(GarminEpixProCoordinator.class),

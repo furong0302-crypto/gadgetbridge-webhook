@@ -90,6 +90,9 @@
         <item name="deviceIconOnPrimary">#ffffff</item>
         <item name="deviceIconLight">#1f7fdb</item>
         <item name="deviceIconDark">#4dabf5</item>
+        <item name="deviceIconBackground">?attr/deviceIconPrimary</item>
+        <item name="deviceIconBackgroundLight">?attr/deviceIconLight</item>
+        <item name="deviceIconBackgroundDark">?attr/deviceIconDark</item>
 
         <item name="android:windowBackground">@color/window_background_light</item>
         <item name="android:colorBackground">@color/window_background_light</item>
@@ -195,6 +198,9 @@
         <item name="deviceIconOnPrimary">#ffffff</item>
         <item name="deviceIconLight">#1f7fdb</item>
         <item name="deviceIconDark">#4dabf5</item>
+        <item name="deviceIconBackground">?attr/deviceIconPrimary</item>
+        <item name="deviceIconBackgroundLight">?attr/deviceIconLight</item>
+        <item name="deviceIconBackgroundDark">?attr/deviceIconDark</item>
 
         <item name="android:windowBackground">@color/window_background_dark</item>
         <item name="android:colorBackground">@color/window_background_dark</item>
@@ -243,6 +249,9 @@
         <item name="deviceIconOnPrimary">?attr/colorOnPrimary</item>
         <item name="deviceIconLight">?attr/colorPrimaryVariant</item>
         <item name="deviceIconDark">?attr/colorPrimaryDark</item>
+        <item name="deviceIconBackground">?attr/deviceIconPrimary</item>
+        <item name="deviceIconBackgroundLight">?attr/deviceIconLight</item>
+        <item name="deviceIconBackgroundDark">?attr/deviceIconDark</item>
         <item name="spo2_avg_color">@color/spo2_avg_color_light</item>
         <item name="training_acute_load">@color/training_load</item>
 
@@ -303,6 +312,9 @@
         <item name="deviceIconOnPrimary">?attr/colorOnPrimary</item>
         <item name="deviceIconLight">?attr/colorPrimaryVariant</item>
         <item name="deviceIconDark">?attr/colorPrimaryDark</item>
+        <item name="deviceIconBackground">?attr/deviceIconPrimary</item>
+        <item name="deviceIconBackgroundLight">?attr/deviceIconLight</item>
+        <item name="deviceIconBackgroundDark">?attr/deviceIconDark</item>
         <item name="spo2_avg_color">@color/spo2_avg_color_dark</item>
         <item name="training_acute_load">@color/training_load_dark</item>
 
@@ -393,6 +405,55 @@
     <style name="ShapeAppearance.App.RoundedPhoto" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">14dp</item>
+    </style>
+
+    <!-- device list: device cards -->
+    <style name="ThemeOverlay.App.DeviceCardIcon" parent="">
+        <item name="deviceIconPrimary">?attr/colorSurfaceContainerHighest</item>
+        <item name="deviceIconLight">?attr/colorSurfaceContainerHighest</item>
+        <item name="deviceIconDark">?attr/colorSurfaceContainerHighest</item>
+        <item name="deviceIconOnPrimary">?attr/colorPrimary</item>
+        <item name="deviceIconBackground">@android:color/transparent</item>
+        <item name="deviceIconBackgroundLight">@android:color/transparent</item>
+        <item name="deviceIconBackgroundDark">@android:color/transparent</item>
+        <item name="deviceCardIconTile">?attr/colorSurfaceContainerHighest</item>
+    </style>
+    <style name="ThemeOverlay.App.DeviceCardIcon.Connected">
+        <item name="deviceIconPrimary">?attr/colorPrimaryContainer</item>
+        <item name="deviceIconLight">?attr/colorPrimaryContainer</item>
+        <item name="deviceIconDark">?attr/colorPrimaryContainer</item>
+        <item name="deviceIconOnPrimary">?attr/colorOnPrimaryContainer</item>
+        <item name="deviceCardIconTile">?attr/colorPrimaryContainer</item>
+    </style>
+    <style name="DeviceCardActionIcon">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:padding">3dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">?attr/textColorSecondary</item>
+    </style>
+    <style name="DeviceCardActionButton" parent="DeviceCardActionIcon">
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+    <style name="DeviceCardActionBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:minWidth">40dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+    <style name="DeviceCardActionLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">-6dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelSmall</item>
+        <item name="android:textColor">?attr/textColorSecondary</item>
     </style>
 
     <style name="GadgetbridgeTheme.ToolbarIconOverlay" parent="">

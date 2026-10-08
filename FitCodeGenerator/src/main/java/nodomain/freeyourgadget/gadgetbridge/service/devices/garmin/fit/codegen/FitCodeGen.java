@@ -242,9 +242,9 @@ public enum FitCodeGen {
             builder.append(device.product);
             builder.append(", \"");
             builder.append(device.name);
-            if(device.type == null) {
+            if (device.type == null) {
                 builder.append("\", null),\n");
-            }else{
+            } else {
                 builder.append("\", ");
                 builder.append(device.type);
                 builder.append("),\n");
@@ -442,76 +442,86 @@ public enum FitCodeGen {
         final JSONTokener tokenizer = new JSONTokener(reader);
         final JSONObject root = new JSONObject(tokenizer);
 
-        final JSONArray messagesJson = root.getJSONArray("messages");
-        for (int messageIndex = 0; messageIndex < messagesJson.length(); messageIndex++) {
-            final JSONObject messageJson = messagesJson.getJSONObject(messageIndex);
-            final FitMessage messageFit = new FitMessage();
-            messageFit.num = messageJson.getInt("num");
-            messageFit.name = messageJson.getString("name");
-            final JSONArray fieldsJson = messageJson.getJSONArray("fields");
-            for (int fieldIndex = 0; fieldIndex < fieldsJson.length(); fieldIndex++) {
-                final JSONObject fieldJson = fieldsJson.getJSONObject(fieldIndex);
-                final FitField fieldFit = new FitField();
-                fieldFit.num = fieldJson.getInt("num");
-                fieldFit.name = fieldJson.getString("name");
+        final JSONArray messagesJson = root.optJSONArray("messages");
+        if (messagesJson != null) {
+            for (int messageIndex = 0; messageIndex < messagesJson.length(); messageIndex++) {
+                final JSONObject messageJson = messagesJson.getJSONObject(messageIndex);
+                final FitMessage messageFit = new FitMessage();
+                messageFit.num = messageJson.getInt("num");
+                messageFit.name = messageJson.getString("name");
+                final JSONArray fieldsJson = messageJson.optJSONArray("fields", null);
+                if (fieldsJson != null) {
+                    for (int fieldIndex = 0; fieldIndex < fieldsJson.length(); fieldIndex++) {
+                        final JSONObject fieldJson = fieldsJson.getJSONObject(fieldIndex);
+                        final FitField fieldFit = new FitField();
+                        fieldFit.num = fieldJson.getInt("num");
+                        fieldFit.name = fieldJson.getString("name");
+                        fieldFit.base = fieldJson.getString("base");
 
-                fieldFit.type = fieldJson.has("type") ? fieldJson.getString("type") : null;
-                fieldFit.scale = fieldJson.has("scale") ? fieldJson.getDouble("scale") : 1.0;
-                fieldFit.offset = fieldJson.has("offset") ? fieldJson.getDouble("offset") : 0.0;
-                fieldFit.arrayLen = fieldJson.has("arrayLen") ? fieldJson.getInt("arrayLen") : -1;
-                fieldFit.stringLen = fieldJson.has("stringLen") ? fieldJson.getInt("stringLen") : -1;
-                fieldFit.UOM = fieldJson.has("UOM") ? fieldJson.getString("UOM") : null;
-                fieldFit.base = fieldJson.getString("base");
-                if (fieldFit.arrayLen < 0) {
-                    fieldFit.arrayLen = -1;
-                }
-                if (fieldFit.stringLen <= 0) {
-                    fieldFit.stringLen = -1;
-                }
-                if (fieldFit.base != null && fieldFit.type != null && fieldFit.base.contentEquals(fieldFit.type)) {
-                    fieldFit.type = null;
-                }
-                if (fieldFit.base.contentEquals("STRING")) {
-                    if (fieldFit.scale != 1.0) {
-                        throw new IllegalArgumentException("unexpected scale value for STRING field " + fieldFit.name + " (#" + fieldFit.num + ")");
+                        fieldFit.type = fieldJson.optString("type", null);
+                        fieldFit.scale = fieldJson.has("scale") ? fieldJson.getDouble("scale") : 1.0;
+                        fieldFit.offset = fieldJson.has("offset") ? fieldJson.getDouble("offset") : 0.0;
+                        fieldFit.arrayLen = fieldJson.has("arrayLen") ? fieldJson.getInt("arrayLen") : -1;
+                        fieldFit.stringLen = fieldJson.has("stringLen") ? fieldJson.getInt("stringLen") : -1;
+                        fieldFit.UOM = fieldJson.optString("UOM", null);
+                        if (fieldFit.arrayLen < 0) {
+                            fieldFit.arrayLen = -1;
+                        }
+                        if (fieldFit.stringLen <= 0) {
+                            fieldFit.stringLen = -1;
+                        }
+                        if (fieldFit.base != null && fieldFit.type != null && fieldFit.base.contentEquals(fieldFit.type)) {
+                            fieldFit.type = null;
+                        }
+                        if (fieldFit.base.contentEquals("STRING")) {
+                            if (fieldFit.scale != 1.0) {
+                                throw new IllegalArgumentException("unexpected scale value for STRING field " + fieldFit.name + " (#" + fieldFit.num + ")");
+                            }
+                            if (fieldFit.offset != 0) {
+                                throw new IllegalArgumentException("unexpected offset value for STRING field " + fieldFit.name + " (#" + fieldFit.num + ")");
+                            }
+                        }
+                        messageFit.fields.add(fieldFit);
                     }
-                    if (fieldFit.offset != 0) {
-                        throw new IllegalArgumentException("unexpected offset value for STRING field " + fieldFit.name + " (#" + fieldFit.num + ")");
-                    }
                 }
-                messageFit.fields.add(fieldFit);
+                messages.add(messageFit);
             }
-            messages.add(messageFit);
         }
 
-        final JSONArray enumerationsJson = root.getJSONArray("enumerations");
-        for (int enumIndex = 0; enumIndex < enumerationsJson.length(); enumIndex++) {
-            final JSONObject enumJson = enumerationsJson.getJSONObject(enumIndex);
-            final FitEnum enumFit = new FitEnum();
-            enumFit.name = enumJson.getString("name");
-            final JSONArray entries = enumJson.getJSONArray("entries");
-            for (int entryIndex = 0; entryIndex < entries.length(); entryIndex++) {
-                final JSONObject entryJson = entries.getJSONObject(entryIndex);
-                final FitEnumEntry entryFit = new FitEnumEntry();
-                entryFit.num = entryJson.getInt("num");
-                entryFit.name = entryJson.getString("name");
-                entryFit.label = entryJson.has("label") ? entryJson.getString("label") : null;
-                entryFit.text = entryJson.has("text") ? entryJson.getString("text") : null;
-                enumFit.entries.add(entryFit);
+        final JSONArray enumerationsJson = root.optJSONArray("enumerations");
+        if (enumerationsJson != null) {
+            for (int enumIndex = 0; enumIndex < enumerationsJson.length(); enumIndex++) {
+                final JSONObject enumJson = enumerationsJson.getJSONObject(enumIndex);
+                final FitEnum enumFit = new FitEnum();
+                enumFit.name = enumJson.getString("name");
+                final JSONArray entries = enumJson.optJSONArray("entries");
+                if (entries != null) {
+                    for (int entryIndex = 0; entryIndex < entries.length(); entryIndex++) {
+                        final JSONObject entryJson = entries.getJSONObject(entryIndex);
+                        final FitEnumEntry entryFit = new FitEnumEntry();
+                        entryFit.num = entryJson.getInt("num");
+                        entryFit.name = entryJson.getString("name");
+                        entryFit.label = entryJson.has("label") ? entryJson.getString("label") : null;
+                        entryFit.text = entryJson.has("text") ? entryJson.getString("text") : null;
+                        enumFit.entries.add(entryFit);
+                    }
+                }
+                enumerations.add(enumFit);
             }
-            enumerations.add(enumFit);
         }
 
-        final JSONArray devicesJson = root.getJSONArray("devices");
-        for (int deviceIndex = 0; deviceIndex < devicesJson.length(); deviceIndex++) {
-            final JSONObject deviceJson = devicesJson.getJSONObject(deviceIndex);
-            final FitDevice device = new FitDevice(
+        final JSONArray devicesJson = root.optJSONArray("devices");
+        if (devicesJson != null) {
+            for (int deviceIndex = 0; deviceIndex < devicesJson.length(); deviceIndex++) {
+                final JSONObject deviceJson = devicesJson.getJSONObject(deviceIndex);
+                final FitDevice device = new FitDevice(
                     deviceJson.getInt("manufacturer"),
                     deviceJson.getInt("product"),
                     deviceJson.getString("name"),
                     deviceJson.optString("type", null)
-            );
-            devices.add(device);
+                );
+                devices.add(device);
+            }
         }
     }
 
@@ -975,59 +985,65 @@ public enum FitCodeGen {
 
             o.name("messages");
             o.beginArray();
-            for (final FitMessage m : messages) {
-                o.beginObject();
-                o.name("num").value(m.num);
-                o.name("name").value(m.name);
-                o.name("fields");
-                o.beginArray();
-                for (final FitField field : m.getFieldDefinitionPrimitives()) {
-                    printJSon(field, o);
+            if(messages != null) {
+                for (final FitMessage m : messages) {
+                    o.beginObject();
+                    o.name("num").value(m.num);
+                    o.name("name").value(m.name);
+                    o.name("fields");
+                    o.beginArray();
+                    for (final FitField field : m.getFieldDefinitionPrimitives()) {
+                        printJSon(field, o);
+                    }
+                    o.endArray();
+                    o.endObject();
                 }
-                o.endArray();
-                o.endObject();
             }
             o.endArray();
 
             o.name("enumerations");
             o.beginArray();
-            for (final FitEnum fitEnum : enums) {
-                o.beginObject();
-                o.name("name").value(fitEnum.name);
-                o.name("entries");
-                o.beginArray();
-                for (final FitEnumEntry fitEnumEntry : fitEnum.entries) {
+            if(enums != null) {
+                for (final FitEnum fitEnum : enums) {
                     o.beginObject();
-                    o.setFormattingStyle(FormattingStyle.COMPACT);
-                    o.name("num").value(fitEnumEntry.num);
-                    o.name("name").value(fitEnumEntry.name);
-                    if (fitEnumEntry.label != null) {
-                        o.name("label").value(fitEnumEntry.label);
+                    o.name("name").value(fitEnum.name);
+                    o.name("entries");
+                    o.beginArray();
+                    for (final FitEnumEntry fitEnumEntry : fitEnum.entries) {
+                        o.beginObject();
+                        o.setFormattingStyle(FormattingStyle.COMPACT);
+                        o.name("num").value(fitEnumEntry.num);
+                        o.name("name").value(fitEnumEntry.name);
+                        if (fitEnumEntry.label != null) {
+                            o.name("label").value(fitEnumEntry.label);
+                        }
+                        if (fitEnumEntry.text != null) {
+                            o.name("text").value(fitEnumEntry.text);
+                        }
+                        o.endObject();
+                        o.setFormattingStyle(FormattingStyle.PRETTY);
                     }
-                    if (fitEnumEntry.text != null) {
-                        o.name("text").value(fitEnumEntry.text);
-                    }
+                    o.endArray();
                     o.endObject();
-                    o.setFormattingStyle(FormattingStyle.PRETTY);
                 }
-                o.endArray();
-                o.endObject();
             }
             o.endArray();
 
             o.name("devices");
             o.beginArray();
-            for (final FitDevice fitDevice : devices) {
-                o.beginObject();
-                o.setFormattingStyle(FormattingStyle.COMPACT);
-                o.name("manufacturer").value(fitDevice.manufacturer);
-                o.name("product").value(fitDevice.product);
-                o.name("name").value(fitDevice.name);
-                if (null != fitDevice.type && !fitDevice.type.isEmpty()) {
-                    o.name("type").value(fitDevice.type);
+            if(devices != null) {
+                for (final FitDevice fitDevice : devices) {
+                    o.beginObject();
+                    o.setFormattingStyle(FormattingStyle.COMPACT);
+                    o.name("manufacturer").value(fitDevice.manufacturer);
+                    o.name("product").value(fitDevice.product);
+                    o.name("name").value(fitDevice.name);
+                    if (null != fitDevice.type && !fitDevice.type.isEmpty()) {
+                        o.name("type").value(fitDevice.type);
+                    }
+                    o.endObject();
+                    o.setFormattingStyle(FormattingStyle.PRETTY);
                 }
-                o.endObject();
-                o.setFormattingStyle(FormattingStyle.PRETTY);
             }
             o.endArray();
 
@@ -1098,13 +1114,13 @@ public enum FitCodeGen {
         FitField(FitField master) {
             num = master.num;
             name = master.name;
-            type = master.type;;
+            type = master.type;
             base = master.base;
             scale = master.scale;
             offset = master.offset;
             arrayLen = master.arrayLen;
             stringLen = master.stringLen;
-            UOM = master.UOM;;
+            UOM = master.UOM;
         }
 
         @Override
@@ -1209,7 +1225,7 @@ public enum FitCodeGen {
         String name;
         String type;
 
-        FitDevice (int manufacturer, int product, String name, String type) {
+        FitDevice(int manufacturer, int product, String name, String type) {
             this.manufacturer = manufacturer;
             this.product = product;
             this.name = name;
