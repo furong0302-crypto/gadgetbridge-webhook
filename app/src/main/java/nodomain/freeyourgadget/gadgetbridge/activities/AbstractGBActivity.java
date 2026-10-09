@@ -128,6 +128,9 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
         // user's chosen accent preset only applies to the static Light/Dark themes above.
         if (!GBApplication.areDynamicColorsEnabled() && activity instanceof Activity) {
             ((Activity) activity).getTheme().applyStyle(GBApplication.getAccentColorOverlay(), true);
+            if (GBApplication.areContrastingSurfacesEnabled()) {
+                ((Activity) activity).getTheme().applyStyle(GBApplication.getContrastingSurfacesOverlay(), true);
+            }
         }
 
         activity.setLanguage(GBApplication.getLanguage(), false);

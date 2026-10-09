@@ -47,6 +47,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.CompositeDateValidator;
 import com.google.android.material.datepicker.DateValidatorPointBackward;
@@ -151,6 +152,9 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charts);
+        final int dateBarColor = MaterialColors.getColor(this, R.attr.datestep_row_bg, "ActivityChartsActivity");
+        findViewById(android.R.id.content).setBackgroundColor(dateBarColor);
+        getWindow().setNavigationBarColor(dateBarColor);
         if (BarShade.continuesToolbar(this, R.attr.tab_bar_bg)) {
             setTopShade(findViewById(R.id.charts_tab_shade));
         }
@@ -232,7 +236,7 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
         }
 
         mLoadingProgressBar = findViewById(R.id.loading_progressbar);
-        dateBar = findViewById(R.id.charts_date_bar);
+        dateBar = findViewById(R.id.charts_date_bar_container);
         mDateControl = findViewById(R.id.charts_text_date);
         mDateControl.setOnClickListener(v -> {
             String detailedDuration = formatDetailedDuration();

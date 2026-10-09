@@ -3245,7 +3245,7 @@ public class HuaweiSupportProvider {
         syncState.updateState(needSync);
     }
 
-    public void onTestNewFunction() {
+    public void onTestNewFunction(@Nullable Bundle options) {
 
         AsyncTask.execute(() -> {
             long startTime = System.nanoTime();

@@ -237,6 +237,14 @@
             android:title="@string/pref_title_accent_color" />
 
         <SwitchPreferenceCompat
+            android:icon="@drawable/ic_bottom_navigation"
+            android:key="pref_key_contrasting_surfaces"
+            android:persistent="false"
+            android:layout="@layout/preference_checkbox"
+            android:summary="@string/pref_summary_contrasting_surfaces"
+            android:title="@string/pref_title_contrasting_surfaces" />
+
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:icon="@drawable/ic_visibility_lock"
             android:key="block_screenshots"

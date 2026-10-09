@@ -532,6 +532,7 @@ public class SettingsActivity extends AbstractSettingsActivityV2 implements Acti
             final Preference theme = findPreference("pref_key_theme");
             final Preference amoled_black = findPreference("pref_key_theme_amoled_black");
             final Preference accentColor = findPreference("pref_key_accent_color");
+            final SwitchPreferenceCompat contrastingSurfaces = findPreference(GBApplication.PREF_CONTRASTING_SURFACES);
 
             if (amoled_black != null) {
                 String selectedTheme = prefs.getString("pref_key_theme", requireContext().getString(R.string.pref_theme_value_system));
@@ -557,6 +558,18 @@ public class SettingsActivity extends AbstractSettingsActivityV2 implements Acti
                 });
             }
 
+            if (contrastingSurfaces != null) {
+                contrastingSurfaces.setEnabled(!GBApplication.areDynamicColorsEnabled());
+                contrastingSurfaces.setChecked(GBApplication.areContrastingSurfacesEnabled());
+                contrastingSurfaces.setOnPreferenceChangeListener((preference, newVal) -> {
+                    GBApplication.getPrefs().getPreferences().edit()
+                            .putBoolean(GBApplication.PREF_CONTRASTING_SURFACES, (Boolean) newVal)
+                            .apply();
+                    sendThemeChangeIntent();
+                    return true;
+                });
+            }
+
             if (theme != null) {
                 theme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -576,6 +589,9 @@ public class SettingsActivity extends AbstractSettingsActivityV2 implements Acti
                                         .apply();
                             }
                             updateAccentColorSummary(accentColor);
+                        }
+                        if (contrastingSurfaces != null) {
+                            contrastingSurfaces.setEnabled(!val.equals(requireContext().getString(R.string.pref_theme_value_dynamic)));
                         }
                         // Warn user if dynamic colors are not available
                         if (val.equals(requireContext().getString(R.string.pref_theme_value_dynamic)) && !DynamicColors.isDynamicColorAvailable()) {

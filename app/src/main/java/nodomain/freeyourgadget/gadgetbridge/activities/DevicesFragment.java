@@ -61,7 +61,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.kotlin.FloatingActionButtonExtensionsKt;
 
-public class DevicesFragment extends Fragment {
+public class DevicesFragment extends Fragment implements HeaderShadePage {
 
     private DeviceManager deviceManager;
     private GBDeviceAdapterv2 mGBDeviceAdapter;
@@ -193,6 +193,13 @@ public class DevicesFragment extends Fragment {
         refreshPairedDevices();
 
         return currentView;
+    }
+
+    @Nullable
+    @Override
+    public View getHeaderShade() {
+        final View view = getView();
+        return view != null ? view.findViewById(R.id.devices_top_shade) : null;
     }
 
     private void launchDiscoveryActivity() {

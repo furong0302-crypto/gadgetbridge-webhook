@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.oppo
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothClass
 import android.util.Pair
 import java.util.Locale
@@ -43,6 +44,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.oppo.commands.TouchC
 import nodomain.freeyourgadget.gadgetbridge.service.devices.oppo.commands.TouchConfigType
 import nodomain.freeyourgadget.gadgetbridge.service.devices.oppo.commands.TouchConfigValue
 import nodomain.freeyourgadget.gadgetbridge.service.devices.oppo.commands.AncConfigValue
+import nodomain.freeyourgadget.gadgetbridge.service.devices.oppo.commands.EarbudsStatusSide
+import nodomain.freeyourgadget.gadgetbridge.service.devices.oppo.commands.EarbudsStatusValue
 
 abstract class OppoHeadphonesCoordinator : AbstractBLClassicDeviceCoordinator() {
     override fun getManufacturer(): String = "Oppo"
@@ -54,6 +57,7 @@ abstract class OppoHeadphonesCoordinator : AbstractBLClassicDeviceCoordinator() 
 
     override fun getBatteryCount(device: GBDevice): Int = 3
 
+    @SuppressLint("MissingPermission") // if we're here, we have permission
     override fun supports(candidate: GBDeviceCandidate): Boolean {
         if (!super.supports(candidate)) return false
         val majorDeviceClass = candidate.device?.bluetoothClass?.majorDeviceClass
@@ -165,6 +169,11 @@ abstract class OppoHeadphonesCoordinator : AbstractBLClassicDeviceCoordinator() 
 
     open fun ctrlUuid(device: GBDevice): OppoUuid = OppoUuid.VENDOR_RFCOMM
     open fun multipointMacOrder(device: GBDevice): ByteOrder = ByteOrder.BIG_ENDIAN
+    open fun canApplyAncMode(
+        device: GBDevice,
+        earbudsStatus: Map<EarbudsStatusSide, EarbudsStatusValue>,
+        mode: AncConfigValue
+    ): Boolean = true
     open fun supportsLdac(device: GBDevice): Boolean = false
     open fun supportsMultipoint(device: GBDevice): Boolean = false
     open fun supportsGameMode(device: GBDevice): Boolean = false
