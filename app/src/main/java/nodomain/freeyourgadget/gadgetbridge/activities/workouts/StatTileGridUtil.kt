@@ -230,8 +230,7 @@ private fun buildCenteredTileContent(context: Context, stat: StatTileData): Line
                 val color = stat.subtextColor ?: MaterialColors.getColor(context, R.attr.textColorPrimary, "StatTile")
                 setTextColor(color)
                 if (stat.subtextIcon != null) {
-                    TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        this,
+                    setCompoundDrawablesRelativeWithIntrinsicBounds(
                         ResourcesCompat.getDrawable(resources, stat.subtextIcon, context.theme),
                         null,
                         null,

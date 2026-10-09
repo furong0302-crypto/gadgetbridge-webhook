@@ -2,8 +2,10 @@ package nodomain.freeyourgadget.gadgetbridge.util;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.AttrRes;
@@ -12,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.color.MaterialColors;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 
@@ -60,6 +65,9 @@ public final class BarShade {
         ViewTreeObserver.OnGlobalLayoutListener, Runnable {
 
         private final View root;
+        private final int dividerColor;
+        private final int dividerHeight;
+        private final Map<View, ColorDrawable> dividers = new WeakHashMap<>();
         private View topShadeView;
         private View bottomShadeView;
         private Fader topShade;
@@ -69,6 +77,8 @@ public final class BarShade {
 
         public ScrollListener(final View root) {
             this.root = root;
+            dividerColor = MaterialColors.getColor(root.getContext(), R.attr.toolbar_divider, Color.TRANSPARENT);
+            dividerHeight = Math.max(1, Math.round(root.getResources().getDisplayMetrics().density));
             root.getViewTreeObserver().addOnScrollChangedListener(this);
             root.getViewTreeObserver().addOnGlobalLayoutListener(this);
         }
@@ -77,15 +87,74 @@ public final class BarShade {
             root.getViewTreeObserver().removeOnScrollChangedListener(this);
             root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             root.removeCallbacks(this);
+            for (final View shade : dividers.keySet().toArray(new View[0])) {
+                removeDivider(shade);
+            }
         }
 
         public void setTopShade(@Nullable final View shade) {
             if (shade == topShadeView) {
                 return;
             }
+            final View previous = topShadeView;
             topShadeView = shade;
             topShade = replace(topShade, shade);
+            moveDivider(previous, shade);
             postUpdate();
+        }
+
+        private void moveDivider(@Nullable final View previous, @Nullable final View shade) {
+            if (dividerColor == Color.TRANSPARENT) {
+                return;
+            }
+            if (previous != null && !insidePager(previous)) {
+                removeDivider(previous);
+            }
+            addDivider(shade);
+        }
+
+        public void addDivider(@Nullable final View shade) {
+            if (dividerColor == Color.TRANSPARENT || shade == null || dividers.containsKey(shade)) {
+                return;
+            }
+            dividers.put(shade, null);
+            postUpdate();
+        }
+
+        private void installDividers() {
+            for (final Map.Entry<View, ColorDrawable> entry : dividers.entrySet()) {
+                final View shade = entry.getKey();
+                ColorDrawable divider = entry.getValue();
+                if (divider == null) {
+                    if (!shade.isAttachedToWindow() || !(shade.getParent() instanceof ViewGroup)) {
+                        continue;
+                    }
+                    divider = new ColorDrawable(dividerColor);
+                    ((ViewGroup) shade.getParent()).getOverlay().add(divider);
+                    entry.setValue(divider);
+                }
+                placeDivider(shade, divider);
+            }
+        }
+
+        private void removeDivider(final View shade) {
+            final ColorDrawable divider = dividers.remove(shade);
+            if (divider != null && shade.getParent() instanceof ViewGroup) {
+                ((ViewGroup) shade.getParent()).getOverlay().remove(divider);
+            }
+        }
+
+        private void placeDivider(final View shade, final ColorDrawable divider) {
+            divider.setBounds(shade.getLeft(), shade.getTop(), shade.getRight(), shade.getTop() + dividerHeight);
+        }
+
+        private boolean insidePager(final View view) {
+            for (ViewParent parent = view.getParent(); parent instanceof View && parent != root; parent = parent.getParent()) {
+                if (parent instanceof ViewPager2) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void setBottomShade(@Nullable final View shade) {
@@ -117,6 +186,7 @@ public final class BarShade {
             }
             final boolean atTop = scrolling == null || !scrolling.canScrollVertically(-1);
             final boolean atBottom = scrolling == null || !scrolling.canScrollVertically(1);
+            installDividers();
             if (topShade != null) {
                 if (scrolling != null) {
                     align(topShadeView, scrolling, true);

@@ -278,6 +278,9 @@ public class ControlCenterv2 extends AppCompatActivity
             @Override
             public void onFragmentViewCreated(@NonNull final FragmentManager fm, @NonNull final Fragment fragment,
                                               @NonNull final View view, final Bundle savedInstanceState) {
+                if (fragment instanceof HeaderShadePage) {
+                    barShades.addDivider(((HeaderShadePage) fragment).getHeaderShade());
+                }
                 bindTopShade();
             }
 

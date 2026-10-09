@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -23,12 +24,15 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.HydrationSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -40,8 +44,7 @@ public class HydrationPeriodFragment extends HydrationFragment<HydrationPeriodFr
     private int TOTAL_DAYS = 1;
 
     private TextView mDateView;
-    private TextView dailyAverage;
-    private TextView hydrationGoal;
+    private LinearLayout hydrationStatsContainer;
     private BarChart hydrationChart;
 
     @Override
@@ -73,8 +76,7 @@ public class HydrationPeriodFragment extends HydrationFragment<HydrationPeriodFr
 
         mDateView = rootView.findViewById(R.id.hydration_date_view);
         hydrationChart = rootView.findViewById(R.id.hydration_chart);
-        dailyAverage = rootView.findViewById(R.id.hydration_daily_average);
-        hydrationGoal = rootView.findViewById(R.id.hydration_goal);
+        hydrationStatsContainer = rootView.findViewById(R.id.hydration_period_stats_container);
 
         setupHydrationChart();
         refresh();
@@ -179,8 +181,12 @@ public class HydrationPeriodFragment extends HydrationFragment<HydrationPeriodFr
         }
         hydrationChart.setData(barData);
 
-        dailyAverage.setText(unit.format(context, data.days.isEmpty() ? 0 : totalMl / data.days.size()));
-        hydrationGoal.setText(unit.format(context, data.goalMl));
+        final List<StatTileData> stats = Arrays.asList(
+                new StatTileData(unit.format(context, data.days.isEmpty() ? 0 : totalMl / data.days.size()), getString(R.string.hydration_daily_average)),
+                new StatTileData(unit.format(context, data.goalMl), getString(R.string.hydration_goal))
+        );
+        hydrationStatsContainer.removeAllViews();
+        StatTileGridUtilKt.addStatTileGrid(hydrationStatsContainer, context, stats, 0);
     }
 
     private IAxisValueFormatter getDayValueFormatter(final HydrationData data) {

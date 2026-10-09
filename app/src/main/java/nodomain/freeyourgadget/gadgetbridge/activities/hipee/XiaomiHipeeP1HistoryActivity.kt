@@ -399,8 +399,8 @@ class XiaomiHipeeP1HistoryActivity : AbstractGBActivity() {
     private inner class P1HistoryMarker(private val hours: Array<HourCounts>) : MarkerView(this@XiaomiHipeeP1HistoryActivity, R.layout.value_marker) {
         private val markerContent: TextView = findViewById(R.id.marker_content)
 
-        override fun refreshContent(entry: Entry<*>, highlight: Highlight) {
-            val hour = entry.x.toInt()
+        override fun refreshContent(e: Entry<*>, highlight: Highlight) {
+            val hour = e.x.toInt()
             val counts = hours.getOrNull(hour)
             markerContent.text = buildString {
                 append(String.format(Locale.getDefault(), "%02d:00", hour))
@@ -413,7 +413,7 @@ class XiaomiHipeeP1HistoryActivity : AbstractGBActivity() {
                     }
                 }
             }
-            super.refreshContent(entry, highlight)
+            super.refreshContent(e, highlight)
             setOffset(-(width / 2f), -height.toFloat())
         }
     }

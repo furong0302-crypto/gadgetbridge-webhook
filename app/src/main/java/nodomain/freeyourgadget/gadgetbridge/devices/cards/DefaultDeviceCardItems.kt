@@ -156,6 +156,7 @@ object DefaultDeviceCardItems {
             items.add(ActionCardItem(powerOffAction()))
         }
 
+        @Suppress("DEPRECATION")
         coordinator.customActions.filter { it.isVisible(device) }.forEach {
             items.add(ActionCardItem(it))
         }
@@ -218,8 +219,8 @@ object DefaultDeviceCardItems {
                 .setTitle(R.string.controlcenter_power_off_confirm_title)
                 .setMessage(R.string.controlcenter_power_off_confirm_description)
                 .setIcon(R.drawable.ic_power_settings_new)
-                .setPositiveButton(android.R.string.yes) { _, _ -> GBApplication.deviceService(device).onPowerOff() }
-                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(R.string.yes) { _, _ -> GBApplication.deviceService(device).onPowerOff() }
+                .setNegativeButton(R.string.no, null)
                 .show()
         }
     }
@@ -287,7 +288,7 @@ object DefaultDeviceCardItems {
             Snackbar.LENGTH_INDEFINITE
         ).setAction(R.string.find_lost_device_you_found_it) {
             GBApplication.deviceService(device).onFindDevice(false, target)
-        }.setCallback(object : Snackbar.Callback() {
+        }.addCallback(object : Snackbar.Callback() {
             override fun onDismissed(snackbar: Snackbar, event: Int) {
                 GBApplication.deviceService(device).onFindDevice(false, target)
                 super.onDismissed(snackbar, event)

@@ -19,7 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.garmin;
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -64,9 +64,10 @@ import nodomain.freeyourgadget.gadgetbridge.test.TestBase;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class GarminSupportTest extends TestBase {
-    @BeforeClass
-    public static void forceUtc() {
+    @Before
+    public void forceUtc() {
         // FIXME this is hacky, but we need the timestamps to match in the toString comparisons below
+        // Robolectric restores the default time zone after each test, so this must run before each test
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 

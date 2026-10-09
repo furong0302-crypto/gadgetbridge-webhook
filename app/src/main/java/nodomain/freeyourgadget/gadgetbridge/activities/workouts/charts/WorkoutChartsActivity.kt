@@ -203,10 +203,8 @@ class WorkoutChartsActivity : AbstractGBActivity(), MenuProvider {
                 }
                 // Only the first segment of a gapped series is labelled; ValueMarker resolves the
                 // following ones to it.
-                dataSet.label?.let {
-                    markerFormatters[it] = workoutChart.chartYLabelFormatter
-                    markerUnits[it] = workoutChart.unitString
-                }
+                markerFormatters[dataSet.label] = workoutChart.chartYLabelFormatter
+                markerUnits[dataSet.label] = workoutChart.unitString
                 if (!legendAdded) {
                     legendEntries.add(
                         LegendEntry(

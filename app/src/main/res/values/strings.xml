@@ -293,6 +293,8 @@
     <string name="accent_color_violet">Violet</string>
     <string name="accent_color_pink">Pink</string>
     <string name="accent_color_white">White</string>
+    <string name="pref_title_contrasting_surfaces">Contrasting surfaces</string>
+    <string name="pref_summary_contrasting_surfaces">Give bars and tiles their own shade, separate from the background</string>
     <string name="pref_title_block_screenshot">Block screenshots</string>
     <string name="pref_summary_block_screenshots">Prevent screenshots and viewing on non-secure displays. Requires a GB restart to become fully effective.</string>
     <string name="pref_title_language">Language</string>

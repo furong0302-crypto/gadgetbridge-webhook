@@ -747,6 +747,20 @@ public class GBApplication extends Application {
         }
     }
 
+    public static final String PREF_CONTRASTING_SURFACES = "pref_key_contrasting_surfaces";
+
+    public static boolean areContrastingSurfacesEnabled() {
+        return prefs.getBoolean(PREF_CONTRASTING_SURFACES, isDarkThemeEnabled());
+    }
+
+    @StyleRes
+    public static int getContrastingSurfacesOverlay() {
+        if (!isDarkThemeEnabled()) {
+            return R.style.ThemeOverlay_App_ContrastingSurfaces_Light;
+        }
+        return isAmoledBlackEnabled() ? R.style.ThemeOverlay_App_ContrastingSurfaces_Black : R.style.ThemeOverlay_App_ContrastingSurfaces_Dark;
+    }
+
     public static int getTextColor(Context context) {
         if (AndroidUtils.isDynamicColorActive()) {
             return AndroidUtils.getDynamicColor(context, com.google.android.material.R.attr.colorOnSurface);

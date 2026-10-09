@@ -24,9 +24,14 @@
 
     <color name="bar_shade_light" type="color">#1A000000</color>
     <color name="bar_shade_dark" type="color">#59000000</color>
+    <color name="bar_shade_amoled_end" type="color">#00080808</color>
+
+    <color name="surface_contrasting_light" type="color">#F4F4F4</color>
+    <color name="toolbar_divider_contrasting_light" type="color">#E8E8E8</color>
+    <color name="stat_tile_bg_contrasting_dark" type="color">#1A1A1A</color>
 
     <!-- Static Light theme screen background -->
-    <color name="window_background_light" type="color">#FAFAFA</color>
+    <color name="window_background_light" type="color">#FFFFFF</color>
     <color name="surface_container_lowest_light" type="color">#FFFFFF</color>
     <color name="surface_container_low_light" type="color">#F5F5F5</color>
     <color name="surface_container_light" type="color">#F0F0F0</color>
