@@ -83,11 +83,11 @@ public class FitWeatherConditions extends AbstractFitWeatherConditions {
 
         public void weatherWindSpeed(final float kilometerPerHour) {
             // WeatherSpec: kilometer per hour
-            // FIT: millimeter per second
+            // FIT: meter per second
             if (kilometerPerHour >= 0.0f) {
-                int speed = Math.round(kilometerPerHour / 3.6f * 1000.0f);
-                if (speed >= 0xFFFF) {
-                    speed = 0xFFFE;
+                float speed = kilometerPerHour / 3600.0f * 1000.0f;
+                if (speed >= 65.53f) {
+                    speed = 65.53f;
                 }
                 setWindSpeed(speed);
             } else {

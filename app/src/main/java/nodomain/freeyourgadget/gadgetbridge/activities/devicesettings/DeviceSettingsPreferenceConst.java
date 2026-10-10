@@ -709,6 +709,8 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREFS_ACTIVITY_IN_DEVICE_CARD_STEPS = "prefs_activity_in_device_card_steps";
     public static final String PREFS_ACTIVITY_IN_DEVICE_CARD_SLEEP = "prefs_activity_in_device_card_sleep";
     public static final String PREFS_ACTIVITY_IN_DEVICE_CARD_DISTANCE = "prefs_activity_in_device_card_distance";
+    public static final String PREF_DEVICE_CARD_SHOW_ITEMS = "pref_device_card_show_items";
+    public static final String PREF_DEVICE_CARD_ITEMS = "pref_device_card_items";
     public static final String PREFS_DEVICE_CHARTS_TABS = "charts_tabs";
     public static final String PREFS_PER_APP_NOTIFICATION_SETTINGS = "pref_per_app_notification_settings";
     public static final String PREF_MULTIPOINT = "pref_multipoint";

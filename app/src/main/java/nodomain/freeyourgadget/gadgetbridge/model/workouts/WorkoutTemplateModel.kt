@@ -33,6 +33,10 @@ data class WorkoutTarget(
 data class WorkoutDuration(
     val type: WorkoutDurationType,
     val value: Long? = null,
+    /**
+     * Whether the value is a target that the user can go beyond.
+     */
+    val plus: Boolean = false,
 ) : Parcelable
 
 /**

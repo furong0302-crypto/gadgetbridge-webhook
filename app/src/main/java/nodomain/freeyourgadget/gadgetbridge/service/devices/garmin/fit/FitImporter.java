@@ -764,8 +764,8 @@ public class FitImporter {
 
         // Garmin reports the cumulative data per activity, but not always, so we need to keep
         // track of the amounts for each activity, and set the sum of all on the sample
-        final Map<Integer, Long> stepsPerActivity = new HashMap<>();
-        final Map<Integer, Long> distancePerActivity = new HashMap<>();
+        final Map<Integer, Double> stepsPerActivity = new HashMap<>();
+        final Map<Integer, Double> distancePerActivity = new HashMap<>();
         final Map<Integer, Integer> caloriesPerActivity = new HashMap<>();
 
         final int THRESHOLD_NOT_WORN = 10 * 60; // 10 min gap between samples = not-worn
@@ -815,12 +815,12 @@ public class FitImporter {
                     sample.setHeartRate(hr);
                 }
 
-                final Long steps = record.getCycles();
+                final Double steps = record.getCycles();
                 if (steps != null) {
                     stepsPerActivity.put(activityType, steps);
                 }
 
-                final Long distance = record.getDistance();
+                final Double distance = record.getDistance();
                 if (distance != null) {
                     distancePerActivity.put(activityType, distance);
                 }
@@ -846,18 +846,18 @@ public class FitImporter {
                 }
             }
             if (!stepsPerActivity.isEmpty()) {
-                int sumSteps = 0;
-                for (final Long steps : stepsPerActivity.values()) {
+                double sumSteps = 0;
+                for (final Double steps : stepsPerActivity.values()) {
                     sumSteps += steps;
                 }
-                sample.setSteps(sumSteps);
+                sample.setSteps((int) Math.round(sumSteps * 2));
             }
             if (!distancePerActivity.isEmpty()) {
-                int sumDistance = 0;
-                for (final Long distance : distancePerActivity.values()) {
+                double sumDistance = 0;
+                for (final Double distance : distancePerActivity.values()) {
                     sumDistance += distance;
                 }
-                sample.setDistanceCm(sumDistance);
+                sample.setDistanceCm((int) Math.round(sumDistance * 100));
             }
             if (!caloriesPerActivity.isEmpty()) {
                 int sumCalories = 0;

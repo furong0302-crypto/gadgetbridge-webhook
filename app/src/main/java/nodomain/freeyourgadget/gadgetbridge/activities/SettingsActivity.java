@@ -48,6 +48,7 @@ import com.google.android.material.color.DynamicColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
+import com.jaredrummler.android.colorpicker.MaterialColorPickerDialog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -735,7 +736,7 @@ public class SettingsActivity extends AbstractSettingsActivityV2 implements Acti
             builder.setAllowPresets(true);
             builder.setPresets(swatches);
 
-            final ColorPickerDialog dialog = builder.create();
+            final ColorPickerDialog dialog = MaterialColorPickerDialog.create(builder);
             dialog.setColorPickerDialogListener(new ColorPickerDialogListener() {
                 @Override
                 public void onColorSelected(int dialogId, int color) {

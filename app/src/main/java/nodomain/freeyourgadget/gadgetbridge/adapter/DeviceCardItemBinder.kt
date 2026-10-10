@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.ImageViewCompat
 import com.google.android.flexbox.FlexboxLayout
@@ -20,6 +21,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.cards.ColorCardItem
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardItem
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.HeartRateCardItem
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
+import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState
 import java.util.Locale
 
@@ -35,14 +37,15 @@ object DeviceCardItemBinder {
         context: Context,
         hrSampleText: String?,
     ) {
-        for (i in items.indices) {
+        val visibleItems = items.filter { it.isVisible(device) }
+        for (i in visibleItems.indices) {
             val view = container.getChildAt(i)
                 ?: LayoutInflater.from(context).inflate(R.layout.device_card_item, container, false)
                     .also { container.addView(it) }
-            bindItem(view, items[i], device, context, hrSampleText)
+            bindItem(view, visibleItems[i], device, context, hrSampleText)
         }
-        if (container.childCount > items.size) {
-            container.removeViews(items.size, container.childCount - items.size)
+        if (container.childCount > visibleItems.size) {
+            container.removeViews(visibleItems.size, container.childCount - visibleItems.size)
         }
     }
 
@@ -71,6 +74,49 @@ object DeviceCardItemBinder {
             is BatteryCardItem -> bindBattery(view, icon, label, item, device, context)
             is ColorCardItem -> bindColor(view, icon, label, item, device, context)
             is HeartRateCardItem -> bindHeartRate(view, icon, label, item, device, context, hrSampleText)
+        }
+    }
+
+    /**
+     * Returns the icon that represents the item in a list.
+     */
+    @DrawableRes
+    fun icon(item: DeviceCardItem, device: GBDevice): Int = when (item) {
+        is ActionCardItem -> item.action.getIcon(device)
+        is BatteryCardItem -> batteryConfig(item, device)?.batteryIcon
+            ?.takeIf { it != GBDevice.BATTERY_ICON_DEFAULT.toInt() }
+            ?: R.drawable.ic_battery_full
+
+        is ColorCardItem -> R.drawable.ic_lightbulb
+        is HeartRateCardItem -> R.drawable.ic_heart
+    }
+
+    /**
+     * Returns the name of the item in a list.
+     */
+    fun title(item: DeviceCardItem, device: GBDevice, context: Context): String = when (item) {
+        is ActionCardItem -> item.action.getDescription(device, context)
+        is BatteryCardItem -> batteryName(item, device, context)
+
+        is ColorCardItem -> item.description(device, context)
+        is HeartRateCardItem -> context.getString(R.string.controlcenter_get_heartrate_measurement)
+    }
+
+    private fun batteryConfig(item: BatteryCardItem, device: GBDevice): BatteryConfig? =
+        device.deviceCoordinator.getBatteryConfig(device).firstOrNull { it.batteryIndex == item.batteryIndex }
+
+    private fun batteryName(item: BatteryCardItem, device: GBDevice, context: Context): String {
+        val labelDefault = GBDevice.BATTERY_LABEL_DEFAULT.toInt()
+        val label = batteryConfig(item, device)?.batteryLabel?.takeIf { it != labelDefault }
+            ?: device.getBatteryLabel(item.batteryIndex).takeIf { it != labelDefault }
+        return when {
+            label != null -> context.getString(R.string.battery_with_label, context.getString(label))
+            device.deviceCoordinator.getBatteryCount(device) > 1 -> context.getString(
+                R.string.battery_i,
+                item.batteryIndex + 1
+            )
+
+            else -> context.getString(R.string.battery)
         }
     }
 
@@ -127,7 +173,7 @@ object DeviceCardItemBinder {
         val batteryState = device.getBatteryState(batteryIndex)
         val batteryIcon = device.getBatteryIcon(batteryIndex)
 
-        setDescription(view, context.getString(R.string.battery_detail_activity_title))
+        setDescription(view, batteryName(item, device, context))
 
         if (batteryIcon != GBDevice.BATTERY_ICON_DEFAULT.toInt()) {
             icon.setImageResource(batteryIcon)

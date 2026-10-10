@@ -1673,6 +1673,24 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
             }
         }
 
+        final Preference deviceCardShowItems = findPreference(PREF_DEVICE_CARD_SHOW_ITEMS);
+        if (deviceCardShowItems != null) {
+            deviceCardShowItems.setOnPreferenceChangeListener((preference, newValue) -> {
+                LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST));
+                return true;
+            });
+        }
+
+        final Preference deviceCardItems = findPreference(PREF_DEVICE_CARD_ITEMS);
+        if (deviceCardItems != null) {
+            deviceCardItems.setOnPreferenceClickListener(preference -> {
+                final Intent intent = new Intent(getContext(), DeviceCardItemsActivity.class);
+                intent.putExtra(GBDevice.EXTRA_DEVICE, device);
+                startActivity(intent);
+                return true;
+            });
+        }
+
         // Replace the PAI with the device-specific name
         if (chartsTabsOrderSelection != null) {
             final ListPreference chartsTabsListPref = (ListPreference) chartsTabsOrderSelection;
@@ -1827,12 +1845,16 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
                         R.xml.devicesettings_chartstabs
                 );
             }
+
+            final List<Integer> deviceCardSubScreens = new ArrayList<>();
+            deviceCardSubScreens.add(R.xml.devicesettings_device_card);
             if (coordinator.supportsActivityTracking(device)) {
-                deviceSpecificSettings.addRootScreen(
-                        DeviceSpecificSettingsScreen.ACTIVITY_INFO,
-                        R.xml.devicesettings_device_card_activity_card_preferences
-                );
+                deviceCardSubScreens.add(R.xml.devicesettings_device_card_activity_card_preferences);
             }
+            deviceSpecificSettings.addRootScreen(
+                    DeviceSpecificSettingsScreen.DEVICE_CARD,
+                    deviceCardSubScreens
+            );
 
             if (coordinator.getConnectionType() != DeviceCoordinator.ConnectionType.USB) {
                 // USB devices do not support it (and should not need it)

@@ -33,6 +33,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.MultiS
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs
 
+
 /**
  * Adds a language [ListSetting] with key [DeviceSettingsPreferenceConst.PREF_LANGUAGE]. Pass the
  * languages the device supports; if none are given all known [Language] entries are included.
@@ -187,6 +188,33 @@ fun DeviceSettingsScope.prefixNotificationWithAppName() {
 }
 
 /**
+ * Controls whether notifications on the device are removed when they are dismissed on the phone.
+ */
+fun DeviceSettingsScope.autoRemoveNotifications() {
+    switchSetting(
+        key = DeviceSettingsPreferenceConst.PREF_AUTOREMOVE_NOTIFICATIONS,
+        title = R.string.pref_title_autoremove_notifications,
+        summary = R.string.pref_summary_autoremove_notifications,
+        icon = R.drawable.ic_done_all,
+        defaultValue = true,
+        connectedOnly = false,
+    )
+}
+
+/**
+ * Seekbar for controlling vibration strength.
+ */
+fun DeviceSettingsScope.vibrationStrength(default: Int, max: Int) {
+    seekbar(
+        key = "vibration_strength",
+        title = R.string.pref_title_vibration_strength,
+        icon = R.drawable.ic_vibration,
+        defaultValue = default,
+        max = max,
+        showValue = true,
+    )
+}
+/**
  * The switch that controls whether the device clock is kept in sync with the phone.
  */
 fun DeviceSettingsScope.timeSync() {
@@ -239,5 +267,21 @@ fun DeviceSettingsScope.worldClocks() {
         title = R.string.pref_world_clocks_title,
         summary = R.string.pref_world_clocks_summary,
         activityClass = ConfigureWorldClocks::class.java,
+    )
+}
+
+/**
+ * Setting that allows choosing a call rejection method.
+ * Original XML: devicesettings_reject_call_method.xml
+ */
+fun DeviceSettingsScope.rejectCallMethod() {
+    list(
+        key = "call_reject_method",
+        title = R.string.pref_call_rejection_method_title,
+        summary = R.string.pref_call_rejection_method_summary,
+        icon = R.drawable.ic_phone_missed_outline,
+        entriesRes = R.array.call_rejection_methods,
+        entryValuesRes = R.array.call_rejection_methods_values,
+        defaultValue = "reject",
     )
 }

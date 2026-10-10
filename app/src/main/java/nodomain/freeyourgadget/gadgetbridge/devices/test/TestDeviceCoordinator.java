@@ -713,7 +713,7 @@ public class TestDeviceCoordinator extends AbstractDeviceCoordinator {
         final BatteryConfig[] ret = new BatteryConfig[getBatteryCount(device)];
 
         for (int i = 0; i < getBatteryCount(device); i++) {
-            ret[i] = new BatteryConfig(i, R.drawable.ic_battery_full, R.string.battery);
+            ret[i] = new BatteryConfig(i, R.drawable.ic_battery_full, GBDevice.BATTERY_LABEL_DEFAULT);
         }
 
         return ret;

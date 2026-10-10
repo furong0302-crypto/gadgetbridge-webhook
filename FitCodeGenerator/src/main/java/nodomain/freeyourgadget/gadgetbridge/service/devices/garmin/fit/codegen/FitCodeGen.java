@@ -817,11 +817,6 @@ public enum FitCodeGen {
         );
 
         for (final FitField primitive : nativeFITMessage.getFieldDefinitionPrimitives()) {
-            if ("STRING".equals(primitive.base) && primitive.stringLen <= 0) {
-                // Without a stringLen we can't encode the field, and it would silently
-                // default to 1 byte (only the null terminator). Don't generate the setter.
-                continue;
-            }
             if ("STRING[]".equals(primitive.base)) {
                 // Encoding String arrays is not supported by the current code.
                 // Don't generate the setter.

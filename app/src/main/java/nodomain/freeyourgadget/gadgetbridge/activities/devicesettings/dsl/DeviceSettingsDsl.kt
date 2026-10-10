@@ -462,6 +462,7 @@ class DeviceSettingsScope {
         @StringRes title: Int,
         @StringRes summary: Int = 0,
         @DrawableRes icon: Int = 0,
+        dependency: String? = null,
         connectedOnly: Boolean = false,
         visibleWhen: ((Prefs) -> Boolean)? = null,
         activityClass: Class<out AbstractGBActivity>,
@@ -471,6 +472,7 @@ class DeviceSettingsScope {
             title = title,
             summary = summary,
             icon = icon,
+            dependency = dependency,
             connectedOnly = connectedOnly,
             visibleWhen = visibleWhen,
         ) { context, device ->

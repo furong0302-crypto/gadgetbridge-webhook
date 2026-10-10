@@ -870,7 +870,7 @@ public class FitExporter {
             final Double derived = deriveRowingDistanceMeters(overrides.strokes, strokeLen);
             if (derived != null) {
                 distance = derived;
-                b.setAvgStrokeDistance((int) Math.round(strokeLen * 100.0));
+                b.setAvgStrokeDistance((float) strokeLen);
             }
         }
         if (distance != null) {
@@ -1046,10 +1046,7 @@ public class FitExporter {
         b.setEventType(EventType.STOP);
         b.setSport(sport);
         b.setSubSport(subSport);
-        // SESSION field 7 (total_elapsed_time) is unscaled in NativeFITMessage and stored
-        // as-is in ms. Field 8 (total_timer_time) carries scale=1000 — the codec multiplies
-        // raw seconds by 1000 on encode, so pass seconds.
-        b.setTotalElapsedTime(elapsedSeconds * 1000L);
+        b.setTotalElapsedTime((double) elapsedSeconds);
         b.setTotalTimerTime((double) elapsedSeconds);
         b.setNumLaps(numLaps);
         b.setFirstLapIndex(0);

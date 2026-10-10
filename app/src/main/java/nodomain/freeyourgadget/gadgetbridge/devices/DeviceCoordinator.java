@@ -1179,8 +1179,9 @@ public interface DeviceCoordinator {
     List<DeviceCardAction> getCustomActions();
 
     /**
-     * Returns the items to render in the device list card's icon row, in display order. The preset
-     * items are built from the capabilities, and then appended {@link #getCustomActions()}.
+     * Returns all the items that the device supports in the device list card's icon row, in the
+     * default display order. The preset items are built from the capabilities, and then appended
+     * {@link #getCustomActions()}.
      */
     List<DeviceCardItem> getCardItems(@NonNull final GBDevice device);
 
