@@ -16,6 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
+import com.jaredrummler.android.colorpicker.MaterialColorPickerDialog
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureAlarms
@@ -42,6 +43,8 @@ object DefaultDeviceCardItems {
     @JvmStatic
     fun build(coordinator: DeviceCoordinator, device: GBDevice): List<DeviceCardItem> {
         val items = mutableListOf<DeviceCardItem>()
+        val initialized: (GBDevice) -> Boolean = { it.isInitialized }
+        val always: (GBDevice) -> Boolean = { true }
 
         for (i in 0 until coordinator.getBatteryCount(device)) {
             items.add(BatteryCardItem(i))
@@ -49,26 +52,32 @@ object DefaultDeviceCardItems {
 
         @Suppress("DEPRECATION")
         if (coordinator.getSupportedDeviceSpecificSettings(device) != null) {
-            items.add(ActionCardItem(settingsAction()))
+            items.add(ActionCardItem(settingsAction(), visible = always))
         }
 
-        if (device.isInitialized && device.getExtraInfo("fm_frequency") != null) {
-            items.add(ActionCardItem(fmFrequencyAction()))
+        if (device.getExtraInfo("fm_frequency") != null) {
+            items.add(ActionCardItem(fmFrequencyAction(), visible = initialized))
         }
 
-        if (device.isInitialized && device.getExtraInfo("led_color") != null && coordinator.supportsLedColor(device)) {
+        if (coordinator.supportsLedColor(device)) {
             items.add(ledColorItem(coordinator))
         }
 
-        if (device.isInitialized && coordinator.supportsDataFetching(device)) {
-            items.add(ActionCardItem(fetchActivityAction(), busyIndicator = true))
+        if (coordinator.supportsDataFetching(device)) {
+            items.add(
+                ActionCardItem(
+                    fetchActivityAction(),
+                    busyIndicator = true,
+                    visible = initialized
+                )
+            )
         }
 
-        if (device.isInitialized && coordinator.supportsScreenshots(device)) {
-            items.add(ActionCardItem(screenshotAction()))
+        if (coordinator.supportsScreenshots(device)) {
+            items.add(ActionCardItem(screenshotAction(), visible = initialized))
         }
 
-        if (device.isInitialized && coordinator.supportsAppsManagement(device)) {
+        if (coordinator.supportsAppsManagement(device)) {
             coordinator.getAppsManagementActivity(device)?.let { activityClass ->
                 items.add(
                     ActionCardItem(
@@ -76,7 +85,9 @@ object DefaultDeviceCardItems {
                             R.drawable.ic_action_manage_apps,
                             R.string.title_activity_appmanager,
                             activityClass
-                        )
+                        ),
+                        id = "apps",
+                        visible = initialized,
                     )
                 )
             }
@@ -89,7 +100,9 @@ object DefaultDeviceCardItems {
                         R.drawable.ic_access_alarms,
                         R.string.controlcenter_start_configure_alarms,
                         ConfigureAlarms::class.java
-                    )
+                    ),
+                    id = "alarms",
+                    visible = always,
                 )
             )
         }
@@ -101,7 +114,9 @@ object DefaultDeviceCardItems {
                         R.drawable.ic_device_set_reminders,
                         R.string.controlcenter_start_configure_reminders,
                         ConfigureReminders::class.java
-                    )
+                    ),
+                    id = "reminders",
+                    visible = always,
                 )
             )
         }
@@ -111,9 +126,11 @@ object DefaultDeviceCardItems {
                 ActionCardItem(
                     DeviceCardAction.forActivity(
                         R.drawable.ic_activity_graphs,
-                        R.string.controlcenter_start_activitymonitor,
+                        R.string.charts,
                         ActivityChartsActivity::class.java
-                    )
+                    ),
+                    id = "charts",
+                    visible = always,
                 )
             )
         }
@@ -125,39 +142,47 @@ object DefaultDeviceCardItems {
                         R.drawable.ic_activity_tracks,
                         R.string.controlcenter_start_activity_tracks,
                         WorkoutListActivity::class.java
-                    )
+                    ),
+                    id = "workouts",
+                    visible = always,
                 )
             )
         }
 
-        if (device.isInitialized && coordinator.supportsFindDevice(device)) {
-            items.add(ActionCardItem(findDeviceAction(coordinator)))
+        if (coordinator.supportsFindDevice(device)) {
+            items.add(ActionCardItem(findDeviceAction(coordinator), id = "find_device", visible = initialized))
         }
 
         coordinator.calibrationActivity?.let { activityClass ->
-            if (device.isInitialized) {
-                items.add(
-                    ActionCardItem(
-                        DeviceCardAction.forActivity(
-                            R.drawable.ic_activity_unknown,
-                            R.string.controlcenter_calibrate_device,
-                            activityClass
-                        )
-                    )
+            items.add(
+                ActionCardItem(
+                    DeviceCardAction.forActivity(
+                        R.drawable.ic_activity_unknown,
+                        R.string.controlcenter_calibrate_device,
+                        activityClass
+                    ),
+                    id = "calibration",
+                    visible = initialized,
                 )
-            }
+            )
         }
 
-        if (device.isInitialized && coordinator.supportsRealtimeData(device)) {
-            items.add(HeartRateCardItem(coordinator.supportsLiveOnlyHeartRateDisplay(device), ::heartRateTestOnClick))
+        if (coordinator.supportsRealtimeData(device)) {
+            items.add(
+                HeartRateCardItem(
+                    visible = initialized,
+                    liveOnly = coordinator.supportsLiveOnlyHeartRateDisplay(device),
+                    onClick = ::heartRateTestOnClick,
+                )
+            )
         }
 
-        if (device.isInitialized && coordinator.supportsPowerOff(device)) {
-            items.add(ActionCardItem(powerOffAction()))
+        if (coordinator.supportsPowerOff(device)) {
+            items.add(ActionCardItem(powerOffAction(), visible = initialized))
         }
 
         @Suppress("DEPRECATION")
-        coordinator.customActions.filter { it.isVisible(device) }.forEach {
+        coordinator.customActions.forEach {
             items.add(ActionCardItem(it))
         }
 
@@ -168,22 +193,18 @@ object DefaultDeviceCardItems {
         (context as Activity).window.decorView.findViewById(android.R.id.content)
 
     private fun settingsAction(): DeviceCardAction = object : DeviceCardAction {
+        override fun getId(): String = "device_specific_settings"
         override fun getIcon(device: GBDevice) = R.drawable.ic_settings
         override fun getDescription(device: GBDevice, context: Context): String =
             context.getString(R.string.title_activity_device_specific_settings)
 
         override fun onClick(device: GBDevice, context: Context) {
-            val intent = Intent(context, DeviceSettingsActivity::class.java)
-            intent.putExtra(GBDevice.EXTRA_DEVICE, device)
-            intent.putExtra(
-                DeviceSettingsActivity.MENU_ENTRY_POINT,
-                DeviceSettingsActivity.MENU_ENTRY_POINTS.DEVICE_SETTINGS
-            )
-            context.startActivity(intent)
+            DeviceSettingsActivity.start(context, device)
         }
     }
 
     private fun fetchActivityAction(): DeviceCardAction = object : DeviceCardAction {
+        override fun getId(): String = "sync"
         override fun getIcon(device: GBDevice) = R.drawable.ic_refresh
         override fun getDescription(device: GBDevice, context: Context): String =
             context.getString(R.string.controlcenter_fetch_activity_data)
@@ -195,6 +216,7 @@ object DefaultDeviceCardItems {
     }
 
     private fun screenshotAction(): DeviceCardAction = object : DeviceCardAction {
+        override fun getId(): String = "screenshot"
         override fun getIcon(device: GBDevice) = R.drawable.ic_screenshot
         override fun getDescription(device: GBDevice, context: Context): String =
             context.getString(R.string.controlcenter_take_screenshot)
@@ -210,6 +232,7 @@ object DefaultDeviceCardItems {
     }
 
     private fun powerOffAction(): DeviceCardAction = object : DeviceCardAction {
+        override fun getId(): String = "power_off"
         override fun getIcon(device: GBDevice) = R.drawable.ic_power_settings_new
         override fun getDescription(device: GBDevice, context: Context): String =
             context.getString(R.string.controlcenter_power_off)
@@ -226,6 +249,7 @@ object DefaultDeviceCardItems {
     }
 
     private fun findDeviceAction(coordinator: DeviceCoordinator): DeviceCardAction = object : DeviceCardAction {
+        override fun getId(): String = "find_device"
         override fun getIcon(device: GBDevice) = R.drawable.ic_action_find_lost_device
         override fun getDescription(device: GBDevice, context: Context): String =
             context.getString(R.string.controlcenter_find_device)
@@ -302,6 +326,7 @@ object DefaultDeviceCardItems {
     }
 
     private fun fmFrequencyAction(): DeviceCardAction = object : DeviceCardAction {
+        override fun getId(): String = "fm_frequency"
         private val freqMin = 87.5f
         private val freqMax = 108.0f
         private val freqMinInt = floor(freqMin.toDouble()).toInt()
@@ -411,6 +436,8 @@ object DefaultDeviceCardItems {
     }
 
     private fun ledColorItem(coordinator: DeviceCoordinator): ColorCardItem = ColorCardItem(
+        id = "led_color",
+        visible = { device -> device.isInitialized && device.getExtraInfo("led_color") != null },
         color = { device -> device.getExtraInfo("led_color") as Int },
         description = { _, context -> context.getString(R.string.controlcenter_change_led_color) },
         onClick = { device, context ->
@@ -436,7 +463,7 @@ object DefaultDeviceCardItems {
                 builder.setPresets(presets)
             }
 
-            val dialog = builder.create()
+            val dialog = MaterialColorPickerDialog.create(builder)
             dialog.setColorPickerDialogListener(object : ColorPickerDialogListener {
                 override fun onColorSelected(dialogId: Int, color: Int) {
                     device.setExtraInfo("led_color", color)

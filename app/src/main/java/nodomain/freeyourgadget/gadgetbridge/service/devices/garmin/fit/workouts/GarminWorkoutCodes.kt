@@ -4,6 +4,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
 import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutDurationType
 import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutEffort
 import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutEquipment
+import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutLoadCategory
 import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutPoolLengthUnit
 import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutStepType
 import nodomain.freeyourgadget.gadgetbridge.model.workouts.WorkoutSwimDrill
@@ -42,6 +43,16 @@ object GarminWorkoutCodes {
         WorkoutDurationType.SEND_OFF_TIME -> WktStepDuration.REPETITION_TIME
         WorkoutDurationType.CSS_SEND_OFF_TIME -> WktStepDuration.CSS_REPETITION_TIME
         else -> WktStepDuration.OPEN
+    }
+
+    /**
+     * `workout_step.exercise_load_category`.
+     */
+    fun loadCategoryCode(category: WorkoutLoadCategory): Int = when (category) {
+        WorkoutLoadCategory.LIGHT -> 1
+        WorkoutLoadCategory.MODERATE -> 2
+        WorkoutLoadCategory.HEAVY -> 3
+        WorkoutLoadCategory.VERY_HEAVY -> 4
     }
 
     /**

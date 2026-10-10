@@ -89,14 +89,30 @@
                         android:textColor="?attr/colorOnSurface"
                         tools:text="My Pebble Watch" />
 
-                    <TextView
-                        android:id="@+id/device_status"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/textColorSecondary"
-                        tools:text="@string/connecting" />
+                        android:layout_marginTop="4dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:id="@+id/device_status_dot"
+                            android:layout_width="7dp"
+                            android:layout_height="7dp"
+                            android:layout_marginEnd="6dp"
+                            android:background="@drawable/device_status_dot" />
+
+                        <TextView
+                            android:id="@+id/device_status"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:includeFontPadding="false"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/textColorSecondary"
+                            tools:text="@string/connecting" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <ImageView

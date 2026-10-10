@@ -43,6 +43,7 @@ import com.google.android.material.color.MaterialColors;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.adapter.DeviceStatusDot;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
@@ -56,6 +57,10 @@ public class BatteryInfoActivity extends AbstractGBActivity {
     private int batteryIndex = 0;
     TextView battery_status_battery_level_text;
     TextView battery_status_battery_voltage;
+    TextView battery_status_connection_state;
+    TextView battery_status_extra_name;
+    View battery_status_details;
+    View battery_status_connection_dot;
     LocalBroadcastManager localBroadcastManager;
 
     @Override
@@ -93,7 +98,8 @@ public class BatteryInfoActivity extends AbstractGBActivity {
 
         TextView battery_status_device_name_text = findViewById(R.id.battery_status_device_name);
         battery_status_battery_voltage = findViewById(R.id.battery_status_battery_voltage);
-        TextView battery_status_extra_name = findViewById(R.id.battery_status_extra_name);
+        battery_status_extra_name = findViewById(R.id.battery_status_extra_name);
+        battery_status_details = findViewById(R.id.battery_status_details);
         final TextView battery_status_date_from_text = findViewById(R.id.battery_status_date_from_text);
         final TextView battery_status_date_to_text = findViewById(R.id.battery_status_date_to_text);
         final SeekBar battery_status_time_span_seekbar = findViewById(R.id.battery_status_time_span_seekbar);
@@ -200,8 +206,9 @@ public class BatteryInfoActivity extends AbstractGBActivity {
         }
         battery_status_battery_level_text = findViewById(R.id.battery_status_battery_level);
         battery_status_device_name_text.setText(gbDevice.getAliasOrName());
+        battery_status_connection_state = findViewById(R.id.battery_status_connection_state);
+        battery_status_connection_dot = findViewById(R.id.battery_status_connection_dot);
 
-        setBatteryLabels();
         for (BatteryConfig batteryConfig : coordinator.getBatteryConfig(gbDevice)) {
             if (batteryConfig.getBatteryIndex() == batteryIndex) {
                 if (batteryConfig.getBatteryLabel() != GBDevice.BATTERY_LABEL_DEFAULT) {
@@ -215,6 +222,9 @@ public class BatteryInfoActivity extends AbstractGBActivity {
                 }
             }
         }
+
+        setBatteryLabels();
+        setConnectionState();
     }
 
     private void setBatteryLabels() {
@@ -222,6 +232,12 @@ public class BatteryInfoActivity extends AbstractGBActivity {
         String voltage = gbDevice.getBatteryVoltage(batteryIndex) > 0 ? String.format("%1sV", gbDevice.getBatteryVoltage(batteryIndex)) : "";
         battery_status_battery_level_text.setText(level);
         battery_status_battery_voltage.setText(voltage);
+        battery_status_details.setVisibility(voltage.isEmpty() && battery_status_extra_name.getText().length() == 0 ? View.GONE : View.VISIBLE);
+    }
+
+    private void setConnectionState() {
+        battery_status_connection_state.setText(gbDevice.getStateString(this));
+        DeviceStatusDot.apply(battery_status_connection_dot, gbDevice);
     }
 
     BroadcastReceiver commandReceiver = new BroadcastReceiver() {
@@ -233,6 +249,7 @@ public class BatteryInfoActivity extends AbstractGBActivity {
                 if (gbDevice.equals(newDevice)) {
                     gbDevice = newDevice;
                     setBatteryLabels();
+                    setConnectionState();
                 }
 
             }

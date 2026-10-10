@@ -449,7 +449,8 @@ public class GarminWorkoutParser implements ActivitySummaryParser {
         summary.setActivityKind(activityKind.getCode());
 
         if (session.getTotalElapsedTime() != null) {
-            summary.setEndTime(new Date(summary.getStartTime().getTime() + session.getTotalElapsedTime().intValue()));
+            long elapsedMs = Math.round(session.getTotalElapsedTime() * 1000);
+            summary.setEndTime(new Date(summary.getStartTime().getTime() + elapsedMs));
         }
 
         summaryData.add(ACTIVE_SECONDS, session.getTotalTimerTime(), UNIT_SECONDS);

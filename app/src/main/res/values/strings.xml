@@ -100,6 +100,13 @@
     <string name="calendar_three_months">3 months</string>
     <string name="calendar_six_months">6 months</string>
     <string name="calendar_year">Year</string>
+    <!-- Short duration labels under the battery info slider -->
+    <string name="duration_short_day">1d</string>
+    <string name="duration_short_week">1w</string>
+    <string name="duration_short_two_weeks">2w</string>
+    <string name="duration_short_month">1m</string>
+    <string name="duration_short_six_months">6m</string>
+    <string name="duration_short_year">1y</string>
     <!-- Strings related to Debug Activity -->
     <string name="title_activity_debug">Debug</string>
     <string name="debugactivity_really_factoryreset_title">Really factory reset?</string>
@@ -217,6 +224,12 @@
     <string name="pref_header_calendar">Calendar</string>
     <string name="pref_header_connection">Connection</string>
     <string name="pref_header_dashboard">Dashboard</string>
+    <string name="pref_header_device_card">Device card</string>
+    <string name="pref_device_card_show_items_title">Show card items</string>
+    <string name="pref_device_card_items_title">Card items</string>
+    <string name="pref_device_card_items_summary">Customize the items on the device card</string>
+    <string name="device_card_add_item">Add item</string>
+    <string name="device_card_items_reset_confirmation">Reset the order of the device card items, and restore the removed items?</string>
     <string name="pref_header_display">Display</string>
     <string name="pref_header_generic">Generic</string>
     <string name="pref_header_health">Health</string>
@@ -377,6 +390,7 @@
     <string name="always">Always</string>
     <string name="when_screen_off">When screen is off</string>
     <string name="never">Never</string>
+    <string name="when_connected">When connected</string>
     <string name="pref_header_privacy">Privacy</string>
     <string name="pref_title_call_privacy_mode">Call privacy mode</string>
     <string name="pref_call_privacy_mode_off">Display name and number</string>
@@ -1240,6 +1254,7 @@
     <string name="sleep_colored_stats_light_avg">Light AVG</string>
     <string name="sleep_colored_stats_rem_avg">REM AVG</string>
     <string name="sleep_colored_stats_awake_avg">Awake AVG</string>
+    <string name="sleep_total_value">Total sleep: %s</string>
     <string name="sleep_avg">Sleep AVG</string>
     <string name="lowest">Lowest</string>
     <string name="highest">Highest</string>
@@ -2998,6 +3013,13 @@
     <string name="ascentDistance">Uphill distance</string>
     <string name="activityTotalAscent">Total ascent</string>
     <string name="activityTotalDescent">Total descent</string>
+    <string name="workout_ascent">Ascent</string>
+    <string name="workout_descent">Descent</string>
+    <string name="avg_speed">Avg Speed</string>
+    <string name="avg_power">Avg Power</string>
+    <string name="avg_swolf">Avg SWOLF</string>
+    <string name="avg_aerobic_effect">Avg Aerobic Effect</string>
+    <string name="avg_anaerobic_effect">Avg Anaerobic Effect</string>
     <string name="average_ascent_velocity">Avg ascent velocity</string>
     <string name="descentDistance">Downhill distance</string>
     <string name="flatDistance">Flat distance</string>
@@ -3348,6 +3370,36 @@
         <item quantity="one">%d activity</item>
         <item quantity="other">%d activities</item>
     </plurals>
+    <!-- Title of the per-sport statistics screen, e.g. "Running statistics" -->
+    <string name="statistics_sport_title">%1$s statistics</string>
+    <string name="sports">Sports</string>
+    <string name="statistics_empty_title">No statistics yet</string>
+    <string name="statistics_empty_body">Record an activity and it will show up here.</string>
+    <string name="statistics_load_failed">Could not load statistics</string>
+    <string name="retry">Retry</string>
+    <string name="statistics_summary">Summary</string>
+    <string name="statistics_chart_edit">Edit chart</string>
+    <string name="statistics_chart_editor_title">Chart data</string>
+    <string name="statistics_chart_editor_subtitle">Show up to two data sets.</string>
+    <string name="statistics_chart_data_set_1">Data set 1</string>
+    <string name="statistics_chart_data_set_2">Data set 2</string>
+    <string name="statistics_chart_set_1">Set 1</string>
+    <string name="statistics_chart_set_2">Set 2</string>
+    <string name="statistics_chart_type_bar">Bar</string>
+    <string name="statistics_chart_type_line">Line</string>
+    <string name="statistics_chart_average_hint">Averages are always shown as a line.</string>
+    <string name="statistics_chart_apply">Apply</string>
+    <!-- Accessibility description of the statistics chart, e.g. "Distance per day, Sep 22 – 28, 2026, total 31.4 km" -->
+    <string name="statistics_chart_description_daily">%1$s per day, %2$s, total %3$s</string>
+    <!-- Accessibility description of the statistics chart, e.g. "Distance per month, 2026, total 1,204 km" -->
+    <string name="statistics_chart_description_monthly">%1$s per month, %2$s, total %3$s</string>
+    <!-- Accessibility description of the statistics chart, e.g. "Avg Pace per day, Sep 22 – 28, 2026, average 5:30 min/km" -->
+    <string name="statistics_chart_description_daily_average">%1$s per day, %2$s, average %3$s</string>
+    <!-- Accessibility description of the statistics chart, e.g. "Power per month, 2026, average 215 W" -->
+    <string name="statistics_chart_description_monthly_average">%1$s per month, %2$s, average %3$s</string>
+    <string name="statistics_sessions">Sessions</string>
+    <string name="statistics_previous_period">Previous period</string>
+    <string name="statistics_next_period">Next period</string>
     <string name="sports_activity_quick_filter_this_week">This week</string>
     <string name="sports_activity_quick_filter_last_week">Previous week</string>
     <string name="sports_activity_quick_filter_this_month">This month</string>
@@ -3698,6 +3750,7 @@
     <string name="prefs_earbud_lights_fade">Fade in and out</string>
     <string name="prefs_earbud_lights_steady">Steady</string>
     <string name="battery_i">Battery %d</string>
+    <string name="battery_with_label">Battery: %s</string>
     <string name="battery_case">Battery case</string>
     <string name="left_earbud">Left earbud</string>
     <string name="right_earbud">Right earbud</string>
@@ -5896,6 +5949,7 @@
     <string name="workout_template_keep_editing">Keep editing</string>
     <string name="workout_template_save_failed">Could not save this workout template.</string>
     <string name="workout_template_unsupported">Not supported by this device</string>
+    <string name="workout_template_share_failed">Could not share this workout template</string>
 
     <plurals name="workout_template_step_count">
         <item quantity="one">%d step</item>
@@ -5923,6 +5977,8 @@
     <string name="workout_duration_power_above">Power above</string>
     <string name="workout_duration_power_below">Power below</string>
     <string name="workout_duration_button_press">Button press</string>
+    <string name="workout_duration_reps_plus">Extra Reps</string>
+    <string name="workout_duration_reps_plus_summary">Show a \"+\" after the target rep count - go beyond the target reps if you can.</string>
     <string name="workout_duration_swimming_send_off_time">Send-off time</string>
     <string name="workout_duration_swimming_css_send_off_time">CSS send-off time</string>
 
@@ -5953,6 +6009,9 @@
     <string name="workout_weight_body_weight">Body weight</string>
     <string name="workout_weight_percent_1rm">% of 1RM</string>
     <string name="workout_weight_rm">Rep max (RM)</string>
+    <string name="workout_weight_load_category">Load category</string>
+    <string name="workout_load_heavy">Heavy</string>
+    <string name="workout_load_very_heavy">Very heavy</string>
 
     <string name="workout_swim_stroke_choice">Choice</string>
     <string name="workout_swim_stroke_individual_medley">Individual medley</string>

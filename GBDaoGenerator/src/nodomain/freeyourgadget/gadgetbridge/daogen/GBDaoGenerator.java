@@ -110,7 +110,7 @@ public class GBDaoGenerator {
             outputDir.mkdirs();
         }
 
-        final Schema schema = new Schema(151, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(152, MAIN_PACKAGE + ".entities");
 
         final List<Entity> sampleProvidersToGenerate = new LinkedList<>();
         final List<Entity> batterySampleProvidersToGenerate = new LinkedList<>();
@@ -1967,6 +1967,8 @@ public class GBDaoGenerator {
         step.addStringProperty("durationType")
                 .javaDocGetterAndSetter("Per WorkoutDurationType.");
         step.addLongProperty("durationValue");
+        step.addBooleanProperty("durationPlus")
+                .javaDocGetterAndSetter("Whether durationValue is a target that the user can go beyond.");
 
         // Primary target
         step.addStringProperty("targetType")

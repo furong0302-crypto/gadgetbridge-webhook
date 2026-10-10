@@ -938,7 +938,8 @@ private fun stepSummary(
 
     node.duration?.let { duration ->
         val valueSpec = stepSpec?.durations?.find { it.type == duration.type }?.value
-        parts.add(labeledValue(context, duration.type.label, valueSpec, duration.value))
+        val text = labeledValue(context, duration.type.label, valueSpec, duration.value)
+        parts.add(if (duration.plus) "$text+" else text)
     }
 
     node.target?.let { target ->
