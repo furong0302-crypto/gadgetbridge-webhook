@@ -152,6 +152,7 @@ public class XiaomiSettingsCustomizer implements DeviceSpecificSettingsCustomize
             if (!exportDir.exists() || !exportDir.isDirectory()) {
                 LOG.error("export directory {} not found", exportDir);
                 GB.toast(context, "export directory " + exportDir + " not found", Toast.LENGTH_LONG, GB.ERROR);
+                PARSING_FROM_STORAGE.set(false);
                 return;
             }
 
@@ -159,11 +160,13 @@ public class XiaomiSettingsCustomizer implements DeviceSpecificSettingsCustomize
             if (activityFiles.isEmpty()) {
                 LOG.error("No activity files found in {}", exportDir);
                 GB.toast(context, "No activity files found in " + exportDir, Toast.LENGTH_LONG, GB.ERROR);
+                PARSING_FROM_STORAGE.set(false);
                 return;
             }
         } catch (final Exception e) {
             LOG.error("Failed to parse from storage", e);
             GB.toast(context, "Failed to parse from storage", Toast.LENGTH_LONG, GB.ERROR, e);
+            PARSING_FROM_STORAGE.set(false);
             return;
         }
 

@@ -334,6 +334,11 @@
             android:parentActivityName=".activities.workouts.templates.WorkoutTemplateEditActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".devices.test.TestFeaturesActivity"
+            android:label="@string/pref_test_features_title"
+            android:parentActivityName=".activities.devicesettings.DeviceSettingsActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".activities.workouts.templates.WorkoutExercisePickerActivity"
             android:label="@string/workout_exercise_picker_title"
             android:parentActivityName=".activities.workouts.templates.WorkoutStepEditActivity"

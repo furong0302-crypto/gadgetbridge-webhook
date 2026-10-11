@@ -29,6 +29,7 @@ import nodomain.freeyourgadget.gadgetbridge.adapter.DeviceCardItemBinder
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardItem
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardLayout
+import nodomain.freeyourgadget.gadgetbridge.devices.cards.MoreCardItem
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.util.kotlin.getParcelableCompat
 import nodomain.freeyourgadget.gadgetbridge.util.dialogs.IconListAdapter
@@ -199,6 +200,7 @@ class DeviceCardItemsActivity : AbstractGBActivity() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val icon: ImageView = view.findViewById(R.id.widget_instance_icon)
             val title: TextView = view.findViewById(R.id.widget_instance_title)
+            val summary: TextView = view.findViewById(R.id.widget_instance_summary)
             val overflow: ImageButton = view.findViewById(R.id.widget_instance_overflow)
             val dragHandle: View = view.findViewById(R.id.widget_instance_drag_handle)
         }
@@ -220,6 +222,12 @@ class DeviceCardItemsActivity : AbstractGBActivity() {
                 ColorStateList.valueOf(MaterialColors.getColor(holder.icon, R.attr.textColorSecondary))
             )
             holder.title.text = DeviceCardItemBinder.title(item, device, holder.itemView.context)
+            if (item == MoreCardItem) {
+                holder.summary.setText(R.string.device_card_more_summary)
+                holder.summary.visibility = View.VISIBLE
+            } else {
+                holder.summary.visibility = View.GONE
+            }
             holder.overflow.setOnClickListener { anchor -> showOverflowMenu(anchor, item) }
             holder.dragHandle.setOnTouchListener { _, event ->
                 if (event.actionMasked == MotionEvent.ACTION_DOWN) {

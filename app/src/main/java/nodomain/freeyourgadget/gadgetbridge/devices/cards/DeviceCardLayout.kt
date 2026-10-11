@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 /**
  * The user order and the removed items of the device card icon row, persisted per device.
  * Items that are not in the persisted order are new, and display at their default position.
+ * Optional items are displayed only when they are explicitly added by the user.
  * This avoids the need for preference migrations when devices get new items, or new capabilities.
  */
 object DeviceCardLayout {
@@ -34,7 +35,7 @@ object DeviceCardLayout {
         val orderedIds = order.toSet()
 
         for ((index, item) in defaults.withIndex()) {
-            if (item.id in removed || item.id in orderedIds) {
+            if (item.id in removed || item.id in orderedIds || item.optional) {
                 continue
             }
             val previous = defaults.subList(0, index).lastOrNull { prev -> ordered.any { it.id == prev.id } }
@@ -50,13 +51,14 @@ object DeviceCardLayout {
      */
     fun removed(device: GBDevice, defaults: List<DeviceCardItem>): List<DeviceCardItem> {
         val prefs = GBApplication.getDeviceSpecificSharedPrefs(device.address)
+        val order = split(prefs.getString(PREF_ORDER, null)).toSet()
         val removed = split(prefs.getString(PREF_REMOVED, null)).toSet()
-        return defaults.filter { it.id in removed }
+        return defaults.filter { it.id in removed || (it.optional && it.id !in order) }
     }
 
     fun save(device: GBDevice, ordered: List<DeviceCardItem>, removed: List<DeviceCardItem>) {
         val order = ordered.joinToString(",") { it.id }
-        val removedIds = removed.joinToString(",") { it.id }
+        val removedIds = removed.filterNot { it.optional }.joinToString(",") { it.id }
         LOG.debug("Saving device card items for {}: order={}, removed={}", device.address, order, removedIds)
         GBApplication.getDeviceSpecificSharedPrefs(device.address).edit {
             putString(PREF_ORDER, order)

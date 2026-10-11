@@ -26,6 +26,8 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryEntries
+import nodomain.freeyourgadget.gadgetbridge.model.heartratezones.DefaultHeartRateZones
+import nodomain.freeyourgadget.gadgetbridge.model.heartratezones.HeartRateZones
 import nodomain.freeyourgadget.gadgetbridge.model.workout.Workout
 import nodomain.freeyourgadget.gadgetbridge.model.workout.WorkoutChart
 import nodomain.freeyourgadget.gadgetbridge.model.workout.WorkoutViewModel
@@ -147,7 +149,10 @@ class WorkoutTabChartsFragment : Fragment(), WorkoutTabScreenshotProvider {
             val statEntries = groupedEntries[chart.group].orEmpty().filter { (key, _) -> key in statKeys }
             val stats = statEntries.mapNotNull { (key, entry) ->
                 (entry as? ActivitySummarySimpleEntry)?.takeIf { it.value != null }?.let {
-                    StatTileData(workoutValueFormatter.formatTileValue(it.value, it.unit), workoutValueFormatter.getStringResourceByName(key))
+                    StatTileData(
+                        workoutValueFormatter.formatTileValue(it.value, it.unit),
+                        workoutValueFormatter.getStringResourceByName(key)
+                    )
                 }
             }
             if (stats.isNotEmpty()) {
@@ -175,9 +180,17 @@ class WorkoutTabChartsFragment : Fragment(), WorkoutTabScreenshotProvider {
         }
         val charts = listOf(chart)
         lineChart.selectionEnabled = false
-        lineChart.setSpec(WorkoutChartSpecs.spec(requireContext(), charts, chart.zoneThresholds != null))
+        lineChart.setSpec(
+            WorkoutChartSpecs.spec(
+                requireContext(),
+                charts,
+                chart.zoneThresholds != null,
+                workout.intervals
+            )
+        )
         lineChart.setOnClickListener {
             ChartDataRepository.chartData = workout.charts
+            ChartDataRepository.intervals = workout.intervals
             val intent = Intent(requireContext(), WorkoutChartsActivity::class.java).apply {
                 putExtra(WorkoutChartsActivity.INIT_CHART_ID, chart.id)
                 workoutLabel()?.let {
@@ -196,22 +209,45 @@ class WorkoutTabChartsFragment : Fragment(), WorkoutTabScreenshotProvider {
             val zoneSeconds = chart.secondsInZone
             val zoneThresholds = chart.zoneThresholds
             if (zoneEntries.isNotEmpty()) {
-                addSectionHeader(chartsLayout, requireContext(), getString(R.string.workout_time_in_zones), showDivider = !isFirstChartHeader)
+                addSectionHeader(
+                    chartsLayout,
+                    requireContext(),
+                    getString(R.string.workout_time_in_zones),
+                    showDivider = !isFirstChartHeader
+                )
                 isFirstChartHeader = false
-                addStatRow(chartsLayout, zoneEntries)
+                addZoneRow(chartsLayout, zoneEntries, zoneThresholds)
             } else if (zoneSeconds != null && zoneThresholds != null && (1..5).sumOf { zoneSeconds[it] } > 0) {
                 // The device reported no time in zones, so show the split computed from the HR samples.
-                addSectionHeader(chartsLayout, requireContext(), getString(R.string.workout_time_in_zones), showDivider = !isFirstChartHeader)
+                addSectionHeader(
+                    chartsLayout,
+                    requireContext(),
+                    getString(R.string.workout_time_in_zones),
+                    showDivider = !isFirstChartHeader
+                )
                 isFirstChartHeader = false
                 HeartRateZoneChartUtils.populateZoneSummary(requireContext(), chartsLayout, zoneSeconds, zoneThresholds)
             }
         }
     }
 
-    private fun addStatRow(chartsLayout: LinearLayout, entries: List<Pair<String, ActivitySummaryEntry>>) {
+    private fun addZoneRow(
+        chartsLayout: LinearLayout,
+        entries: List<Pair<String, ActivitySummaryEntry>>,
+        zones: HeartRateZones?,
+    ) {
+        // Only the thresholds from the device will match the time in zones reported by the device
+        val deviceZones = zones?.takeIf { it is DefaultHeartRateZones && it.isReportedByDevice }
         val gridTableBuilder = GridTableBuilder(requireContext(), workoutValueFormatter)
         for ((key, entry) in entries) {
-            gridTableBuilder.addEntry(workoutValueFormatter.getStringResourceByName(key), entry)
+            val name = workoutValueFormatter.getStringResourceByName(key)
+            val zoneIdx = ZONE_INDEX[key]
+            val label = if (deviceZones != null && zoneIdx != null) {
+                HeartRateZoneChartUtils.formatZoneLabel(requireContext(), name, zoneIdx, deviceZones)
+            } else {
+                name
+            }
+            gridTableBuilder.addEntry(label, entry)
         }
         val grid = gridTableBuilder.build().apply {
             // GridTableBuilder paints its own background behind the cells and relies on small
@@ -229,6 +265,18 @@ class WorkoutTabChartsFragment : Fragment(), WorkoutTabScreenshotProvider {
     }
 
     companion object {
+        private val ZONE_INDEX: Map<String, Int> = mapOf(
+            ActivitySummaryEntries.HR_ZONE_NA to 0,
+            ActivitySummaryEntries.HR_ZONE_WARM_UP to 1,
+            ActivitySummaryEntries.HR_ZONE_EASY to 2,
+            ActivitySummaryEntries.HR_ZONE_FAT_BURN to 2,
+            ActivitySummaryEntries.HR_ZONE_AEROBIC to 3,
+            ActivitySummaryEntries.HR_ZONE_ANAEROBIC to 4,
+            ActivitySummaryEntries.HR_ZONE_THRESHOLD to 4,
+            ActivitySummaryEntries.HR_ZONE_EXTREME to 5,
+            ActivitySummaryEntries.HR_ZONE_MAXIMUM to 5,
+        )
+
         /** Which avg/min/max entries to surface above each chart, keyed by [WorkoutChart.group]. */
         private val CHART_STAT_KEYS: Map<String, List<String>> = mapOf(
             ActivitySummaryEntries.GROUP_HEART_RATE to listOf(

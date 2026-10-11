@@ -8,12 +8,13 @@ import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 
 /**
- * Tints a connection status dot: green when initialized, yellow while connecting, grey otherwise.
+ * Tints a connection status dot: red while busy, green when initialized, yellow while connecting, grey otherwise.
  */
 object DeviceStatusDot {
     @JvmStatic
     fun apply(dot: View, device: GBDevice) {
         val color = when {
+            device.isBusy -> ContextCompat.getColor(dot.context, R.color.device_status_busy)
             device.isInitialized -> ContextCompat.getColor(dot.context, R.color.device_status_connected)
             device.state.equalsOrHigherThan(GBDevice.State.CONNECTING) ->
                 ContextCompat.getColor(dot.context, R.color.device_status_connecting)

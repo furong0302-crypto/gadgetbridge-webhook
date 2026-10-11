@@ -176,7 +176,7 @@ public final class HeartRateZoneChartUtils {
         row.addView(swatch);
 
         final TextView label = new TextView(ctx);
-        label.setText(formatZoneLabel(ctx, zoneIdx, zones));
+        label.setText(formatZoneLabel(ctx, HeartRateZonesResolver.labelForZone(ctx, zoneIdx), zoneIdx, zones));
         label.setTextColor(textColor);
         label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
         label.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -200,10 +200,13 @@ public final class HeartRateZoneChartUtils {
         return row;
     }
 
-    private static String formatZoneLabel(Context ctx, int zoneIdx, HeartRateZones zones) {
-        final String name = HeartRateZonesResolver.labelForZone(ctx, zoneIdx);
+    /**
+     * The zone name, followed by its bpm range (e.g. "Aerobic (134 – 152)")
+     */
+    public static String formatZoneLabel(final Context ctx, final String name, final int zoneIdx, final HeartRateZones zones) {
         final String range = switch (zoneIdx) {
-            case 1 -> String.format(Locale.getDefault(), "< %d", zones.getZone2());
+            case 0 -> String.format(Locale.getDefault(), "< %d", zones.getZone1());
+            case 1 -> ctx.getString(R.string.range_integer, zones.getZone1(), zones.getZone2());
             case 2 -> ctx.getString(R.string.range_integer, zones.getZone2(), zones.getZone3());
             case 3 -> ctx.getString(R.string.range_integer, zones.getZone3(), zones.getZone4());
             case 4 -> ctx.getString(R.string.range_integer, zones.getZone4(), zones.getZone5());

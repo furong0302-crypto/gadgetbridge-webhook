@@ -155,6 +155,11 @@ class WorkoutStatisticsViewModel : ViewModel() {
             return StatisticsAggregation.speedMetersPerSecond(value, entry.unit)
         }
 
+        val cadenceKey = listOf(ActivitySummaryEntries.CADENCE_AVG, ActivitySummaryEntries.SWIM_AVG_CADENCE)
+            .firstOrNull { data?.has(it) == true }
+        val cadenceUnit = listOfNotNull(cadenceKey, ActivitySummaryEntries.CADENCE_MAX)
+            .firstNotNullOfOrNull { (data?.get(it) as? ActivitySummarySimpleEntry)?.unit }
+
         return WorkoutInput(
             startMillis = summary.startTime.time,
             endMillis = summary.endTime.time,
@@ -164,8 +169,14 @@ class WorkoutStatisticsViewModel : ViewModel() {
             descentMeters = number(ActivitySummaryEntries.TOTAL_DESCENT, ActivitySummaryEntries.DESCENT_METERS),
             steps = number(ActivitySummaryEntries.STEPS),
             avgSpeedMetersPerSecond = speed(ActivitySummaryEntries.PACE_AVG_SECONDS_KM, ActivitySummaryEntries.SPEED_AVG),
+            maxSpeedMetersPerSecond = speed(ActivitySummaryEntries.PACE_MAX, ActivitySummaryEntries.SPEED_MAX),
             avgHeartRate = number(ActivitySummaryEntries.HR_AVG),
+            maxHeartRate = number(ActivitySummaryEntries.HR_MAX),
             avgPowerWatts = number(ActivitySummaryEntries.AVG_POWER),
+            maxPowerWatts = number(ActivitySummaryEntries.MAX_POWER),
+            avgCadence = cadenceKey?.let { number(it) } ?: 0.0,
+            maxCadence = number(ActivitySummaryEntries.CADENCE_MAX),
+            cadenceUnit = cadenceUnit,
             avgSwolf = number(ActivitySummaryEntries.SWOLF_AVG, ActivitySummaryEntries.SWOLF_INDEX),
             aerobicEffect = number(ActivitySummaryEntries.TRAINING_EFFECT_AEROBIC),
             anaerobicEffect = number(ActivitySummaryEntries.TRAINING_EFFECT_ANAEROBIC),

@@ -1564,11 +1564,11 @@
     <string name="pref_ambient_sound_tone">Tonalité du son ambiant</string>
     <string name="pref_ambient_sound_tone_summary">De doux à Clair</string>
     <string name="pref_balance">Balance</string>
-    <string name="pref_switch_controls_ambient_off">Ambiant ←→ Off</string>
+    <string name="pref_switch_controls_ambient_off">Ambiant ↔ Off</string>
     <string name="prefs_noise_control">Contrôle du bruit</string>
     <string name="prefs_voice_detect">Détection de la voix</string>
-    <string name="pref_switch_controls_anc_ambient">Annulation de bruit ←→ Ambiant</string>
-    <string name="pref_switch_controls_anc_off">Annulation de bruit ←→ Off</string>
+    <string name="pref_switch_controls_anc_ambient">Annulation de bruit ↔ Ambiant</string>
+    <string name="pref_switch_controls_anc_off">Annulation de bruit ↔ Off</string>
     <string name="pref_voice_detect_duration_15">15 secondes</string>
     <string name="pref_device_action_fitness_app_control_toggle">Basculer d\'app de suivi sportif</string>
     <string name="pref_title_banglejs_webview_url">URL de chargement de l\'app</string>
@@ -1990,7 +1990,7 @@
     <string name="pref_pair_bluetooth_calls_help_2">2. Rendez-vous dans les réglages Bluetooth de votre téléphone, et appairez-le avec le nouvel appareil qui apparaîtra (nom similaire à votre montre existante, mais avec un suffixe, du genre \"Amazfit GTR 4 - AFC8\".</string>
     <string name="pref_title_notification_cache_while_disconnected">Garder en cache lorsque hors de portée</string>
     <string name="pref_summary_notification_cache_while_disconnected">Envoyer les notifications manquées lorsqu\'un appareil se reconnecte après avoir été hors de portée</string>
-    <string name="pref_switch_controls_anc_ambient_off">Annulation de bruit ←→ Ambiance ←→ Off</string>
+    <string name="pref_switch_controls_anc_ambient_off">Annulation de bruit ↔ Ambiance ↔ Off</string>
     <string name="single_tap">Appui simple</string>
     <string name="double_tap">Double appui</string>
     <string name="triple_tap">Triple appui</string>

@@ -5,6 +5,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartPoint
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFormat
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
 
 object RespiratoryRateChartData {
@@ -25,7 +26,7 @@ object RespiratoryRateChartData {
             return ChartSpec.EMPTY
         }
         return ChartSpec(
-            series = listOf(ChartSeries("rate", label, points, SeriesStyle.Line(color, curved = true, maxGap = MAX_GAP_SECONDS))),
+            series = listOf(ChartSeries("rate", label, points, SeriesStyle.Line(color, curve = LineCurve.FLAT_AT_POINTS, maxGap = MAX_GAP_SECONDS))),
             xAxis = AxisSpec(
                 format = ChartValueFormat.TIME_OF_DAY,
                 minimum = startTs.toDouble(),

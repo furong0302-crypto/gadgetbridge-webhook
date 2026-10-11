@@ -63,7 +63,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -392,7 +391,7 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
 
     private void showDatePicker() {
         final MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker()
-            .setSelection(toUtcMillis(getEndDate().getTime()));
+            .setSelection(DateTimeUtils.toUtcDayStartMillis(getEndDate().getTime()));
 
         final CalendarConstraints constraints = getAvailableDataConstraints();
         if (constraints != null) {
@@ -401,7 +400,7 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
 
         final MaterialDatePicker<Long> datePicker = builder.build();
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            final LocalDate date = Instant.ofEpochMilli(selection).atZone(ZoneOffset.UTC).toLocalDate();
+            final LocalDate date = DateTimeUtils.utcMillisToLocalDate(selection);
             final Calendar currentDate = Calendar.getInstance();
             currentDate.setTime(getEndDate());
             currentDate.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
@@ -429,8 +428,8 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
             return null;
         }
 
-        final long start = toUtcMillis(range.getStartMillis());
-        final long end = toUtcMillis(range.getEndMillis());
+        final long start = DateTimeUtils.toUtcDayStartMillis(range.getStartMillis());
+        final long end = DateTimeUtils.toUtcDayStartMillis(range.getEndMillis());
         return new CalendarConstraints.Builder()
             .setStart(start)
             .setEnd(end)
@@ -461,18 +460,6 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
             }
         }
         return null;
-    }
-
-    /**
-     * Converts a timestamp to the UTC midnight of its local date, as {@link MaterialDatePicker} expects.
-     */
-    private static long toUtcMillis(final long timestampMillis) {
-        return Instant.ofEpochMilli(timestampMillis)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
-            .atStartOfDay(ZoneOffset.UTC)
-            .toInstant()
-            .toEpochMilli();
     }
 
     @Override

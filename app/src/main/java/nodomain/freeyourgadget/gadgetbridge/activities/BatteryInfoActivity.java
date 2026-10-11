@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
-import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -36,10 +34,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -162,31 +162,22 @@ public class BatteryInfoActivity extends AbstractGBActivity {
         });
 
         //Button battery_status_calendar_button = findViewById(R.id.battery_status_calendar_button);
-        battery_status_date_to_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        battery_status_date_to_layout.setOnClickListener(v -> {
+            final MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setSelection(DateTimeUtils.toUtcDayStartMillis(timeTo * 1000L))
+                    .build();
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                final LocalDate selectedDate = DateTimeUtils.utcMillisToLocalDate(selection);
+                final Calendar date = Calendar.getInstance();
+                date.set(selectedDate.getYear(), selectedDate.getMonthValue() - 1, selectedDate.getDayOfMonth());
+                timeTo = (int) (date.getTimeInMillis() / 1000);
+                battery_status_date_to_text.setText(DateTimeUtils.formatDate(new Date(timeTo * 1000L)));
+                battery_status_time_span_seekbar.setProgress(0);
+                battery_status_time_span_seekbar.setProgress(1);
 
-                final Calendar currentDate = Calendar.getInstance();
-                currentDate.setTimeInMillis(timeTo * 1000L);
-                Context context = getApplicationContext();
-
-                if (context instanceof GBApplication) {
-                    new DatePickerDialog(BatteryInfoActivity.this, new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-                            Calendar date = Calendar.getInstance();
-                            date.set(year, monthOfYear, dayOfMonth);
-                            timeTo = (int) (date.getTimeInMillis() / 1000);
-                            battery_status_date_to_text.setText(DateTimeUtils.formatDate(new Date(timeTo * 1000L)));
-                            battery_status_time_span_seekbar.setProgress(0);
-                            battery_status_time_span_seekbar.setProgress(1);
-
-                            batteryInfoChartFragment.setDateAndGetData(gbDevice, batteryIndex, timeFrom, timeTo);
-                        }
-                    }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
-                }
-            }
+                batteryInfoChartFragment.setDateAndGetData(gbDevice, batteryIndex, timeFrom, timeTo);
+            });
+            datePicker.show(getSupportFragmentManager(), "BATTERY_DATE_PICKER");
         });
 
 

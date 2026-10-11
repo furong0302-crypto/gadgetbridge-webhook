@@ -68,9 +68,9 @@
                     android:paddingTop="2dp"
                     android:scaleType="fitCenter"
                     android:theme="@style/ThemeOverlay.App.DeviceCardIcon"
-                    tools:ignore="RtlHardcoded"
                     android:tooltipText="@string/candidate_item_device_image"
-                    app:srcCompat="@drawable/ic_device_pebble" />
+                    app:srcCompat="@drawable/ic_device_pebble"
+                    tools:ignore="RtlHardcoded" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -127,6 +127,60 @@
                     app:srcCompat="@drawable/ic_more_vert" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/companion_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:importantForAccessibility="no"
+                        app:srcCompat="@drawable/ic_link"
+                        app:tint="?attr/textColorSecondary" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/companion_pairing_hint"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/textColorSecondary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/companion_hint_dismiss"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dont_show_again" />
+
+                    <Button
+                        android:id="@+id/companion_hint_pair"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/discovery_yes_pair" />
+                </LinearLayout>
+            </LinearLayout>
+
             <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/device_info_icons"
                 android:layout_width="match_parent"
@@ -149,29 +203,38 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/activity_dashboard_piechart1"
+                <FrameLayout
+                    android:id="@+id/device_card_gauge_steps"
                     android:layout_width="0dp"
-                    android:layout_height="104dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:contentDescription="@string/live_activity_total_steps"
-                    android:tooltipText="@string/live_activity_total_steps" />
+                    android:tooltipText="@string/live_activity_total_steps">
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/activity_dashboard_piechart2"
+                    <include layout="@layout/activity_gauge" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/device_card_gauge_distance"
                     android:layout_width="0dp"
-                    android:layout_height="104dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:contentDescription="@string/activity_list_summary_distance"
-                    android:tooltipText="@string/activity_list_summary_distance" />
+                    android:tooltipText="@string/activity_list_summary_distance">
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/activity_dashboard_piechart3"
+                    <include layout="@layout/activity_gauge" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/device_card_gauge_sleep"
                     android:layout_width="0dp"
-                    android:layout_height="104dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:contentDescription="@string/sleepchart_your_sleep"
-                    android:tooltipText="@string/sleepchart_your_sleep" />
+                    android:tooltipText="@string/sleepchart_your_sleep">
+
+                    <include layout="@layout/activity_gauge" />
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

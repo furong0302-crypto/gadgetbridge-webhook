@@ -812,7 +812,7 @@ public class GarminWorkoutParser implements ActivitySummaryParser {
                 summaryData.add(TRAINING_EFFECT_AEROBIC, physiologicalMetrics.getAerobicEffect(), UNIT_NONE, true);
             }
             if (physiologicalMetrics.getMetMax() != null) {
-                float vo2Max = physiologicalMetrics.getMetMax().floatValue() * 3.5f;
+                float vo2Max = physiologicalMetrics.getMetMax().floatValue();
                 if (vo2Max > 0.0f) {
                     summaryData.add(MAXIMUM_OXYGEN_UPTAKE, vo2Max, UNIT_ML_KG_MIN);
                     final GenericMetricSample sample = new GenericMetricSample();

@@ -30,8 +30,12 @@ import androidx.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
@@ -43,6 +47,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.DeviceChartsProvid
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.DeviceSettingsSpec;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.BarcodeFormat;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.GarminBodyEnergySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.GarminSolarChargeSampleProvider;
@@ -61,6 +66,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.WorkoutLoadSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardItem;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummaryDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.GarminActivitySampleDao;
@@ -108,6 +114,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.WorkoutLoadSample;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BluetoothCompanyIdentifiers;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.watchapps.GarminLoyaltyCardsApp;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs;
 import nodomain.freeyourgadget.gadgetbridge.widgets.DeviceWidgetsProvider;
@@ -339,6 +346,11 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public List<DeviceCardItem> getCardItems(@NonNull final GBDevice device) {
+        return GarminDeviceCardItemsKt.garminDeviceCardItems(device, this);
+    }
+
+    @Override
     public DeviceSpecificSettingsCustomizer getDeviceSpecificSettingsCustomizer(GBDevice device) {
         return new GarminSettingsCustomizer();
     }
@@ -373,6 +385,14 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public boolean supportsNavigation(@NonNull final GBDevice device) {
         return supportsNotifications(device);
+    }
+
+    @Override
+    public Set<BarcodeFormat> getSupportedBarcodeFormats(@NonNull final GBDevice device) {
+        if (isAppInstalled(device, GarminLoyaltyCardsApp.APP_UUID)) {
+            return EnumSet.allOf(BarcodeFormat.class);
+        }
+        return Collections.emptySet();
     }
 
     @Override
@@ -411,15 +431,20 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
         return !getPrefs(device).getString(GarminPreferences.PREF_AGPS_KNOWN_URLS, "").isEmpty();
     }
 
-    public boolean supportsSendWaypoint(@NonNull final GBDevice device){
+    public boolean supportsSendWaypoint(@NonNull final GBDevice device) {
         return supports(device, GarminCapability.WAYPOINT_TRANSFER)
-                || supports(device, GarminCapability.EXPLORE_SYNC)
-                || GBApplication.getDevicePrefs(device).installUnsupportedFiles();
+            || supports(device, GarminCapability.EXPLORE_SYNC)
+            || GBApplication.getDevicePrefs(device).installUnsupportedFiles();
+    }
+
+    public boolean isAppInstalled(final GBDevice device, final UUID app) {
+        return getPrefs(device).getStringSet(GarminPreferences.PREF_GARMIN_INSTALLED_APPS, Collections.emptySet())
+            .contains(app.toString());
     }
 
     public boolean supports(final GBDevice device, final GarminCapability capability) {
         return getPrefs(device).getStringSet(GarminPreferences.PREF_GARMIN_CAPABILITIES, Collections.emptySet())
-                .contains(capability.name());
+            .contains(capability.name());
     }
 
     @Override

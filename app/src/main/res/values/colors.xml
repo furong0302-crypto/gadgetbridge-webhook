@@ -104,6 +104,7 @@
     <color name="training_load_high" type="color">#d12a2a</color>
     <color name="device_status_connected" type="color">#4ADE80</color>
     <color name="device_status_connecting" type="color">#FACC15</color>
+    <color name="device_status_busy" type="color">#F87171</color>
     <color name="vo2max_running_char_line_color" type="color">#46acea</color>
     <color name="vo2max_cycling_char_line_color" type="color">#59b22c</color>
     <color name="vo2max_value_poor_color" type="color">#d93832</color>
@@ -121,7 +122,8 @@
     <color name="respiratory_rate_color" type="color">#163ede</color>
     <color name="chart_temperature" type="color">#ff8f00</color>
     <color name="chart_temperature_average" type="color">#00acc1</color>
-    <color name="spo2_color" type="color">#aad93832</color>
+    <color name="spo2_color" type="color">#d93832</color>
+    <color name="spo2_sleep_overlay_color" type="color">#aad93832</color>
     <color name="spo2_avg_color_light" type="color">#630b0d</color>
     <color name="spo2_avg_color_dark" type="color">#ff9393</color>
     <color name="blood_pressure_systolic_color" type="color">#d93832</color>
@@ -163,6 +165,9 @@
     <color name="chart_line_body_energy" type="color">#884088</color>
     <color name="chart_line_stamina" type="color">#8888FF</color>
     <color name="chart_line_step_length" type="color">#FF4088</color>
+    <color name="chart_interval_active" type="color">#66BB6A</color>
+    <color name="chart_interval_rest" type="color">#FFC107</color>
+    <color name="chart_interval_unknown" type="color">#92a4ad</color>
     <color name="chart_cns_toxicity" type="color">#FF4040</color>
     <color name="chart_n2_load" type="color">#FF8840</color>
 

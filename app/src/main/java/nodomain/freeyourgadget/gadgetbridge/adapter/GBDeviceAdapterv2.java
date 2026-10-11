@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -66,14 +67,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -100,6 +95,8 @@ import nodomain.freeyourgadget.gadgetbridge.activities.DeviceDeleteActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.ControlCenterv2;
 import nodomain.freeyourgadget.gadgetbridge.activities.OpenFwAppInstallerActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.ActivityChartsActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.ActivityGauge;
+import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.GaugeDrawer;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -127,10 +124,12 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
     private static final Logger LOG = LoggerFactory.getLogger(GBDeviceAdapterv2.class);
 
     private final Context context;
+    private final GaugeDrawer gaugeDrawer = new GaugeDrawer();
     private List<GBDevice> deviceList;
     private List<GBDevice> devicesListWithFolders;
     private String expandedDeviceAddress = "";
     private final Set<String> revealedCardItemsAddresses = new HashSet<>();
+    private String pendingCompanionAddress = null;
     private String expandedFolderName = "";
     private ViewGroup parent;
     private HashMap<String, DailyTotals> deviceActivityMap = new HashMap<>();
@@ -166,7 +165,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
         for (GBDevice device : deviceList) {
             String folder = device.getParentFolder();
-            if (StringUtils.isNullOrEmpty(folder)){
+            if (StringUtils.isNullOrEmpty(folder)) {
                 enrichedList.add(device);
                 continue;
             }
@@ -194,10 +193,10 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         return new ViewHolder(view);
     }
 
-    private int countDevicesInFolder(String folderName, boolean needsToBeConnected){
+    private int countDevicesInFolder(String folderName, boolean needsToBeConnected) {
         int count = 0;
-        for(GBDevice device : deviceList){
-            if(folderName.equals(device.getParentFolder()) && ((!needsToBeConnected) || device.isConnected())){
+        for (GBDevice device : deviceList) {
+            if (folderName.equals(device.getParentFolder()) && ((!needsToBeConnected) || device.isConnected())) {
                 count++;
             }
         }
@@ -217,10 +216,11 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         }
     }
 
-    private void showDeviceFolder(ViewHolder holder, final GBDeviceFolder folder){
+    private void showDeviceFolder(ViewHolder holder, final GBDeviceFolder folder) {
         holder.container.setVisibility(View.VISIBLE);
         holder.deviceNameLabel.setText(folder.getName());
         holder.infoIcons.setVisibility(View.GONE);
+        holder.companionHint.setVisibility(View.GONE);
         holder.deviceImageView.setOnClickListener(null);
         holder.deviceImageView.setOnLongClickListener(null);
         holder.deviceInfoBox.setVisibility(View.GONE);
@@ -235,7 +235,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (expandedFolderName.equals(folder.getName())){
+                if (expandedFolderName.equals(folder.getName())) {
                     // collapse open folder
                     expandedFolderName = "";
                 } else {
@@ -248,33 +248,33 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         holder.container.setOnLongClickListener(null);
     }
 
-    private void setItemMargin(ViewHolder holder, GBDevice device){
+    private void setItemMargin(ViewHolder holder, GBDevice device) {
         Resources r = context.getResources();
         int widthDp = 8;
-        if(!StringUtils.isNullOrEmpty(device.getParentFolder())){
+        if (!StringUtils.isNullOrEmpty(device.getParentFolder())) {
             widthDp = 20;
         }
         float px = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                widthDp,
-                r.getDisplayMetrics()
+            TypedValue.COMPLEX_UNIT_DIP,
+            widthDp,
+            r.getDisplayMetrics()
         );
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) holder.container.getLayoutParams();
         layoutParams.setMarginStart((int) px);
         holder.container.setLayoutParams(layoutParams);
 
         int alpha = 0;
-        if(device instanceof GBDeviceFolder && device.getName().equals(expandedFolderName)){
+        if (device instanceof GBDeviceFolder && device.getName().equals(expandedFolderName)) {
             alpha = 50;
-        }else if(!StringUtils.isNullOrEmpty(device.getParentFolder()) && expandedFolderName.equals(device.getParentFolder())){
+        } else if (!StringUtils.isNullOrEmpty(device.getParentFolder()) && expandedFolderName.equals(device.getParentFolder())) {
             alpha = 50;
         }
 
         holder.root.setBackgroundColor(Color.argb(alpha, 0, 0, 0));
     }
 
-    void handleDeviceConnect(GBDevice device){
-        if (!device.getDeviceCoordinator().isConnectable()){
+    void handleDeviceConnect(GBDevice device) {
+        if (!device.getDeviceCoordinator().isConnectable()) {
             device.setState(GBDevice.State.WAITING_FOR_SCAN);
             device.sendDeviceUpdateIntent(GBApplication.getContext(), GBDevice.DeviceUpdateSubject.CONNECTION_STATE);
             return;
@@ -289,19 +289,19 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
         setItemMargin(holder, device);
 
-        if(device instanceof GBDeviceFolder){
+        if (device instanceof GBDeviceFolder) {
             showDeviceFolder(holder, (GBDeviceFolder) device);
             return;
         }
 
         String parentFolder = device.getParentFolder();
-        if(!StringUtils.isNullOrEmpty(parentFolder)){
-            if(parentFolder.equals(expandedFolderName)){
+        if (!StringUtils.isNullOrEmpty(parentFolder)) {
+            if (parentFolder.equals(expandedFolderName)) {
                 holder.container.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.container.setVisibility(View.GONE);
             }
-        }else{
+        } else {
             holder.container.setVisibility(View.VISIBLE);
         }
 
@@ -364,6 +364,8 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
             hrSampleText
         );
 
+        bindCompanionHint(holder, device);
+
         ItemWithDetailsAdapter infoAdapter = new ItemWithDetailsAdapter(context, device.getDeviceInfos());
         infoAdapter.setHorizontalAlignment(true);
         holder.deviceInfoList.setAdapter(infoAdapter);
@@ -405,6 +407,38 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
         if (coordinator.supportsActivityTracking(device)) {
             setActivityCard(holder, device, dailyTotals);
+        }
+    }
+
+    private void bindCompanionHint(final ViewHolder holder, final GBDevice device) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+            || !(context instanceof Activity)
+            || !CompanionPairingHint.shouldShow(context, device)) {
+            holder.companionHint.setVisibility(View.GONE);
+            return;
+        }
+        holder.companionHint.setVisibility(View.VISIBLE);
+        holder.companionHintDismiss.setOnClickListener(v -> {
+            CompanionPairingHint.dismiss(device);
+            notifyItemChanged(holder.getBindingAdapterPosition());
+        });
+        holder.companionHintPair.setOnClickListener(v -> {
+            pendingCompanionAddress = device.getAddress();
+            CompanionPairingHint.pair((Activity) context, device);
+        });
+    }
+
+    public void onResume() {
+        if (pendingCompanionAddress == null) {
+            return;
+        }
+        final String address = pendingCompanionAddress;
+        pendingCompanionAddress = null;
+        CompanionPairingHint.onChooserClosed(context, address);
+        for (int i = 0; i < devicesListWithFolders.size(); i++) {
+            if (address.equals(devicesListWithFolders.get(i).getAddress())) {
+                notifyItemChanged(i);
+            }
         }
     }
 
@@ -498,16 +532,17 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
     private void showRemoveDeviceDialog(final GBDevice device) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setCancelable(true)
-                .setTitle(context.getString(R.string.controlcenter_delete_device_name, device.getAliasOrName()))
-                .setMessage(R.string.controlcenter_delete_device_dialogmessage)
-                .setPositiveButton(R.string.delete,
-                        (dialog, which) -> removeDevice(device, true))
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {});
+            .setCancelable(true)
+            .setTitle(context.getString(R.string.controlcenter_delete_device_name, device.getAliasOrName()))
+            .setMessage(R.string.controlcenter_delete_device_dialogmessage)
+            .setPositiveButton(R.string.delete,
+                (dialog, which) -> removeDevice(device, true))
+            .setNegativeButton(R.string.cancel, (dialog, which) -> {
+            });
 
         if (deviceHasFiles(device)) {
             builder.setNeutralButton(R.string.delete_device_and_retain_files,
-                    (dialog, which) -> removeDevice(device, false));
+                (dialog, which) -> removeDevice(device, false));
         }
         builder.show();
     }
@@ -556,7 +591,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         final LinearLayout newFolderLayout = new LinearLayout(context);
         newFolderLayout.setOrientation(LinearLayout.HORIZONTAL);
         newFolderLayout.setPadding(context.getResources().getDimensionPixelSize(R.dimen.dialog_margin),
-                0, context.getResources().getDimensionPixelSize(R.dimen.dialog_margin), 0);
+            0, context.getResources().getDimensionPixelSize(R.dimen.dialog_margin), 0);
 
         final TextView newFolderLabel = new TextView(context);
         newFolderLabel.setText(R.string.controlcenter_folder_name);
@@ -564,7 +599,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         newFolderInput.setInputType(InputType.TYPE_CLASS_TEXT);
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
+            ViewGroup.LayoutParams.WRAP_CONTENT);
         newFolderInput.setLayoutParams(params);
 
         newFolderInput.addTextChangedListener(new TextWatcher() {
@@ -606,7 +641,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         }
 
         final SpinnerWithIconAdapter deviceListAdapter = new SpinnerWithIconAdapter((Activity) context,
-                R.layout.spinner_with_image_layout, R.id.spinner_item_text, foldersList);
+            R.layout.spinner_with_image_layout, R.id.spinner_item_text, foldersList);
         deviceListSpinner.setAdapter(deviceListAdapter);
 
         deviceListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -640,40 +675,40 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         linearLayout.addView(newFolderLayout);
 
         new MaterialAlertDialogBuilder(context)
-                .setCancelable(true)
-                .setTitle(R.string.controlcenter_set_folder_title)
-                .setView(linearLayout)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+            .setCancelable(true)
+            .setTitle(R.string.controlcenter_set_folder_title)
+            .setView(linearLayout)
+            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            DaoSession session = dbHandler.getDaoSession();
-                            Device dbDevice = DBHelper.getDevice(device, session);
-                            String parentFolder = selectedFolder[0];
-                            dbDevice.setParentFolder(parentFolder);
-                            dbDevice.update();
-                            device.setParentFolder(parentFolder);
-                            expandedFolderName = parentFolder;
-                        } catch (Exception ex) {
-                            GB.toast(context, context.getString(R.string.error_setting_parent_folder, ex.getLocalizedMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
-                        } finally {
-                            Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(refreshIntent);
-                        }
+                    try (DBHandler dbHandler = GBApplication.acquireDB()) {
+                        DaoSession session = dbHandler.getDaoSession();
+                        Device dbDevice = DBHelper.getDevice(device, session);
+                        String parentFolder = selectedFolder[0];
+                        dbDevice.setParentFolder(parentFolder);
+                        dbDevice.update();
+                        device.setParentFolder(parentFolder);
+                        expandedFolderName = parentFolder;
+                    } catch (Exception ex) {
+                        GB.toast(context, context.getString(R.string.error_setting_parent_folder, ex.getLocalizedMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
+                    } finally {
+                        Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(refreshIntent);
                     }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
+                }
+            })
+            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            })
+            .show();
     }
 
-    private boolean folderListContainsName(ArrayList<SpinnerWithIconItem> list, String name){
-        for (SpinnerWithIconItem item: list) {
-            if (item.getText().equals(name)){
+    private boolean folderListContainsName(ArrayList<SpinnerWithIconItem> list, String name) {
+        for (SpinnerWithIconItem item : list) {
+            if (item.getText().equals(name)) {
                 return true;
             }
         }
@@ -696,12 +731,13 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         startIntent.putExtra(DeviceSettingsActivity.MENU_ENTRY_POINT, DeviceSettingsActivity.MENU_ENTRY_POINTS.APPLICATION_SETTINGS);
         context.startActivity(startIntent);
     }
+
     private void showSetAliasDialog(final GBDevice device) {
         final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setText(device.getAlias());
         FrameLayout container = new FrameLayout(context);
-        FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.leftMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin);
         params.rightMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin);
         input.setLayoutParams(params);
@@ -709,34 +745,34 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
 
         new MaterialAlertDialogBuilder(context)
-                .setView(container)
-                .setCancelable(true)
-                .setTitle(context.getString(R.string.controlcenter_set_alias))
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            DaoSession session = dbHandler.getDaoSession();
-                            Device dbDevice = DBHelper.getDevice(device, session);
-                            String alias = input.getText().toString();
-                            dbDevice.setAlias(alias);
-                            dbDevice.update();
-                            device.setAlias(alias);
-                        } catch (Exception ex) {
-                            GB.toast(context, context.getString(R.string.error_setting_alias) + ex.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR, ex);
-                        } finally {
-                            Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(refreshIntent);
-                        }
+            .setView(container)
+            .setCancelable(true)
+            .setTitle(context.getString(R.string.controlcenter_set_alias))
+            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try (DBHandler dbHandler = GBApplication.acquireDB()) {
+                        DaoSession session = dbHandler.getDaoSession();
+                        Device dbDevice = DBHelper.getDevice(device, session);
+                        String alias = input.getText().toString();
+                        dbDevice.setAlias(alias);
+                        dbDevice.update();
+                        device.setAlias(alias);
+                    } catch (Exception ex) {
+                        GB.toast(context, context.getString(R.string.error_setting_alias) + ex.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR, ex);
+                    } finally {
+                        Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(refreshIntent);
                     }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .show();
+                }
+            })
+            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                }
+            })
+            .show();
     }
 
     @Override
@@ -764,6 +800,10 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         // dynamically into this container by DeviceCardItemBinder.
         FlexboxLayout infoIcons;
 
+        final LinearLayout companionHint;
+        final Button companionHintDismiss;
+        final Button companionHintPair;
+
         ImageView deviceInfoView;
         //overflow
         final RelativeLayout deviceInfoBox;
@@ -771,9 +811,9 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
         //activity card
         LinearLayout cardViewActivityCardLayout;
-        PieChart TotalStepsChart;
-        PieChart TotalDistanceChart;
-        PieChart SleepTimeChart;
+        ActivityGauge TotalStepsChart;
+        ActivityGauge TotalDistanceChart;
+        ActivityGauge SleepTimeChart;
 
         ViewHolder(View view) {
             super(view);
@@ -795,11 +835,15 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
             deviceInfoList = view.findViewById(R.id.device_item_infos);
             infoIcons = view.findViewById(R.id.device_info_icons);
 
+            companionHint = view.findViewById(R.id.companion_hint);
+            companionHintDismiss = view.findViewById(R.id.companion_hint_dismiss);
+            companionHintPair = view.findViewById(R.id.companion_hint_pair);
+
             cardViewActivityCardLayout = view.findViewById(R.id.card_view_activity_card_layout);
 
-            TotalStepsChart = view.findViewById(R.id.activity_dashboard_piechart1);
-            TotalDistanceChart = view.findViewById(R.id.activity_dashboard_piechart2);
-            SleepTimeChart = view.findViewById(R.id.activity_dashboard_piechart3);
+            TotalStepsChart = new ActivityGauge(view.findViewById(R.id.device_card_gauge_steps));
+            TotalDistanceChart = new ActivityGauge(view.findViewById(R.id.device_card_gauge_distance));
+            SleepTimeChart = new ActivityGauge(view.findViewById(R.id.device_card_gauge_sleep));
         }
     }
 
@@ -884,14 +928,11 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         double distanceMeters = (distanceCm > 0 ? distanceCm : steps * stepLength) * 0.01;
         String distanceFormatted = FormatUtils.getFormattedDistanceLabel(distanceMeters);
 
-        setUpChart(holder.TotalStepsChart);
-        setChartsData(holder.TotalStepsChart, steps, stepGoal, context.getString(R.string.steps), NumberFormat.getInstance().format(steps), context);
+        holder.TotalStepsChart.update(gaugeDrawer, steps, stepGoal, NumberFormat.getInstance().format(steps), context.getString(R.string.steps));
 
-        setUpChart(holder.TotalDistanceChart);
-        setChartsData(holder.TotalDistanceChart, distanceForChart, distanceGoal, context.getString(R.string.distance), distanceFormatted, context);
+        holder.TotalDistanceChart.update(gaugeDrawer, distanceForChart, distanceGoal, distanceFormatted, context.getString(R.string.distance));
 
-        setUpChart(holder.SleepTimeChart);
-        setChartsData(holder.SleepTimeChart, sleep, sleepGoalMinutes, context.getString(R.string.prefs_activity_in_device_card_sleep_title), String.format("%1s", getHM(sleep)), context);
+        holder.SleepTimeChart.update(gaugeDrawer, sleep, sleepGoalMinutes, String.format("%1s", getHM(sleep)), context.getString(R.string.prefs_activity_in_device_card_sleep_title));
 
 
         boolean showActivitySteps = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREFS_ACTIVITY_IN_DEVICE_CARD_STEPS, true);
@@ -899,13 +940,13 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         boolean showActivityDistance = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREFS_ACTIVITY_IN_DEVICE_CARD_DISTANCE, true);
 
         //do the multiple mini-charts for activities in a loop
-        Hashtable<PieChart, Pair<Boolean, Integer>> activitiesStatusMiniCharts = new Hashtable<>();
-        activitiesStatusMiniCharts.put(holder.TotalStepsChart, new Pair<>(showActivitySteps && steps > 0, ActivityChartsActivity.getChartsTabIndex("stepsweek", device, context)));
-        activitiesStatusMiniCharts.put(holder.SleepTimeChart, new Pair<>(showActivitySleep && sleep > 0, ActivityChartsActivity.getChartsTabIndex("sleep", device, context)));
-        activitiesStatusMiniCharts.put(holder.TotalDistanceChart, new Pair<>(showActivityDistance && distanceForChart > 0, ActivityChartsActivity.getChartsTabIndex("activity", device, context)));
+        Hashtable<View, Pair<Boolean, Integer>> activitiesStatusMiniCharts = new Hashtable<>();
+        activitiesStatusMiniCharts.put(holder.TotalStepsChart.container, new Pair<>(showActivitySteps && steps > 0, ActivityChartsActivity.getChartsTabIndex("stepsweek", device, context)));
+        activitiesStatusMiniCharts.put(holder.SleepTimeChart.container, new Pair<>(showActivitySleep && sleep > 0, ActivityChartsActivity.getChartsTabIndex("sleep", device, context)));
+        activitiesStatusMiniCharts.put(holder.TotalDistanceChart.container, new Pair<>(showActivityDistance && distanceForChart > 0, ActivityChartsActivity.getChartsTabIndex("activity", device, context)));
 
-        for (Map.Entry<PieChart, Pair<Boolean, Integer>> miniCharts : activitiesStatusMiniCharts.entrySet()) {
-            PieChart miniChart = miniCharts.getKey();
+        for (Map.Entry<View, Pair<Boolean, Integer>> miniCharts : activitiesStatusMiniCharts.entrySet()) {
+            View miniChart = miniCharts.getKey();
             final Pair<Boolean, Integer> parameters = miniCharts.getValue();
             miniChart.setVisibility(parameters.first ? View.VISIBLE : View.GONE);
             miniChart.setOnClickListener(new View.OnClickListener() {
@@ -925,88 +966,24 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
     private String getHM(long value) {
         return DateTimeUtils.formatDurationHoursMinutes(value, TimeUnit.MINUTES);
     }
-    private void setUpChart(PieChart DashboardChart) {
-        DashboardChart.setTouchEnabled(false);
-        DashboardChart.setNoDataText("");
-        DashboardChart.setNoDataIconEnabled(false);
-        DashboardChart.getLegend().setEnabled(false);
-        DashboardChart.setDrawHoleEnabled(true);
-        DashboardChart.setHoleColor(Color.TRANSPARENT);
-        DashboardChart.getDescription().setText("");
-        DashboardChart.setTransparentCircleAlpha(0);
-        DashboardChart.setHoleRadius(82f);
-        DashboardChart.setTransparentCircleRadius(0f);
-        DashboardChart.setCenterTextColor(MaterialColors.getColor(DashboardChart, com.google.android.material.R.attr.colorOnSurface));
-        DashboardChart.setDrawCenterTextEnabled(true);
-        DashboardChart.setRotationEnabled(true);
-        DashboardChart.setHighlightPerTapEnabled(true);
-        DashboardChart.setCenterTextOffset(0, 0);
-    }
-    private void setChartsData(PieChart pieChart, float value, float target, String label, String stringValue, Context context) {
-        final String CHART_COLOR_START = "#e74c3c";
-        final String CHART_COLOR_END = "#2ecc71";
-
-        ArrayList<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry<>((float) value, null, context.getResources().getDrawable(R.drawable.ic_star_gold), null));
-
-        if (value < target) {
-            entries.add(new PieEntry<>((float) (target - value), null, null, null));
-        }
-
-        pieChart.setCenterText(String.format("%s\n%s", stringValue, label));
-        float colorValue = Math.max(0, Math.min(1, value / target));
-        int chartColor = interpolateColor(Color.parseColor(CHART_COLOR_START), Color.parseColor(CHART_COLOR_END), colorValue);
-
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setDrawIconsEnabled(false);
-        dataSet.setIconsOffset(new MPPointF(0, -66));
-
-        if (colorValue == 1) {
-            dataSet.setDrawIconsEnabled(true);
-        }
-        dataSet.setSliceSpace(0f);
-        dataSet.setSelectionShift(5f);
-        dataSet.setColors(chartColor, MaterialColors.getColor(pieChart, com.google.android.material.R.attr.colorSurfaceContainerHighest));
-
-        PieData data = new PieData(dataSet);
-        data.setValueTextSize(0f);
-        data.setValueTextColor(Color.WHITE);
-
-        pieChart.setData(data);
-        pieChart.invalidate();
-    }
-    private float interpolate(float a, float b, float proportion) {
-        return (a + ((b - a) * proportion));
-    }
-
-    private int interpolateColor(int a, int b, float proportion) {
-        float[] hsva = new float[3];
-        float[] hsvb = new float[3];
-        Color.colorToHSV(a, hsva);
-        Color.colorToHSV(b, hsvb);
-        for (int i = 0; i < 3; i++) {
-            hsvb[i] = interpolate(hsva[i], hsvb[i], proportion);
-        }
-        return Color.HSVToColor(hsvb);
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     void createDynamicShortcut(GBDevice device) {
         Intent intent = new Intent(context, ControlCenterv2.class)
-                .setAction(ACTION_CONNECT)
-                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                .putExtra("device", device.getAddress());
+            .setAction(ACTION_CONNECT)
+            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .putExtra("device", device.getAddress());
 
         ShortcutManager shortcutManager = (ShortcutManager) context.getApplicationContext().getSystemService(Context.SHORTCUT_SERVICE);
 
         DeviceCoordinator coordinator = device.getDeviceCoordinator();
 
         shortcutManager.pushDynamicShortcut(new ShortcutInfo.Builder(context, device.getAddress())
-                .setLongLived(false)
-                .setShortLabel(device.getAliasOrName())
-                .setIntent(intent)
-                .setIcon(Icon.createWithResource(context, coordinator.getDefaultIconResource()))
-                .build()
+            .setLongLived(false)
+            .setShortLabel(device.getAliasOrName())
+            .setIntent(intent)
+            .setIcon(Icon.createWithResource(context, coordinator.getDefaultIconResource()))
+            .build()
         );
     }
 
