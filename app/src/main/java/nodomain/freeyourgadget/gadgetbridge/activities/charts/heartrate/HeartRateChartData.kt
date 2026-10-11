@@ -6,6 +6,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFormat
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LimitLineSpec
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
 
 object HeartRateChartData {
@@ -36,7 +37,7 @@ object HeartRateChartData {
         }
         return ChartSpec(
             series = listOf(
-                ChartSeries("hr", label, points, SeriesStyle.Line(color, curved = true, maxGap = maxGapSeconds.toDouble())),
+                ChartSeries("hr", label, points, SeriesStyle.Line(color, curve = LineCurve.FLAT_AT_POINTS, maxGap = maxGapSeconds.toDouble())),
             ),
             xAxis = AxisSpec(
                 format = ChartValueFormat.TIME_OF_DAY,

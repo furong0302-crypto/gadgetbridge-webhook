@@ -26,9 +26,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.github.mikephil.charting.charts.Chart;
@@ -116,8 +116,9 @@ public class BloodPressurePeriodFragment extends AbstractChartFragment<BloodPres
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_blood_pressure_period, container, false);
 
-        rootView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
-                getChartsHost().enableSwipeRefresh(scrollY == 0)
+        final View scrollView = rootView.findViewById(R.id.bp_scroll_view);
+        scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
+            getChartsHost().enableSwipeRefresh(scrollY == 0)
         );
 
         mDateView = rootView.findViewById(R.id.date_view);
@@ -125,7 +126,7 @@ public class BloodPressurePeriodFragment extends AbstractChartFragment<BloodPres
         mChart = rootView.findViewById(R.id.blood_pressure_chart);
         mLegend = rootView.findViewById(R.id.blood_pressure_period_legend);
         mChart.setZoomable(TOTAL_DAYS > 7);
-        mChart.dismissSelectionOnTapOutside(rootView.findViewById(R.id.bp_scroll_view));
+        mChart.dismissSelectionOnTapOutside(scrollView);
 
         FloatingActionButton exportFab = rootView.findViewById(R.id.bp_export_fab);
         exportFab.setOnClickListener(v -> showExportDialog());
@@ -256,8 +257,8 @@ public class BloodPressurePeriodFragment extends AbstractChartFragment<BloodPres
         }
 
         final String average = (systolicAvg > 0 && diastolicAvg > 0)
-                ? getString(R.string.blood_pressure_avg_format, systolicAvg, diastolicAvg)
-                : emptyValue;
+            ? getString(R.string.blood_pressure_avg_format, systolicAvg, diastolicAvg)
+            : emptyValue;
 
         final List<StatTileData> stats = new ArrayList<>();
         stats.add(new StatTileData(systolicLast > 0 ? String.valueOf(systolicLast) : emptyValue, getString(R.string.blood_pressure_systolic)));
@@ -270,16 +271,16 @@ public class BloodPressurePeriodFragment extends AbstractChartFragment<BloodPres
         final String pressureUnit = getString(R.string.unit_millimetre_of_mercury);
         final String pulseUnit = getString(R.string.bpm);
         final List<String> labels = Arrays.asList(
-                getString(R.string.blood_pressure_systolic),
-                getString(R.string.blood_pressure_diastolic),
-                getString(R.string.heart_rate)
+            getString(R.string.blood_pressure_systolic),
+            getString(R.string.blood_pressure_diastolic),
+            getString(R.string.heart_rate)
         );
         final List<Integer> colors = Arrays.asList(SYSTOLIC_COLOR, DIASTOLIC_COLOR, HEART_RATE_COLOR);
         final ChartSpec spec = BloodPressureChartData.periodSpec(
-                epochDays, systolicMin, systolicMax, diastolicMin, diastolicMax, heartRateAvg,
-                labels.toArray(new String[0]), new int[]{SYSTOLIC_COLOR, DIASTOLIC_COLOR, HEART_RATE_COLOR},
-                pressureUnit, pulseUnit,
-                HeartRateUtils.getInstance().getMinHeartRate(), HeartRateUtils.getInstance().getMaxHeartRate()
+            epochDays, systolicMin, systolicMax, diastolicMin, diastolicMax, heartRateAvg,
+            labels.toArray(new String[0]), new int[]{SYSTOLIC_COLOR, DIASTOLIC_COLOR, HEART_RATE_COLOR},
+            pressureUnit, pulseUnit,
+            HeartRateUtils.getInstance().getMinHeartRate(), HeartRateUtils.getInstance().getMaxHeartRate()
         );
         final List<Function1<Integer, String>> rowTexts = new ArrayList<>();
         rowTexts.add(i -> systolicMin[i] > 0 ? systolicMin[i] + " \u2013 " + systolicMax[i] + " " + pressureUnit : emptyValue);
@@ -296,16 +297,16 @@ public class BloodPressurePeriodFragment extends AbstractChartFragment<BloodPres
         }
         String dateLabel = mDateView.getText().toString();
         String[] options = {"PDF", "CSV"};
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.appmanager_app_share)
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        BloodPressureExportHelper.exportPdf(requireContext(), allSamples, dateLabel, mChart.toLightBitmap());
-                    } else {
-                        BloodPressureExportHelper.exportCsv(requireContext(), allSamples);
-                    }
-                })
-                .show();
+        new MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.appmanager_app_share)
+            .setItems(options, (dialog, which) -> {
+                if (which == 0) {
+                    BloodPressureExportHelper.exportPdf(requireContext(), allSamples, dateLabel, mChart.toLightBitmap());
+                } else {
+                    BloodPressureExportHelper.exportCsv(requireContext(), allSamples);
+                }
+            })
+            .show();
     }
 
     @Override

@@ -437,6 +437,9 @@
         <item name="deviceIconOnPrimary">?attr/colorOnPrimaryContainer</item>
         <item name="deviceCardIconTile">?attr/colorPrimaryContainer</item>
     </style>
+    <style name="ThemeOverlay.App.DropdownDeviceIcon" parent="ThemeOverlay.App.DeviceCardIcon">
+        <item name="deviceIconOnPrimary">?attr/colorOnSurfaceVariant</item>
+    </style>
     <style name="DeviceCardActionIcon">
         <item name="android:layout_width">40dp</item>
         <item name="android:layout_height">40dp</item>
@@ -602,6 +605,19 @@
         <item name="android:textColor">@color/chart_chip_text</item>
         <item name="chipIconTint">@color/chart_chip_text</item>
         <item name="rippleColor">?attr/subtab_pill</item>
+    </style>
+
+    <style name="Widget.App.Chip.Weekday" parent="Widget.App.Chip.Chart">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="chipMinHeight">40dp</item>
+        <item name="chipCornerRadius">20dp</item>
+        <item name="chipStartPadding">0dp</item>
+        <item name="chipEndPadding">0dp</item>
+        <item name="textStartPadding">0dp</item>
+        <item name="textEndPadding">0dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
     </style>
 
     <!-- Single-select metric chips above the sport statistics chart: a solid on-surface fill when

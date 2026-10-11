@@ -28,9 +28,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.github.mikephil.charting.charts.Chart;
@@ -98,7 +98,11 @@ public class BloodPressureChartFragment extends AbstractChartFragment<BloodPress
 
         mManualMeasurements.setVisibility(View.GONE);
         mChart.setZoomable(true);
-        mChart.dismissSelectionOnTapOutside(rootView.findViewById(R.id.bp_scroll_view));
+        final View scrollView = rootView.findViewById(R.id.bp_scroll_view);
+        scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
+            getChartsHost().enableSwipeRefresh(scrollY == 0)
+        );
+        mChart.dismissSelectionOnTapOutside(scrollView);
 
         FloatingActionButton exportFab = rootView.findViewById(R.id.bp_export_fab);
         exportFab.setOnClickListener(v -> showExportDialog());
@@ -137,8 +141,8 @@ public class BloodPressureChartFragment extends AbstractChartFragment<BloodPress
 
         final String emptyValue = requireContext().getString(R.string.stats_empty_value);
         final String average = (data.systolicAvg > 0 && data.diastolicAvg > 0)
-                ? getString(R.string.blood_pressure_avg_format, data.systolicAvg, data.diastolicAvg)
-                : emptyValue;
+            ? getString(R.string.blood_pressure_avg_format, data.systolicAvg, data.diastolicAvg)
+            : emptyValue;
 
         final List<StatTileData> stats = new ArrayList<>();
         stats.add(new StatTileData(data.systolicLast > 0 ? String.valueOf(data.systolicLast) : emptyValue, getString(R.string.blood_pressure_systolic)));
@@ -172,15 +176,15 @@ public class BloodPressureChartFragment extends AbstractChartFragment<BloodPress
         }
 
         final String[] labels = {
-                getString(R.string.blood_pressure_systolic),
-                getString(R.string.blood_pressure_diastolic),
-                getString(R.string.heart_rate)
+            getString(R.string.blood_pressure_systolic),
+            getString(R.string.blood_pressure_diastolic),
+            getString(R.string.heart_rate)
         };
         final ChartSpec spec = BloodPressureChartData.daySpec(
-                data.startTs, seconds, systolic, diastolic, pulse, data.systolicAvg,
-                GBApplication.getPrefs().getBoolean("charts_show_average", true), Color.GRAY,
-                labels, new int[]{systolicColor, diastolicColor, heartRateColor}, pressureUnit, pulseUnit,
-                HeartRateUtils.getInstance().getMinHeartRate(), HeartRateUtils.getInstance().getMaxHeartRate()
+            data.startTs, seconds, systolic, diastolic, pulse, data.systolicAvg,
+            GBApplication.getPrefs().getBoolean("charts_show_average", true), Color.GRAY,
+            labels, new int[]{systolicColor, diastolicColor, heartRateColor}, pressureUnit, pulseUnit,
+            HeartRateUtils.getInstance().getMinHeartRate(), HeartRateUtils.getInstance().getMaxHeartRate()
         );
         mChart.setSelectionContent(x -> {
             final long time = Math.round(x);
@@ -193,7 +197,7 @@ public class BloodPressureChartFragment extends AbstractChartFragment<BloodPress
                 }
                 if (systolic[i] > 0 || diastolic[i] > 0) {
                     final String pressure = (systolic[i] > 0 ? String.valueOf(systolic[i]) : "\u2013") + "/"
-                            + (diastolic[i] > 0 ? String.valueOf(diastolic[i]) : "\u2013") + " " + pressureUnit;
+                        + (diastolic[i] > 0 ? String.valueOf(diastolic[i]) : "\u2013") + " " + pressureUnit;
                     rows.add(new ChartSelection.Row(systolic[i] > 0 ? systolicColor : diastolicColor, pressure));
                     description.append(' ').append(pressure).append('.');
                 }
@@ -226,16 +230,16 @@ public class BloodPressureChartFragment extends AbstractChartFragment<BloodPress
         }
         String dateLabel = mDateView.getText().toString();
         String[] options = {"PDF", "CSV"};
-        new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.appmanager_app_share)
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        BloodPressureExportHelper.exportPdf(requireContext(), currentData.samples, dateLabel, mChart.toLightBitmap());
-                    } else {
-                        BloodPressureExportHelper.exportCsv(requireContext(), currentData.samples);
-                    }
-                })
-                .show();
+        new MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.appmanager_app_share)
+            .setItems(options, (dialog, which) -> {
+                if (which == 0) {
+                    BloodPressureExportHelper.exportPdf(requireContext(), currentData.samples, dateLabel, mChart.toLightBitmap());
+                } else {
+                    BloodPressureExportHelper.exportCsv(requireContext(), currentData.samples);
+                }
+            })
+            .show();
     }
 
     @Override

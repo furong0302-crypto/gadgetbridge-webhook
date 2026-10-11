@@ -22,6 +22,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartPoint
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFormat
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
 
 /**
@@ -63,7 +64,7 @@ internal data class BarLayout(val width: Float, val gap: Float) {
  * Builds MPAndroidChart data from a [ChartSpec]. Entry data holds the original x, since grouped bars are offset.
  */
 internal object ChartDataBuilder {
-    private const val LINE_WIDTH_DP = 2f
+    const val LINE_WIDTH_DP = 2f
     private const val POINT_RADIUS_DP = 3.5f
     private const val AREA_FILL_ALPHA = 0.45f
     private const val MAX_CANDLE_SPACE = 0.45f
@@ -206,11 +207,16 @@ internal object ChartDataBuilder {
         return LineDataSet(entries, series.label).apply {
             color = if (style.showLine) style.color else Color.TRANSPARENT
             lineWidth = LINE_WIDTH_DP
-            isDrawCirclesEnabled = style.showPoints
+            // If the line is a single point, draw it
+            isDrawCirclesEnabled = style.showPoints || (style.showLine && points.size == 1)
             circleColor = style.color
             circleRadius = POINT_RADIUS_DP
             isDrawCircleHoleEnabled = false
-            mode = if (style.curved) LineDataSet.Mode.HORIZONTAL_BEZIER else LineDataSet.Mode.LINEAR
+            mode = when (style.curve) {
+                LineCurve.STRAIGHT -> LineDataSet.Mode.LINEAR
+                LineCurve.FLAT_AT_POINTS -> LineDataSet.Mode.HORIZONTAL_BEZIER
+                LineCurve.SMOOTH -> LineDataSet.Mode.CUBIC_BEZIER
+            }
             isDrawFilledEnabled = style.filled
             val fillBase = style.fillBase
             if (style.filled && fillBase != null) {

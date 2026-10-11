@@ -1005,9 +1005,9 @@
     <string name="pref_title_touch_anc">Pembatalan Suara Aktif</string>
     <string name="pref_title_touch_quick_ambient">Suara Sekitar Cepat</string>
     <string name="prefs_noise_control_with_one_earbud_summary">Perbolehkan kendali suara ketika menggunakan satu earbud saja</string>
-    <string name="pref_switch_controls_anc_ambient">Pembatalan suara ←→ Sekitar</string>
-    <string name="pref_switch_controls_anc_off">Pembatalan suara ←→ Mati</string>
-    <string name="pref_switch_controls_ambient_off">Sekitar ←→ Mati</string>
+    <string name="pref_switch_controls_anc_ambient">Pembatalan suara ↔ Sekitar</string>
+    <string name="pref_switch_controls_anc_off">Pembatalan suara ↔ Mati</string>
+    <string name="pref_switch_controls_ambient_off">Sekitar ↔ Mati</string>
     <string name="prefs_voice_detect_duration">Akhiri setelah diam selama:</string>
     <string name="sony_pause_when_taken_off">Jeda ketika headphone tidak digunakan</string>
     <string name="sony_button_mode_left">Mode Tombol (Kiri)</string>
@@ -1989,7 +1989,7 @@
     <string name="pref_pair_bluetooth_calls_help_2">2. Buka pengaturan Bluetooth ponsel Anda, lalu pasangkan dengan perangkat baru yang akan muncul (namanya mirip dengan jam tangan Anda saat ini, tetapi dengan sufiks, misalnya \"Amazfit GTR 4 - AFC8\".</string>
     <string name="pref_pair_bluetooth_calls_help_3">3. Aktifkan pengaturan \"Panggilan Bluetooth\" di bawah.</string>
     <string name="pref_pair_bluetooth_calls_help_warning">PERINGATAN: Jika Anda mengaktifkan panggilan Bluetooth tanpa memasangkan dengan instans kedua, notifikasi panggilan mungkin tidak berfungsi sebagaimana mestinya.</string>
-    <string name="pref_switch_controls_anc_ambient_off">Pembatalan bising ←→ Ambien ←→ Nonaktif</string>
+    <string name="pref_switch_controls_anc_ambient_off">Pembatalan bising ↔ Ambien ↔ Nonaktif</string>
     <string name="sony_button_mode_help_title">Mode Tombol - Bantuan</string>
     <string name="quick_attention">Pengingat Cepat</string>
     <string name="sony_button_mode_help_summary">Deskripsi dari setiap mode tombol</string>

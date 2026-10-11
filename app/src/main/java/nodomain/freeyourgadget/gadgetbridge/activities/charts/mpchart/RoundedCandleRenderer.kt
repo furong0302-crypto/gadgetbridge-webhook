@@ -65,6 +65,22 @@ internal class RoundedCandleRenderer(
         animator: ChartAnimator,
         viewPortHandler: ViewPortHandler,
     ) : CombinedChartRenderer(chart, animator, viewPortHandler) {
+        private val clip = RectF()
+
+        /**
+         * Clips the data to the content width, and to the content height plus half a line width, so that a line
+         * on the axis minimum or maximum is fully drawn.
+         */
+        override fun drawData(c: Canvas) {
+            val margin = Utils.convertDpToPixel(ChartDataBuilder.LINE_WIDTH_DP / 2f)
+            clip.set(viewPortHandler.contentRect)
+            clip.inset(0f, -margin)
+            val restoreCount = c.save()
+            c.clipRect(clip)
+            super.drawData(c)
+            c.restoreToCount(restoreCount)
+        }
+
         override fun createRenderers() {
             super.createRenderers()
             val chart = chart.get() ?: return

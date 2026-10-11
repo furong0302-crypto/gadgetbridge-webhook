@@ -1716,7 +1716,7 @@
     <string name="prefs_noise_control_with_one_earbud">Kontrola hałasu za pomocą jednej słuchawki</string>
     <string name="pref_ambient_sound_tone_summary">Od miękkiego do czystego</string>
     <string name="pref_balance">Balans</string>
-    <string name="pref_switch_controls_anc_ambient">Tłumienie hałasu ←→ Otoczenie</string>
+    <string name="pref_switch_controls_anc_ambient">Tłumienie hałasu ↔ Otoczenie</string>
     <string name="prefs_password_summary">Zablokuj opaskę za pomocą hasła po zdjęciu z nadgarstka</string>
     <string name="mi5_prefs_workout_activity_types_summary">Wybierz typy aktywności, które mają być wyświetlane na ekranie treningów</string>
     <string name="activity_type_outdoor_running">Bieganie na świeżym powietrzu</string>
@@ -1735,11 +1735,11 @@
     <string name="permission_notification_listener">%1$s potrzebuje dostępu do Powiadomień, aby wyświetlać je na zegarku, gdy ekran telefonu jest wyłączony.\n\nStuknij „%2$s”, a następnie „%1$s” i włącz „Zezwól na dostęp do powiadomień”, po czym stuknij „Wstecz”, aby wrócić do %1$s.</string>
     <string name="permission_notification_policy_access">Aby %1$s mógł szanować ustawienia Nie przeszkadzać na Twoim zegarku, gdy ekran telefonu jest wyłączony, musi mieć do nich dostęp.\n\nStuknij „%2$s”, a następnie „%1$s” i włącz „Zezwól na dostęp do nie przeszkadzać”, po czym stuknij „Wstecz”, aby wrócić do %1$s.</string>
     <string name="pref_title_touch_volume">Głośność</string>
-    <string name="pref_switch_controls_anc_off">Tłumienie hałasu ←→ Wyłączone</string>
+    <string name="pref_switch_controls_anc_off">Tłumienie hałasu ↔ Wyłączone</string>
     <string name="sensitive">Wrażliwy</string>
     <string name="permission_location">Aby %1$s mógł pozostać połączony z zegarkiem, gdy ekran telefonu jest wyłączony, musi mieć stały dostęp do Twojej lokalizacji.\n\nWybierz opcję „%2$s” na następnym ekranie, a następnie stuknij „Wstecz”, aby wrócić do %1$s.</string>
     <string name="controlcenter_unset_folder">Nieustawiony folder</string>
-    <string name="pref_switch_controls_ambient_off">Otoczenie ←→ Wyłączone</string>
+    <string name="pref_switch_controls_ambient_off">Otoczenie ↔ Wyłączone</string>
     <string name="prefs_noise_control">Kontrola hałasu</string>
     <string name="prefs_voice_detect">Wykrywanie głosu</string>
     <string name="prefs_voice_detect_summary">Włącz dźwięk otoczenia i obniż głośność odtwarzania automatycznie po wykryciu głosu</string>

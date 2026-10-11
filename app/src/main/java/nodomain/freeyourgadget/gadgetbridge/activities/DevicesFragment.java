@@ -219,6 +219,14 @@ public class DevicesFragment extends Fragment implements HeaderShadePage {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (mGBDeviceAdapter != null) {
+            mGBDeviceAdapter.onResume();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         if (deviceListView != null) unregisterForContextMenu(deviceListView);
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(mReceiver);

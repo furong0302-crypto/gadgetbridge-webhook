@@ -17,6 +17,12 @@ sealed interface DeviceCardItem {
      * Whether the item is displayed for the current device state.
      */
     fun isVisible(device: GBDevice): Boolean
+
+    /**
+     * Whether the item is not present by default - the user must add it.
+     */
+    val optional: Boolean
+        get() = false
 }
 
 /**
@@ -29,6 +35,7 @@ data class ActionCardItem(
     val busyIndicator: Boolean = false,
     override val id: String = action.id,
     val visible: (GBDevice) -> Boolean = action::isVisible,
+    override val optional: Boolean = false,
 ) : DeviceCardItem {
     override fun isVisible(device: GBDevice) = visible(device)
 }
@@ -66,4 +73,14 @@ data class HeartRateCardItem(
     val onClick: (GBDevice, Context) -> Unit,
 ) : DeviceCardItem {
     override fun isVisible(device: GBDevice) = visible(device)
+}
+
+/**
+ * A button that opens a dialog with the items that are placed after it.
+ */
+data object MoreCardItem : DeviceCardItem {
+    override val id = "more"
+    override val optional = true
+
+    override fun isVisible(device: GBDevice) = true
 }

@@ -1516,7 +1516,7 @@
     <string name="mi2_prefs_heart_rate_monitoring">Monitorování srdeční frekvence</string>
     <string name="prefs_ambient_sound_during_call_title">Okolní zvuk během hovoru</string>
     <string name="prefs_switch_control_left">Ovládání přepínání Vlevo</string>
-    <string name="pref_switch_controls_ambient_off">Okolní zvuk ←→ Vypnuto</string>
+    <string name="pref_switch_controls_ambient_off">Okolní zvuk ↔ Vypnuto</string>
     <string name="heartrate_bpm_120">120 tepů/min</string>
     <string name="heartrate_bpm_140">140 tepů/min</string>
     <string name="heartrate_bpm_125">125 tepů/min</string>
@@ -1537,14 +1537,14 @@
     <string name="prefs_active_noise_cancelling_level">Úroveň aktivního potlačení hluku</string>
     <string name="prefs_active_noise_cancelling_level_high">Vysoká</string>
     <string name="pref_title_touch_anc">Aktivní potlačení hluku</string>
-    <string name="pref_switch_controls_anc_off">Potlačení hluku ←→ Vypnuto</string>
+    <string name="pref_switch_controls_anc_off">Potlačení hluku ↔ Vypnuto</string>
     <string name="prefs_voice_detect_duration">Konec po klidu za:</string>
     <string name="prefs_active_noise_cancelling_level_low">Nízká</string>
     <string name="pref_title_touch_quick_ambient">Rychlý okolní zvuk</string>
     <string name="prefs_noise_control_with_one_earbud">Regulace hluku s jedním sluchátkem</string>
     <string name="pref_ambient_sound_tone_summary">Od Měkkého po Jasný</string>
     <string name="pref_balance">Vyrovnání zvuku</string>
-    <string name="pref_switch_controls_anc_ambient">Potlačení hluku ←→ Okolní zvuk</string>
+    <string name="pref_switch_controls_anc_ambient">Potlačení hluku ↔ Okolní zvuk</string>
     <string name="prefs_noise_control">Regulace hluku</string>
     <string name="prefs_voice_detect">Detekce hlasu</string>
     <string name="pref_title_touch_voice_assistant">Hlasový asistent</string>
@@ -2034,7 +2034,7 @@
     <string name="zepp_os_watchface_simplicity_data">Simplicity Data</string>
     <string name="sports_activity_confirm_delete_description">Opravdu chcete odstranit %d aktivit?</string>
     <string name="watchface_widget_type_uv_index">UV Index</string>
-    <string name="pref_switch_controls_anc_ambient_off">Potlačení Hluku ←→ Zvuky Okolí ←→ Vypnuto</string>
+    <string name="pref_switch_controls_anc_ambient_off">Potlačení Hluku ↔ Zvuky Okolí ↔ Vypnuto</string>
     <string name="sony_quick_access_double_tap">Rychlý Přístup (dvojité ťuknutí)</string>
     <string name="continue_pressing">Dlouhý stisk</string>
     <string name="quick_attention">Rychlá pozornost</string>

@@ -6,6 +6,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFormat
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LimitLineSpec
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -37,7 +38,7 @@ object TemperatureChartData {
             return ChartSpec.EMPTY
         }
         return ChartSpec(
-            series = listOf(ChartSeries("temperature", label, points, SeriesStyle.Line(color, curved = true))),
+            series = listOf(ChartSeries("temperature", label, points, SeriesStyle.Line(color, curve = LineCurve.FLAT_AT_POINTS))),
             xAxis = AxisSpec(
                 format = ChartValueFormat.TIME_OF_DAY,
                 minimum = startTs.toDouble(),
@@ -57,7 +58,7 @@ object TemperatureChartData {
     }
 
     /**
-     * The min-max range of each day with its average as a dot; NaN marks a day without data.
+     * The min-max range of each day with its average as a line; NaN marks a day without data and breaks the line.
      */
     @JvmStatic
     fun periodSpec(
@@ -84,7 +85,7 @@ object TemperatureChartData {
         return ChartSpec(
             series = listOf(
                 ChartSeries("range", rangeLabel, ranges, SeriesStyle.Range(rangeColor, DAY_RANGE_WIDTH)),
-                ChartSeries("average", averageLabel, averages, SeriesStyle.Line(averageColor, showPoints = true, showLine = false)),
+                ChartSeries("average", averageLabel, averages, SeriesStyle.Line(averageColor, maxGap = 1.0)),
             ).filter { it.points.isNotEmpty() },
             xAxis = AxisSpec(
                 format = ChartValueFormat.EPOCH_DAY,

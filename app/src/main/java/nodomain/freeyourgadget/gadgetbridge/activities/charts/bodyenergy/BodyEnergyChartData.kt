@@ -5,6 +5,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartPoint
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFormat
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
 
 object BodyEnergyChartData {
@@ -40,14 +41,14 @@ object BodyEnergyChartData {
                     "average",
                     averageLabel,
                     averagePoints,
-                    SeriesStyle.Line(averageColor, filled = true, curved = true),
+                    SeriesStyle.Line(averageColor, filled = true, curve = LineCurve.SMOOTH),
                     selectable = false,
                 ),
                 ChartSeries(
                     "level",
                     levelLabel,
                     levelPoints,
-                    SeriesStyle.Line(levelColor, filled = true, curved = true)
+                    SeriesStyle.Line(levelColor, filled = true, curve = LineCurve.FLAT_AT_POINTS)
                 ),
             ).filter { it.points.isNotEmpty() },
             xAxis = AxisSpec(

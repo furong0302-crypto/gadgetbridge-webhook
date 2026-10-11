@@ -6,6 +6,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFormat
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LimitLineSpec
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -35,7 +36,7 @@ object WeightChartData {
         }
         val values = points.map { it.y } + if (target > 0) listOf(target) else emptyList()
         return ChartSpec(
-            series = listOf(ChartSeries("weight", label, points, SeriesStyle.Line(color, curved = true, showPoints = true))),
+            series = listOf(ChartSeries("weight", label, points, SeriesStyle.Line(color, curve = LineCurve.FLAT_AT_POINTS, showPoints = true))),
             xAxis = AxisSpec(format = ChartValueFormat.DATE, minimum = startTs.toDouble(), maximum = endTs.toDouble()),
             yAxis = AxisSpec(
                 format = ChartValueFormat.DECIMAL,
