@@ -21,8 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,9 @@ import nodomain.freeyourgadget.gadgetbridge.activities.ActivitySummariesChartFra
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityListItem;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySession;
+import nodomain.freeyourgadget.gadgetbridge.util.dialogs.MaterialDialogFragment;
 
-public class ActivityListingDetail extends DialogFragment {
+public class ActivityListingDetail extends MaterialDialogFragment {
     protected static final Logger LOG = LoggerFactory.getLogger(ActivityListingDetail.class);
 
     public ActivityListingDetail() {
@@ -52,14 +53,20 @@ public class ActivityListingDetail extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_list_detail, container);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        // The dialog inflates the view first. The fragment must use the same view, because the
+        // child fragment manager puts the chart into it.
+        final View dialogView = getView();
+        if (dialogView != null) {
+            return dialogView;
+        }
+        return inflater.inflate(R.layout.activity_list_detail, container, false);
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         int tsFrom = getArguments().getInt("tsFrom");
@@ -73,30 +80,29 @@ public class ActivityListingDetail extends DialogFragment {
 
         final ActivitySummariesChartFragment activitySummariesChartFragment = new ActivitySummariesChartFragment();
         getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.chartsFragmentHolder, activitySummariesChartFragment)
-                .commit();
+            .beginTransaction()
+            .replace(R.id.chartsFragmentHolder, activitySummariesChartFragment)
+            .commit();
         activitySummariesChartFragment.setDateAndGetData(null, gbDevice, tsFrom, tsTo);
 
-        ActivityListingAdapter stepListAdapter = new ActivityListingAdapter(getContext());
         View activityItem = view.findViewById(R.id.activityItemHolder);
         ActivityListItem activityListItem = new ActivityListItem(activityItem);
         activityListItem.update(
-                item.getStartTime(),
-                item.getEndTime(),
-                item.getActivityKind(),
-                null,
-                item.getActiveSteps(),
-                item.getDistance(),
-                item.getHeartRateAverage(),
-                item.getIntensity(),
-                item.getEndTime().getTime() - item.getStartTime().getTime(),
-                false,
-                false,
-                null,
-                null,
-                false,
-                false
+            item.getStartTime(),
+            item.getEndTime(),
+            item.getActivityKind(),
+            null,
+            item.getActiveSteps(),
+            item.getDistance(),
+            item.getHeartRateAverage(),
+            item.getIntensity(),
+            item.getEndTime().getTime() - item.getStartTime().getTime(),
+            false,
+            false,
+            null,
+            null,
+            false,
+            false
         );
     }
 }

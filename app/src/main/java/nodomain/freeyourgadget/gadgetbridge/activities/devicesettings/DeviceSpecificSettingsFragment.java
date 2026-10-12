@@ -826,6 +826,8 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_HEARTRATE_STRESS_MONITORING);
         addPreferenceHandlerFor(PREF_HEARTRATE_STRESS_RELAXATION_REMINDER);
         addPreferenceHandlerFor(PREF_HEARTRATE_SLEEP_BREATHING_QUALITY_MONITORING);
+        addPreferenceHandlerFor(PREF_HEARTRATE_SLEEP_RESPIRATORY_RATE_MONITORING);
+        addPreferenceHandlerFor(PREF_HEARTRATE_ALERT_IRREGULAR_RHYTHM);
         addPreferenceHandlerFor(PREF_SPO2_ALL_DAY_MONITORING);
         addPreferenceHandlerFor(PREF_SPO2_MEASUREMENT_INTERVAL);
         addPreferenceHandlerFor(PREF_SPO2_MEASUREMENT_TIME);
@@ -1052,8 +1054,6 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SOUNDCORE_EQUALIZER_BAND8_VALUE);
         addPreferenceHandlerFor(PREF_SOUNDCORE_EQUALIZER_BAND9_FREQ);
         addPreferenceHandlerFor(PREF_SOUNDCORE_EQUALIZER_BAND9_VALUE);
-        addPreferenceHandlerFor(PREF_SOUNDCORE_FIND_LEFT_EARBUD);
-        addPreferenceHandlerFor(PREF_SOUNDCORE_FIND_RIGHT_EARBUD);
         addPreferenceHandlerFor(PREF_SOUNDCORE_A30I_DISABLE_OPTION_AMBIENT_MODE);
         addPreferenceHandlerFor(PREF_SOUNDCORE_A30I_DISABLE_OPTION_AMBIENT_SOUND_LEVEL);
         addPreferenceHandlerFor(PREF_SOUNDCORE_A30I_DISABLE_OPTION_WIND_NOISE_REDUCTION);

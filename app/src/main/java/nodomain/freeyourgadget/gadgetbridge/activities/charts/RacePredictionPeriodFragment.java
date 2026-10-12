@@ -275,7 +275,7 @@ public class RacePredictionPeriodFragment extends AbstractChartFragment<RacePred
         return new StatTileData(tileValue, label, null, formatSeconds(Math.abs(deltaSeconds)), iconRes, color);
     }
 
-    private static String formatSeconds(final double seconds) {
+    static String formatSeconds(final double seconds) {
         final long totalSeconds = Math.round(seconds);
         final long hours = totalSeconds / 3600;
         final long minutes = (totalSeconds % 3600) / 60;

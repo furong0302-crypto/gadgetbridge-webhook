@@ -31,6 +31,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.HeartRateDialog
 import nodomain.freeyourgadget.gadgetbridge.activities.VibrationActivity
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.ActivityChartsActivity
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsActivity
+import nodomain.freeyourgadget.gadgetbridge.activities.install.InstallLauncher
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.WorkoutListActivity
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCardAction
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
@@ -366,14 +367,14 @@ object DefaultDeviceCardItems {
             lateinit var launcher: ActivityResultLauncher<Array<String>>
             launcher = activity.activityResultRegistry.register(
                 "device_card_install_file",
-                ActivityResultContracts.OpenDocument()
-            ) { uri ->
+                ActivityResultContracts.OpenMultipleDocuments()
+            ) { uris ->
                 launcher.unregister()
-                if (uri == null) {
+                if (uris.isEmpty()) {
                     return@register
                 }
-                val installHandler = device.deviceCoordinator.findInstallHandler(uri, Bundle.EMPTY, activity)
-                if (installHandler == null) {
+                val intent = InstallLauncher.createIntent(activity, device, uris, Bundle.EMPTY)
+                if (intent == null) {
                     GB.toast(
                         activity.getString(R.string.fwinstaller_file_not_compatible_to_device),
                         Toast.LENGTH_LONG,
@@ -381,10 +382,6 @@ object DefaultDeviceCardItems {
                     )
                     return@register
                 }
-                val intent = Intent(activity, installHandler.installActivity)
-                    .setAction(Intent.ACTION_VIEW)
-                    .setDataAndType(uri, null)
-                    .putExtra(GBDevice.EXTRA_DEVICE, device)
                 activity.startActivity(intent)
             }
             launcher.launch(arrayOf("*/*"))

@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -110,6 +111,13 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
     List<String> enabledTabsList;
 
     private GBDevice mGBDevice;
+    private ViewPager2 viewPager;
+    private final OnBackPressedCallback backToOverview = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {
+            viewPager.setCurrentItem(enabledTabsList.indexOf(DefaultChartsProvider.OVERVIEW), false);
+        }
+    };
     private ViewGroup dateBar;
     private List<Button> nextButtons;
 
@@ -206,7 +214,7 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
         enableSwipeRefresh(true);
 
         // Set up the ViewPager with the section's adapter.
-        final ViewPager2 viewPager = findViewById(R.id.charts_pager);
+        viewPager = findViewById(R.id.charts_pager);
         TabLayout tabLayout = findViewById(R.id.charts_pagerTabStrip);
 
         viewPager.setAdapter(getPagerAdapter());
@@ -216,21 +224,30 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
                 tab.setText(getPageTitle(position));
             }).attach();
 
+        getOnBackPressedDispatcher().addCallback(this, backToOverview);
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(final int position) {
+                backToOverview.setEnabled(false);
+            }
+        });
+
         if (tabFragmentIdToOpen > -1) {
             viewPager.setCurrentItem(tabFragmentIdToOpen);  // open the tab as specified in the intent
         }
 
-        viewPager.setUserInputEnabled(singleFragmentName == null && GBApplication.getPrefs().getBoolean("charts_allow_swipe", true));
+        viewPager.setUserInputEnabled(enabledTabsList.size() > 1 && GBApplication.getPrefs().getBoolean("charts_allow_swipe", true));
 
-        if (singleFragmentName != null) {
+        if (enabledTabsList.size() == 1) {
             tabLayout.setVisibility(TextView.GONE);
         }
 
-        if (actionbarTitle != 0) {
-            final ActionBar actionBar = getSupportActionBar();
-
-            if (actionBar != null) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            if (actionbarTitle != 0) {
                 actionBar.setTitle(actionbarTitle);
+            } else if (enabledTabsList.size() == 1) {
+                actionBar.setTitle(getPageTitle(0));
             }
         }
 
@@ -466,6 +483,16 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
     public void enableSwipeRefresh(final boolean enable) {
         final boolean refreshOnSwipe = GBApplication.getPrefs().refreshOnSwipe();
         swipeLayout.setEnabled(enable && refreshOnSwipe && allowRefresh());
+    }
+
+    @Override
+    public void showChart(final String chartName) {
+        final int position = enabledTabsList.indexOf(chartName);
+        if (position >= 0) {
+            viewPager.setCurrentItem(position, false);
+            // Enable after setCurrentItem, which calls onPageSelected and disables it
+            backToOverview.setEnabled(true);
+        }
     }
 
     protected boolean supportsRefresh() {

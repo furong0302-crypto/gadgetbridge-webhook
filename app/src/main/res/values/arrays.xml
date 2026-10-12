@@ -3511,6 +3511,7 @@
     </string-array>
 
     <string-array name="pref_charts_tabs_items">
+        <item>@string/workout_tab_overview</item>
         <item>@string/activity_sleepchart_activity_and_sleep</item>
         <item>@string/charts_activity_list</item>
         <item>@string/sleepchart_your_sleep</item>
@@ -3538,6 +3539,7 @@
     </string-array>
 
     <string-array name="pref_charts_tabs_values">
+        <item>@string/p_overview</item>
         <item>@string/p_activity</item>
         <item>@string/p_activity_list</item>
         <item>@string/p_sleep</item>

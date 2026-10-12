@@ -91,6 +91,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.HealthConnectSyncStateDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.HealthConnectWorkoutSyncFailureDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.InternetFirewallRuleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallHandlerV2;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.AbstractNotificationPattern;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
@@ -586,6 +587,12 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     @Nullable
     @Override
     public InstallHandler findInstallHandler(final Uri uri, final Bundle options, final Context context) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public InstallHandlerV2 findInstallHandlerV2(@NonNull final List<Uri> files, @NonNull final Context context) {
         return null;
     }
 

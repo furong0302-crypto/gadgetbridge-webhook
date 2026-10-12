@@ -964,7 +964,6 @@
     <string name="stats_y_axis_label">Steps per minute</string>
     <string name="control_center_find_lost_device">Find lost device</string>
     <string name="control_center_cancel_to_stop_vibration">Cancel to stop vibration.</string>
-    <string name="title_activity_charts">Activity and Sleep</string>
     <string name="title_activity_set_alarm">Configure alarms</string>
     <string name="title_activity_set_reminders">Configure reminders</string>
     <string name="title_activity_set_contacts">Configure contacts</string>
@@ -1288,6 +1287,8 @@
     <string name="prefs_reserve_reminder_calendar_summary">Number of calendar events that will be synchronized</string>
     <string name="miband_prefs_hr_sleep_detection">Use heart rate sensor to improve sleep detection</string>
     <string name="pref_sleep_breathing_quality_monitoring">Sleep breathing quality monitoring</string>
+    <string name="pref_sleep_respiratory_rate_monitoring">Sleep breathing rate monitoring</string>
+    <string name="pref_heartrate_alert_irregular_rhythm">Irregular heart rhythm alert</string>
     <string name="miband_prefs_device_time_offset_hours">Device time offset in hours (for detecting sleep of shift workers)</string>
     <string name="prefs_find_phone">Find phone</string>
     <string name="prefs_enable_find_phone">Turn on \"Find phone\"</string>
@@ -2391,6 +2392,7 @@
     <string name="devicetype_ak75_pro" translatable="false">AK75 PRO</string>
     <string name="devicetype_ak86" translatable="false">AK86</string>
     <string name="devicetype_domyos_t540" translatable="false">Domyos T540</string>
+    <string name="devicetype_concept2_pm5" translatable="false">Concept2 PM5</string>
     <string name="devicetype_even_realities_g1" translatable="false">Even Realities G1</string>
     <string name="devicetype_laxasfit" translatable="false">LaxasFit</string>
     <string name="devicetype_sony_wh_1000xm2" translatable="false">Sony WH-1000XM2</string>
@@ -2613,6 +2615,7 @@
     <string name="generic_metrics">Other</string>
     <string name="p_generic_metrics" translatable="false">genericmetrics</string>
     <string name="generic_metric_select_metric">Metric</string>
+    <string name="number_of_generic_metrics">%1$d metrics</string>
     <string name="generic_metric_samples">Samples</string>
     <string name="generic_metric_chart_label_with_unit">%1$s (%2$s)</string>
     <string name="metric_garmin_endurance_score">Endurance Score</string>
@@ -4912,6 +4915,11 @@
     <string name="pref_install_unsupported_files_title">Install unsupported files</string>
     <string name="pref_install_unsupported_files_summary">Allow upload of unsupported files to the device.</string>
     <string name="install_unsupported_files_warning">This file is not supported by the device, and might cause issues.\n\nYou are DISCOURAGED from installing it!</string>
+    <string name="install_files_not_supported">These files cannot be installed: %s</string>
+    <string name="install_another_in_progress">Another installation is already in progress on this device.</string>
+    <string name="install_show_running">Show installation</string>
+    <string name="install_item_skipped">Skipped</string>
+    <string name="install_progress">%1$d/%2$d (%3$d%%)</string>
     <string name="pref_refresh_on_swipe_summary">Swipe down to fetch new data from connected devices.</string>
     <string name="pref_refresh_on_swipe_title">Refresh on swipe</string>
     <string name="cannot_upload_watchface_too_many_watchfaces_installed">Cannot upload watchface, too many watchfaces installed</string>

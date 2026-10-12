@@ -21,12 +21,11 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="10dp" />
 
-        <TextView
-            android:id="@+id/stress_average"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/chart_section_spacing"
-            android:gravity="center" />
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/stress_pie_chart"
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="@dimen/chart_section_spacing" />
 
         <nodomain.freeyourgadget.gadgetbridge.activities.workouts.SectionHeaderView
             android:layout_width="match_parent"

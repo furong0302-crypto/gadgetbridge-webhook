@@ -110,7 +110,7 @@ public class GBDaoGenerator {
             outputDir.mkdirs();
         }
 
-        final Schema schema = new Schema(153, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(154, MAIN_PACKAGE + ".entities");
 
         final List<Entity> sampleProvidersToGenerate = new LinkedList<>();
         final List<Entity> batterySampleProvidersToGenerate = new LinkedList<>();
@@ -1283,6 +1283,19 @@ public class GBDaoGenerator {
         Entity sample = addEntity(schema, "GarminSleepStatsSample");
         addCommonTimeSampleProperties("AbstractSleepScoreSample", sample, user, device);
         sample.addIntProperty(SAMPLE_SLEEP_SCORE).notNull().codeBeforeGetter(OVERRIDE);
+        sample.addFloatProperty("averageStressDuringSleep");
+        sample.addIntProperty("awakeTimeScore");
+        sample.addIntProperty("awakeningsCount");
+        sample.addIntProperty("awakeningsCountScore");
+        sample.addIntProperty("combinedAwakeScore");
+        sample.addIntProperty("deepSleepScore");
+        sample.addIntProperty("interruptionsScore");
+        sample.addIntProperty("lightSleepScore");
+        sample.addIntProperty("remSleepScore");
+        sample.addIntProperty("sleepDurationScore");
+        sample.addIntProperty("sleepQualityScore");
+        sample.addIntProperty("sleepRecoveryScore");
+        sample.addIntProperty("sleepRestlessnessScore");
         return sample;
     }
 
