@@ -114,6 +114,7 @@
         {"num":163,"name":"hr_low_alert","base":"ENUM"},
         {"num":164,"name":"hr_low_alert_limit","base":"UINT8","UOM":"BEATS_PER_MINUTE"},
         {"num":167,"name":"map_theme","base":"STRING"},
+        {"num":168,"name":"stealth_mode","base":"ENUM"},
         {"num":171,"name":"swim_units","base":"ENUM"},
         {"num":174,"name":"tap_sensitivity","base":"ENUM"},
         {"num":176,"name":"airplane_mode","base":"ENUM"},
@@ -288,6 +289,7 @@
       "fields": [
         {"num":1,"name":"high_value","base":"UINT16","UOM":"WATT"},
         {"num":2,"name":"name","base":"STRING"},
+        {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":254,"name":"message_index","base":"UINT16"}
       ]
     },
@@ -324,6 +326,7 @@
       "num": 13,
       "name": "TRAINING_SETTINGS",
       "fields": [
+        {"num":1,"name":"virtual_partner","base":"ENUM","type":"Bool"},
         {"num":2,"name":"virtual_partner_pace","base":"UINT16","scale":1000,"UOM":"METER_PER_SECOND"},
         {"num":3,"name":"auto_lap_mode","base":"ENUM"},
         {"num":4,"name":"auto_lap_distance","base":"UINT32","scale":100,"UOM":"METER"},
@@ -331,15 +334,20 @@
         {"num":6,"name":"auto_lap_longitude","base":"SINT32","type":"COORDINATE","UOM":"SEMICIRCLES"},
         {"num":7,"name":"auto_pause","base":"ENUM"},
         {"num":8,"name":"auto_pause_threshold","base":"UINT16","scale":1000,"UOM":"METER_PER_SECOND"},
+        {"num":9,"name":"recording_mode","base":"ENUM"},
         {"num":11,"name":"data_screens","base":"UINT8"},
         {"num":12,"name":"power_averaging","base":"ENUM","type":"Bool"},
+        {"num":13,"name":"cadence_averaging","base":"ENUM","type":"Bool"},
         {"num":14,"name":"display_pace","base":"ENUM","type":"Bool"},
         {"num":15,"name":"auto_scroll","base":"ENUM"},
         {"num":18,"name":"timer_start_prompt","base":"ENUM"},
         {"num":22,"name":"pool_length","base":"UINT16","scale":100,"UOM":"METER"},
+        {"num":23,"name":"manual_lap","base":"ENUM"},
         {"num":24,"name":"extended_power_save_timeout","base":"ENUM","type":"Bool"},
         {"num":25,"name":"auto_sleep","base":"ENUM","type":"Bool"},
         {"num":27,"name":"satellites","base":"ENUM"},
+        {"num":29,"name":"pool_length_unit","base":"ENUM"},
+        {"num":30,"name":"target_mode","base":"ENUM"},
         {"num":31,"name":"target_distance","base":"UINT32","scale":100,"UOM":"METER"},
         {"num":32,"name":"target_speed","base":"UINT16","scale":1000,"UOM":"METER_PER_SECOND"},
         {"num":33,"name":"target_time","base":"UINT32","UOM":"SECONDS"},
@@ -354,6 +362,7 @@
         {"num":51,"name":"timer_start_auto","base":"ENUM","type":"Bool"},
         {"num":52,"name":"timer_start_speed","base":"UINT16","scale":1000,"UOM":"METER_PER_SECOND"},
         {"num":53,"name":"segment_alerts","base":"ENUM","type":"Bool"},
+        {"num":54,"name":"autolap_time","base":"UINT32","scale":1000,"UOM":"SECONDS"},
         {"num":55,"name":"proximity_alerts","base":"ENUM","type":"Bool"},
         {"num":57,"name":"countdown_start","base":"ENUM","type":"Bool"},
         {"num":60,"name":"count_repetitions","base":"ENUM"},
@@ -642,8 +651,8 @@
         {"num":210,"name":"max_core_temperature","base":"UINT16","scale":100,"UOM":"CELSIUS"},
         {"num":211,"name":"avg_grade_adjusted_speed","base":"UINT32","scale":1000,"UOM":"METER_PER_SECOND"},
         {"num":212,"name":"wind_data","base":"ENUM","type":"Bool"},
-        {"num":215,"name":"beginning_body_battery","base":"UINT8"},
-        {"num":216,"name":"ending_body_battery","base":"UINT8"},
+        {"num":215,"name":"beginning_body_battery","base":"UINT8","UOM":"PERCENT"},
+        {"num":216,"name":"ending_body_battery","base":"UINT8","UOM":"PERCENT"},
         {"num":219,"name":"unpaved_surface","base":"UINT8","UOM":"PERCENT"},
         {"num":220,"name":"pack_weight","base":"UINT16","scale":10,"UOM":"KILOGRAM"},
         {"num":221,"name":"total_equivalent_distance","base":"UINT32","UOM":"METER"},
@@ -907,7 +916,7 @@
         {"num":139,"name":"core_temperature","base":"UINT16","scale":100,"UOM":"CELSIUS"},
         {"num":140,"name":"grade_adjusted_speed","base":"UINT32","scale":1000,"UOM":"METER_PER_SECOND"},
         {"num":141,"name":"calorie_rate","base":"UINT16","scale":10,"UOM":"KCAL_PER_MINUTE"},
-        {"num":143,"name":"body_battery","base":"UINT8"},
+        {"num":143,"name":"body_battery","base":"UINT8","UOM":"PERCENT"},
         {"num":144,"name":"external_heart_rate","base":"UINT8","UOM":"BEATS_PER_MINUTE"},
         {"num":146,"name":"step_speed_loss_distance","base":"UINT16","scale":100,"UOM":"CENTIMETER_PER_SECOND"},
         {"num":147,"name":"step_speed_loss_percentage","base":"UINT16","scale":100,"UOM":"PERCENT"},
@@ -1032,8 +1041,8 @@
         {"num":20,"name":"secondary_target_value","base":"UINT32"},
         {"num":21,"name":"secondary_custom_target_value_low","base":"UINT32"},
         {"num":22,"name":"secondary_custom_target_value_high","base":"UINT32"},
-        {"num":26,"name":"exercise_weight_percent","base":"UINT16"},
-        {"num":27,"name":"exercise_weight_type","base":"UINT8"},
+        {"num":26,"name":"exercise_weight_percent","base":"UINT8"},
+        {"num":27,"name":"exercise_weight_type","base":"UINT16"},
         {"num":30,"name":"swim_drill_type","base":"ENUM","type":"WktSwimDrill"},
         {"num":31,"name":"workout_index","base":"UINT16"},
         {"num":35,"name":"exercise_load_category","base":"UINT8"},
@@ -1095,7 +1104,8 @@
         {"num":4,"name":"sport","base":"ENUM"},
         {"num":5,"name":"name","base":"STRING"},
         {"num":6,"name":"capabilities","base":"UINT32Z"},
-        {"num":7,"name":"sub_sport","base":"ENUM"}
+        {"num":7,"name":"sub_sport","base":"ENUM"},
+        {"num":254,"name":"message_index","base":"UINT16"}
       ]
     },
     {
@@ -1343,7 +1353,7 @@
         {"num":11,"name":"lactate_threshold_heart_rate","base":"UINT16","UOM":"BEATS_PER_MINUTE"},
         {"num":12,"name":"lactate_threshold_power","base":"UINT16","UOM":"WATT"},
         {"num":13,"name":"lactate_threshold_speed","base":"UINT16","scale":10,"UOM":"KILOMETER_PER_HOUR"},
-        {"num":15,"name":"beginning_body_battery","base":"UINT8"},
+        {"num":15,"name":"beginning_body_battery","base":"UINT8","UOM":"PERCENT"},
         {"num":16,"name":"start_of_activity","base":"UINT32","UOM":"SECONDS"},
         {"num":19,"name":"first_vo2_max","base":"SINT32","scale":18724.571428571428,"UOM":"ML_KG_MIN"},
         {"num":23,"name":"time_zone_offset","base":"SINT16","UOM":"MINUTES"},
@@ -1577,6 +1587,7 @@
         {"num":6,"name":"filtered_bpm","base":"UINT8","arrayLen":0,"UOM":"BEATS_PER_MINUTE"},
         {"num":9,"name":"event_timestamp","base":"UINT32","scale":1024,"arrayLen":0,"UOM":"SECONDS"},
         {"num":10,"name":"event_timestamp_12","base":"BYTE","arrayLen":0},
+        {"num":251,"name":"pad","base":"BYTE","arrayLen":0},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
     },
@@ -1611,7 +1622,7 @@
         {"num":17,"name":"ending_performance_condition","base":"SINT8"},
         {"num":20,"name":"anaerobic_effect","base":"UINT8","scale":10},
         {"num":21,"name":"respiratory_rate","base":"SINT32","scale":65536},
-        {"num":25,"name":"ending_body_battery","base":"UINT8"},
+        {"num":25,"name":"ending_body_battery","base":"UINT8","UOM":"PERCENT"},
         {"num":29,"name":"first_vo2_max","base":"SINT32","scale":18724.571428571428,"UOM":"ML_KG_MIN"},
         {"num":30,"name":"avg_temperature","base":"SINT8","UOM":"CELSIUS"},
         {"num":31,"name":"avg_humidity","base":"SINT8"},
@@ -1774,7 +1785,8 @@
         {"num":0,"name":"sport","base":"ENUM"},
         {"num":1,"name":"sub_sport","base":"ENUM"},
         {"num":2,"name":"lock_device","base":"ENUM"},
-        {"num":3,"name":"name","base":"STRING"}
+        {"num":3,"name":"name","base":"STRING"},
+        {"num":254,"name":"message_index","base":"UINT16"}
       ]
     },
     {
@@ -2042,7 +2054,8 @@
         {"num":2,"name":"club_type","base":"ENUM"},
         {"num":3,"name":"club_nickname","base":"STRING"},
         {"num":6,"name":"average_distance","base":"UINT32","scale":100,"UOM":"METER"},
-        {"num":19,"name":"max_distance","base":"UINT32","scale":100,"UOM":"METER"}
+        {"num":19,"name":"max_distance","base":"UINT32","scale":100,"UOM":"METER"},
+        {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
     },
     {
@@ -2420,6 +2433,7 @@
       "fields": [
         {"num":0,"name":"message_number","base":"UINT16"},
         {"num":2,"name":"field_number","base":"UINT8"},
+        {"num":251,"name":"pad","base":"BYTE","arrayLen":0},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
     },
@@ -2469,10 +2483,19 @@
       ]
     },
     {
+      "num": 228,
+      "name": "MANUAL_STRESS",
+      "fields": [
+        {"num":0,"name":"stress_level_value","base":"SINT16"},
+        {"num":1,"name":"stress_level_time","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
+      ]
+    },
+    {
       "num": 229,
       "name": "MAX_MET_DATA",
       "fields": [
         {"num":0,"name":"update_time","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
+        {"num":1,"name":"met_max","base":"SINT32","scale":65536},
         {"num":2,"name":"vo2_max","base":"UINT16","scale":10,"UOM":"ML_KG_MIN"},
         {"num":3,"name":"fitness_age","base":"SINT8","UOM":"YEARS"},
         {"num":5,"name":"sport","base":"ENUM"},
@@ -2713,7 +2736,9 @@
     {
       "num": 276,
       "name": "END_OF_FILE",
-      "fields": []
+      "fields": [
+        {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
+      ]
     },
     {
       "num": 279,
@@ -3533,6 +3558,8 @@
       "num": 384,
       "name": "DAILY_SLEEP",
       "fields": [
+        {"num":0,"name":"min_heart_rate","base":"UINT8","UOM":"BEATS_PER_MINUTE"},
+        {"num":1,"name":"unk_1","base":"UINT8","UOM":"PERCENT"},
         {"num":2,"name":"sleep_score","base":"UINT8","UOM":"PERCENT"},
         {"num":3,"name":"awake_duration","base":"UINT16","UOM":"MINUTES"},
         {"num":8,"name":"local_timestamp","base":"UINT32","type":"LocalDateTime","UOM":"SECONDS"},
@@ -3540,10 +3567,14 @@
         {"num":10,"name":"sleep_start_timezone_offset","base":"SINT16","UOM":"MINUTES"},
         {"num":11,"name":"sleep_end_time","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":12,"name":"sleep_end_timezone_offset","base":"SINT16","UOM":"MINUTES"},
-        {"num":14,"name":"sleep_start_body_battery","base":"UINT8"},
-        {"num":16,"name":"sleep_end_body_battery","base":"UINT8"},
+        {"num":14,"name":"sleep_start_body_battery","base":"UINT8","UOM":"PERCENT"},
+        {"num":15,"name":"sleep_end_body_battery_yesterday","base":"UINT8","UOM":"PERCENT"},
+        {"num":16,"name":"sleep_end_body_battery","base":"UINT8","UOM":"PERCENT"},
+        {"num":20,"name":"sleep_duration_score","base":"SINT8"},
         {"num":22,"name":"sleep_presure","base":"SINT16"},
+        {"num":23,"name":"sleep_recovery_score","base":"SINT8"},
         {"num":24,"name":"sleep_awake_duration","base":"UINT16","UOM":"MINUTES"},
+        {"num":25,"name":"sleep_quality_score","base":"SINT8"},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":254,"name":"message_index","base":"UINT16"}
       ]
@@ -3585,7 +3616,7 @@
       "name": "JET_LAG_CONFIGURATION",
       "fields": [
         {"num":0,"name":"status","base":"ENUM"},
-        {"num":1,"name":"unk2","base":"UINT32Z"}
+        {"num":1,"name":"unk2","base":"ENUM"}
       ]
     },
     {
@@ -3706,6 +3737,7 @@
         {"num":1,"name":"demand","base":"UINT16","UOM":"MINUTES"},
         {"num":7,"name":"start","base":"UINT16","UOM":"MINUTES"},
         {"num":8,"name":"end","base":"UINT16","UOM":"MINUTES"},
+        {"num":251,"name":"pad","base":"BYTE","arrayLen":0},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
     },
@@ -3844,7 +3876,7 @@
         {"num":0,"name":"unk_0","base":"UINT16"},
         {"num":1,"name":"snapshot_timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":2,"name":"snapshot_local_timestamp","base":"UINT32","type":"LocalDateTime","UOM":"SECONDS"},
-        {"num":3,"name":"body_battery","base":"UINT8"},
+        {"num":3,"name":"body_battery","base":"UINT8","UOM":"PERCENT"},
         {"num":4,"name":"unk_4","base":"SINT8"},
         {"num":5,"name":"unk_5","base":"SINT16"},
         {"num":6,"name":"unk_6","base":"SINT8"},
@@ -3886,8 +3918,28 @@
         {"num":1,"name":"end","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":8,"name":"hr_min","base":"UINT8","UOM":"BEATS_PER_MINUTE"},
         {"num":10,"name":"daily_hr_min","base":"UINT8","UOM":"BEATS_PER_MINUTE"},
+        {"num":251,"name":"pad","base":"BYTE","arrayLen":0},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":254,"name":"message_index","base":"UINT16"}
+      ]
+    },
+    {
+      "num": 521,
+      "name": "SLEEP_INSIGHT",
+      "fields": [
+        {"num":0,"name":"recording_timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
+        {"num":1,"name":"overall_sleep_score","base":"UINT8"},
+        {"num":2,"name":"unk_2","base":"UINT32"},
+        {"num":3,"name":"sleep_start_time","base":"UINT32","type":"LocalDateTime","UOM":"SECONDS"},
+        {"num":4,"name":"sleep_start_timezone_offset","base":"SINT16","UOM":"MINUTES"},
+        {"num":5,"name":"sleep_end_time","base":"UINT32","type":"LocalDateTime","UOM":"SECONDS"},
+        {"num":6,"name":"sleep_end_timezone_offset","base":"SINT16","UOM":"MINUTES"},
+        {"num":7,"name":"unk_7","base":"SINT8"},
+        {"num":8,"name":"unk_8","base":"UINT16"},
+        {"num":9,"name":"unk_9","base":"UINT16"},
+        {"num":10,"name":"unk_10","base":"UINT16"},
+        {"num":11,"name":"unk_11","base":"ENUM"},
+        {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
     },
     {

@@ -49,12 +49,28 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
 
-            <TextView
-                android:id="@+id/workout_template_sync_status"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:textAppearance="?attr/textAppearanceLabelSmall" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/workout_template_sync_status_dot"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/device_status_dot" />
+
+                <TextView
+                    android:id="@+id/workout_template_sync_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:textAppearance="?attr/textAppearanceLabelSmall" />
+            </LinearLayout>
         </LinearLayout>
 
         <ImageButton

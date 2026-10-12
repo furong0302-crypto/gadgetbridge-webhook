@@ -84,12 +84,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminFitFileInstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminGpxRouteInstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPreferences;
-import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPrgFileInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPrgInstallItem;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminCapability;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.sleepasandroid.SleepAsAndroidAction;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallItem;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallSession;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -1839,20 +1841,65 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
             return;
         }
 
-        final GarminPrgFileInstallHandler prgFileInstallHandler = new GarminPrgFileInstallHandler(uri, getContext());
-        if (prgFileInstallHandler.isValid()) {
-            final FileType.FILETYPE fileType = FileType.FILETYPE.PRG;
-            communicator.sendMessage(
-                    options.getString(BUNDLE_EXTRA_INSTALL_TASK_NAME, "upload " + fileType + " file"),
-                    fileTransferHandler.initiateUpload(
-                            prgFileInstallHandler.getRawBytes(),
-                            fileType
-                    ).getOutgoingMessage()
-            );
+        LOG.warn("no install handler found for {} {}", uri, options.getString(BUNDLE_EXTRA_INSTALL_TASK_NAME));
+    }
+
+    @Override
+    public void onInstall(@NonNull final InstallSession session) {
+        getDevice().setBusyTask(R.string.uploading, getContext());
+        getDevice().sendDeviceUpdateIntent(getContext());
+        installItem(session, session.getItems(), 0);
+    }
+
+    /**
+     * Uploads the item at the specified index. The next item starts when the upload of this item finishes.
+     */
+    private void installItem(final InstallSession session, final List<InstallItem> items, final int index) {
+        if (index >= items.size()) {
+            if (getDevice().isBusy()) {
+                getDevice().unsetBusyTask();
+                getDevice().sendDeviceUpdateIntent(getContext());
+            }
+            return;
+        }
+        final InstallItem item = items.get(index);
+        if (!(item instanceof GarminPrgInstallItem prgItem)) {
+            LOG.error("Unsupported install item {}", item.getClass());
+            session.failed(item, getContext().getString(R.string.fwapp_install_device_not_supported));
+            installItem(session, items, index + 1);
             return;
         }
 
-        LOG.warn("no install handler found for {} {}", uri, options.getString(BUNDLE_EXTRA_INSTALL_TASK_NAME));
+        final byte[] bytes;
+        try {
+            bytes = prgItem.getFile().readBytes(getContext());
+        } catch (final IOException e) {
+            LOG.error("Failed to read {}", item.getDisplayName(), e);
+            session.failed(item, getContext().getString(R.string.installation_failed_));
+            installItem(session, items, index + 1);
+            return;
+        }
+
+        LOG.debug("Uploading {} bytes for {}", bytes.length, item.getDisplayName());
+        communicator.sendMessage(
+                "upload prg " + item.getDisplayName(),
+                fileTransferHandler.initiateUpload(bytes, FileType.FILETYPE.PRG, new FileTransferHandler.UploadListener() {
+                    @Override
+                    public void onProgress(final int percentage) {
+                        session.progress(item, percentage);
+                    }
+
+                    @Override
+                    public void onComplete(final boolean success) {
+                        if (success) {
+                            session.installed(item);
+                        } else {
+                            session.failed(item, null);
+                        }
+                        installItem(session, items, index + 1);
+                    }
+                }).getOutgoingMessage()
+        );
     }
 
     @Override

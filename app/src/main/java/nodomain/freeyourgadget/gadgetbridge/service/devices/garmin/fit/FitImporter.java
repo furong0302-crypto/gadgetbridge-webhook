@@ -255,6 +255,19 @@ public class FitImporter {
                 final GarminSleepStatsSample sample = new GarminSleepStatsSample();
                 sample.setTimestamp(ts * 1000L);
                 sample.setSleepScore(score);
+                sample.setAverageStressDuringSleep(fitSleepAssessment.getAverageStressDuringSleep());
+                sample.setAwakeTimeScore(fitSleepAssessment.getAwakeTimeScore());
+                sample.setAwakeningsCount(fitSleepAssessment.getAwakeningsCount());
+                sample.setAwakeningsCountScore(fitSleepAssessment.getAwakeningsCountScore());
+                sample.setCombinedAwakeScore(fitSleepAssessment.getCombinedAwakeScore());
+                sample.setDeepSleepScore(fitSleepAssessment.getDeepSleepScore());
+                sample.setInterruptionsScore(fitSleepAssessment.getInterruptionsScore());
+                sample.setLightSleepScore(fitSleepAssessment.getLightSleepScore());
+                sample.setRemSleepScore(fitSleepAssessment.getRemSleepScore());
+                sample.setSleepDurationScore(fitSleepAssessment.getSleepDurationScore());
+                sample.setSleepQualityScore(fitSleepAssessment.getSleepQualityScore());
+                sample.setSleepRecoveryScore(fitSleepAssessment.getSleepRecoveryScore());
+                sample.setSleepRestlessnessScore(fitSleepAssessment.getSleepRestlessnessScore());
                 sleepStatsSamples.add(sample);
             } else if (record instanceof FitSleepLevel fitSleepLevel) {
                 final SleepLevel stage = fitSleepLevel.getSleepLevel();

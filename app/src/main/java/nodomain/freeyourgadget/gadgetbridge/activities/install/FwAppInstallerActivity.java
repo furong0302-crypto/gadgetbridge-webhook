@@ -235,7 +235,10 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
             GBApplication.deviceService(device).onInstallApp(uri, options);
         });
 
-        closeButton.setOnClickListener(v -> finish());
+        closeButton.setOnClickListener(v -> {
+            GB.removeNotification(GB.NOTIFICATION_ID_INSTALL, this);
+            finish();
+        });
 
         uri = getIntent().getData();
         if (uri == null) { // For "share" intent

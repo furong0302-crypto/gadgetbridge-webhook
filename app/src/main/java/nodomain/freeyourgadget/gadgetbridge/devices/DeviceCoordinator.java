@@ -55,6 +55,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadAcuteSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadChronicSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallHandlerV2;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.AbstractNotificationPattern;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
@@ -175,6 +176,7 @@ public interface DeviceCoordinator {
         CAMERA,
         VACUUM,
         GAMEPAD,
+        GYM_EQUIPMENT,
     }
 
     /**
@@ -622,9 +624,17 @@ public interface DeviceCoordinator {
      * uri on the device being managed.
      * @return the {@link InstallHandler} or {@code null} if the {@link Uri} cannot be installed
      *   on the device
+     * @deprecated For new implementations, prefer {@link #findInstallHandlerV2}
      */
     @Nullable
+    @Deprecated
     InstallHandler findInstallHandler(Uri uri, @NonNull final Bundle options, @NonNull final Context context);
+
+    /**
+     * Finds the {@link InstallHandlerV2} that accepts the files, or null if not supported.
+     */
+    @Nullable
+    InstallHandlerV2 findInstallHandlerV2(@NonNull List<Uri> files, @NonNull Context context);
 
     /**
      * Returns true if this device/coordinator supports taking screenshots.

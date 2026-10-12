@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.config.DynamicAppConfig;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.LoyaltyCard;
@@ -44,6 +45,8 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemo
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallItem;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallSession;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -398,6 +401,15 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
     @Override
     public void onInstallApp(Uri uri, @NonNull final Bundle options) {
 
+    }
+
+    @Override
+    public void onInstall(@NonNull final InstallSession session) {
+        LOG.warn("Install sessions are not supported by {}", getClass().getSimpleName());
+        final String reason = getContext().getString(R.string.fwapp_install_device_not_supported);
+        for (final InstallItem item : session.getItems()) {
+            session.failed(item, reason);
+        }
     }
 
     /**

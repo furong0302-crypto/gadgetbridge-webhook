@@ -249,9 +249,11 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HEARTRATE_ALERT_ACTIVE_HIGH_THRESHOLD = "heartrate_alert_active_high_threshold";
     public static final String PREF_HEARTRATE_ALERT_HIGH_THRESHOLD = "heartrate_alert_threshold";
     public static final String PREF_HEARTRATE_ALERT_LOW_THRESHOLD = "heartrate_alert_low_threshold";
+    public static final String PREF_HEARTRATE_ALERT_IRREGULAR_RHYTHM = "heartrate_alert_irregular_rhythm";
     public static final String PREF_HEARTRATE_STRESS_MONITORING = "heartrate_stress_monitoring";
     public static final String PREF_HEARTRATE_STRESS_RELAXATION_REMINDER = "heartrate_stress_relaxation_reminder";
     public static final String PREF_HEARTRATE_SLEEP_BREATHING_QUALITY_MONITORING = "heartrate_sleep_breathing_quality_monitoring";
+    public static final String PREF_HEARTRATE_SLEEP_RESPIRATORY_RATE_MONITORING = "heartrate_sleep_respiratory_rate_monitoring";
     public static final String PREF_SPO2_ALL_DAY_MONITORING = "spo2_all_day_monitoring_enabled";
     public static final String PREF_SPO2_MEASUREMENT_INTERVAL = "spo2_measurement_interval";
     public static final String PREF_SPO2_MEASUREMENT_TIME = "spo2_measurement_time";
@@ -574,8 +576,6 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SOUNDCORE_EQUALIZER_BAND8_VALUE = "pref_soundcore_equalizer_band8_value";
     public static final String PREF_SOUNDCORE_EQUALIZER_BAND9_FREQ = "pref_soundcore_equalizer_band9_freq";
     public static final String PREF_SOUNDCORE_EQUALIZER_BAND9_VALUE = "pref_soundcore_equalizer_band9_value";
-    public static final String PREF_SOUNDCORE_FIND_LEFT_EARBUD = "pref_soundcore_find_left_earbud";
-    public static final String PREF_SOUNDCORE_FIND_RIGHT_EARBUD = "pref_soundcore_find_right_earbud";
     public static final String PREF_SOUNDCORE_A30I_DISABLE_OPTION_AMBIENT_MODE = "pref_soundcore_a30i_disable_option_ambient_mode";
     public static final String PREF_SOUNDCORE_A30I_DISABLE_OPTION_AMBIENT_SOUND_LEVEL = "pref_soundcore_a30i_disable_option_ambient_sound_level";
     public static final String PREF_SOUNDCORE_A30I_DISABLE_OPTION_WIND_NOISE_REDUCTION = "pref_soundcore_a30i_disable_option_wind_noise_reduction";

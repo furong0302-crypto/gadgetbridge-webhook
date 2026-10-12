@@ -38,6 +38,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +51,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.activities.install.InstallLauncher;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -208,15 +209,11 @@ public class AppManagerActivity extends AbstractGBActivity {
         super.onActivityResult(requestCode, resultCode, resultData);
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             final Uri uri = resultData.getData();
-            final InstallHandler installHandler = mGBDevice.getDeviceCoordinator().findInstallHandler(uri, Bundle.EMPTY, this);
-            if (installHandler == null) {
+            final Intent startIntent = uri == null ? null : InstallLauncher.createIntent(this, mGBDevice, Collections.singletonList(uri), Bundle.EMPTY);
+            if (startIntent == null) {
                 GB.toast(getString(R.string.fwinstaller_file_not_compatible_to_device), Toast.LENGTH_LONG, GB.INFO);
                 return;
             }
-            final Intent startIntent = new Intent(AppManagerActivity.this, installHandler.getInstallActivity());
-            startIntent.putExtra(GBDevice.EXTRA_DEVICE, mGBDevice);
-            startIntent.setAction(Intent.ACTION_VIEW);
-            startIntent.setDataAndType(uri, null);
             startActivity(startIntent);
         }
     }

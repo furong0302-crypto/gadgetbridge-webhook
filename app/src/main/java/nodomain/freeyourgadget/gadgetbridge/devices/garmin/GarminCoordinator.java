@@ -93,6 +93,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadChronicS
 import nodomain.freeyourgadget.gadgetbridge.entities.PendingFileDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.install.InstallHandlerV2;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityTrackProvider;
@@ -113,6 +114,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 import nodomain.freeyourgadget.gadgetbridge.model.WorkoutLoadSample;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BluetoothCompanyIdentifiers;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminPrgFile;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.watchapps.GarminLoyaltyCardsApp;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
@@ -463,10 +465,17 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
         if (garminGpxRouteInstallHandler.isValid())
             return garminGpxRouteInstallHandler;
 
-        final GarminPrgFileInstallHandler prgFileInstallHandler = new GarminPrgFileInstallHandler(uri, context);
-        if (prgFileInstallHandler.isValid())
-            return prgFileInstallHandler;
+        return null;
+    }
 
+    @Nullable
+    @Override
+    public InstallHandlerV2 findInstallHandlerV2(@NonNull final List<Uri> files, @NonNull final Context context) {
+        for (final Uri file : files) {
+            if (GarminPrgFile.open(context, file) != null) {
+                return new GarminPrgInstallHandler(context, this);
+            }
+        }
         return null;
     }
 

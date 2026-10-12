@@ -379,7 +379,7 @@ public class FitExporter {
                     gpsDistanceForPoint = gpsCumulativeDistance;
                 }
                 // Pause / segment-break markers — most non-Garmin parsers signal these via
-                // ActivityPoint.description. Emit a TIMER STOP_ALL event so importers that
+                // ActivityPoint.description. Emit a TIMER STOP_DISABLE_ALL event so importers that
                 // honour pauses (Strava, Garmin Connect) see them. Skip if a STOP/START
                 // event was already emitted at this same second.
                 if (p.getDescription() != null && !p.getDescription().isEmpty() && ts != lastEventTs) {
@@ -840,9 +840,6 @@ public class FitExporter {
             b.setEndPositionLong(last.getLongitude());
         }
         // Bounding box — drives map preview in Strava / Garmin Connect / Endurain.
-        // Note: codegen currently maps setNecLat to FIT field 25 and setNecLong to 26
-        // (legacy event_group slot); reader uses field 26 for nec_long and 27/28 for
-        // swc_lat/long so round-trip is self-consistent. Fix codegen mapping later.
         if (agg.hasBoundingBox()) {
             b.setNecLat(agg.getMaxLat());
             b.setNecLong(agg.getMaxLong());

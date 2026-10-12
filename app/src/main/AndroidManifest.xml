@@ -410,10 +410,22 @@
             android:label="@string/title_activity_gps_track_installer"
             android:parentActivityName=".activities.ControlCenterv2" />
         <activity
+            android:name=".activities.install.InstallSessionActivity"
+            android:label="@string/title_activity_fw_app_insaller"
+            android:parentActivityName=".activities.ControlCenterv2" />
+        <activity
             android:name=".activities.install.FileInstallerActivity"
             android:label="@string/title_activity_file_installer"
             android:parentActivityName=".activities.ControlCenterv2"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -887,7 +899,7 @@
             android:label="@string/title_activity_LenovoWatch_calibration" />
         <activity
             android:name=".activities.charts.ActivityChartsActivity"
-            android:label="@string/title_activity_charts"
+            android:label="@string/charts"
             android:parentActivityName=".activities.ControlCenterv2" />
         <activity
             android:name=".activities.ConfigureAlarms"
