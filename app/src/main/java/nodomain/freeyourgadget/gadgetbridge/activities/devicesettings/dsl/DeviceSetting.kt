@@ -180,6 +180,8 @@ data class TextSetting(
     val defaultSummary: ((Context) -> String)? = null,
     /** When non-zero, wraps the current value in this format string for the summary. */
     @StringRes val summaryTemplate: Int = 0,
+    /** Computes the summary on every refresh. Overrides [summary], [defaultSummary] and [summaryTemplate]. */
+    val summaryProvider: ((Context, Prefs) -> CharSequence?)? = null,
 ) : DeviceSetting()
 
 /**

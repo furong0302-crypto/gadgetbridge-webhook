@@ -1273,6 +1273,8 @@
     <string name="charts_min_max_heartrate_popup">Lowest heart rate: %1$d \nHighest heart rate: %2$d \nMovement intensity: %3$s</string>
     <string name="device_not_connected">Not connected.</string>
     <string name="user_feedback_all_alarms_disabled">All alarms disabled</string>
+    <string name="pref_title_do_not_archive_activity_data">Do not archive activity data</string>
+    <string name="pref_summary_do_not_archive_activity_data">Do not mark activities as synced on the device. Useful if Gadgetbridge is used together with other apps. This may cause the watch to run out of space and/or stop syncing properly.</string>
     <string name="pref_title_keep_data_on_device">Keep activity data on device</string>
     <string name="miband_fwinstaller_incompatible_version">Incompatible firmware</string>
     <string name="fwinstaller_firmware_not_compatible_to_device">This firmware is not compatible with the device</string>
@@ -1386,6 +1388,39 @@
     <string name="ak102_audio_unpaired">Call audio unpaired</string>
     <string name="ak102_pref_display_items_title">Display items</string>
     <string name="ak102_pref_display_items_summary">Screens shown on the watch</string>
+    <string name="stratos4pro_pref_audio_on_call_title">Connect call audio only for calls</string>
+    <string name="stratos4pro_pref_audio_on_call_summary">Leave the watch\'s Bluetooth Classic radio off and switch it on when a call comes in, so it can be answered on the watch. Uses less watch battery than keeping it connected. Needs call notifications.</string>
+    <string name="stratos4pro_incoming_call">Incoming call</string>
+    <string name="stratos4pro_pref_audio_auto_connect_title">Keep call audio connected</string>
+    <string name="stratos4pro_pref_audio_auto_connect_summary">The watch switches its Bluetooth Classic radio off after a few minutes idle, which stops calls reaching it. Switch it back on whenever that happens.</string>
+    <string name="stratos4pro_pref_audio_schedule_title">Only during a time window</string>
+    <string name="stratos4pro_pref_audio_schedule_summary">Outside the window the watch powers its own radio down, so call audio is unavailable until the window opens again</string>
+    <string name="stratos4pro_pref_audio_pair_summary">Pair the watch\'s Bluetooth Classic side so calls can be taken on the watch</string>
+    <string name="stratos4pro_audio_rebonding">The watch no longer knows this phone, removing the stale pairing and starting over</string>
+    <string name="stratos4pro_password_six_digits">The watch password must be exactly 6 digits</string>
+    <string name="stratos4pro_pref_reply_all_apps_title">Reply from the watch to any app</string>
+    <string name="stratos4pro_pref_reply_all_apps_summary">The watch offers replies only on WhatsApp notifications. With this on, every notification you can answer (SMS, Gmail, Telegram and others) is sent as a WhatsApp one, and its title starts with the app name.</string>
+    <string name="stratos4pro_pref_reply_icon_app_title">Keep the app\'s own icon</string>
+    <string name="stratos4pro_pref_reply_icon_app_summary">Show the Gmail, SMS or other app icon and name instead of WhatsApp. The watch keeps one icon for all of these, so older ones in its notification list change to the newest app\'s icon.</string>
+    <string name="stratos4pro_pref_scientific_sleep_title">Scientific sleep</string>
+    <string name="stratos4pro_pref_scientific_sleep_summary">Detailed sleep stage recording on the watch. Gadgetbridge reads its sleep data from this, so switching it off stops sleep stages from being synced.</string>
+    <string name="stratos4pro_prefs_lights_header">Watch lights</string>
+    <string name="stratos4pro_light_white">White light</string>
+    <string name="stratos4pro_light_red">Red light</string>
+    <string name="stratos4pro_light_strobe">Strobe</string>
+    <string name="stratos4pro_pref_light_white_strobe_title">White strobe (ms)</string>
+    <string name="stratos4pro_pref_light_red_strobe_title">Red strobe (ms)</string>
+    <string name="stratos4pro_pref_light_strobe_off">Off - steady light</string>
+    <string name="stratos4pro_pref_light_strobe_summary">%1$d ms on / %1$d ms off</string>
+    <string name="stratos4pro_pref_light_keepalive_title">Steady light keepalive (s)</string>
+    <string name="stratos4pro_pref_light_keepalive_off">Off - light turns off with the screen</string>
+    <string name="stratos4pro_pref_light_keepalive_summary">Re-send every %1$d s</string>
+    <string name="stratos4pro_pref_brightness_schedule_title">Scheduled brightness</string>
+    <string name="stratos4pro_pref_brightness_schedule_summary">The phone sets the highest level at the first time and the lowest at the second, once each. A time missed while disconnected is sent on reconnect.</string>
+    <string name="stratos4pro_brightness_schedule_inexact">Allow Gadgetbridge under Android settings, Alarms &amp; reminders, or brightness changes can be up to an hour late</string>
+    <string name="stratos4pro_pref_brightness_max_at">Highest brightness at</string>
+    <string name="stratos4pro_pref_brightness_min_at">Lowest brightness at</string>
+    <string name="stratos4pro_route_exists">This route is already on the watch</string>
     <string name="automatic">Automatic</string>
     <string name="manual">Manual</string>
     <string name="simplified_chinese">Chinese (Simplified)</string>
@@ -2023,6 +2058,7 @@
     <string name="very_high">Very High</string>
     <string name="training_daily_load">Daily Load</string>
     <string name="bpm_value_unit">%1$d bpm</string>
+    <string name="seconds_value_unit">%1$d seconds</string>
     <string name="glucose_value_mg_dl">%1$d mg/dL</string>
     <string name="steps_distance_unit">%1$,.2f km</string>
     <string name="body_energy_gained">Gained</string>
@@ -2545,6 +2581,7 @@
     <string name="devicetype_kt80" translatable="false">KT80</string>
     <string name="devicetype_hc96" translatable="false">HC96</string>
     <string name="devicetype_ksix_venture" translatable="false">KSIX Venture</string>
+    <string name="devicetype_fireboltt_069" translatable="false">Fire-Boltt 069</string>
     <string name="devicetype_fireboltt_talk" translatable="false">Fire-Boltt Talk</string>
     <string name="devicetype_viran_c29" translatable="false">Viran C29</string>
     <string name="devicetype_r50pro" translatable="false">R50Pro</string>
@@ -4727,6 +4764,8 @@
     <string name="pref_force_connection_type_bt_classic">Bluetooth Classic</string>
     <string name="encryption">Encryption</string>
     <string name="development_preference_do_not_change">Do not change unless instructed, or if you are developer</string>
+    <string name="developer_settings_warning_message">These settings are for developers. Do not change them unless a developer tells you to, or if you know what you are doing. A wrong value can cause the device to stop working correctly.</string>
+    <string name="developer_settings_warning_understand">I understand</string>
     <string name="preference_force_enabled">Force enabled</string>
     <string name="preference_force_disabled">Force disabled</string>
     <string name="pref_force_connection_type_auto_value" translatable="false">BOTH</string>
@@ -5326,6 +5365,7 @@
     <string name="devicetype_swiss_peak" translatable="false">Swiss Peak</string>
     <string name="devicetype_una_watch" translatable="false">UNA Watch</string>
     <string name="devicetype_dm58" translatable="false">DM58</string>
+    <string name="devicetype_zeblaze_stratos_4_pro" translatable="false">Zeblaze Stratos 4 Pro</string>
     <string name="devicetype_y6" translatable="false">Y6</string>
     <string name="devicetype_y66" translatable="false">Y66</string>
     <string name="devicetype_d3" translatable="false">D3</string>

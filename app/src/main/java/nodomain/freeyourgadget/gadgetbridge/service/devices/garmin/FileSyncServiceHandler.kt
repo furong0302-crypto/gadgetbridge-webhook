@@ -112,8 +112,6 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
             if (fileListResponse.hasNextPageId()) fileListResponse.nextPageId else null,
         )
 
-        val fetchUnknownFiles = deviceSupport.devicePrefs.fetchUnknownFiles
-
         // Only the first entry for a type seems to contain the type name, so keep track of them
         val nameMap: MutableMap<Int?, String?> = HashMap()
         for (file in fileListResponse.fileList) {

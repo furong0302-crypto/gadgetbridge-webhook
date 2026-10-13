@@ -8,13 +8,13 @@ import org.junit.Test
 class InstallStateMachineTest {
     private val first = InstallItem("first.prg", 0, 100)
     private val second = InstallItem("second.prg", 0, 300)
-    private val parsedFiles = ParsedFiles.Supported(listOf(first, second), "info")
+    private val files = ParsedFiles.Supported(listOf(first, second), "info")
 
     private val compatible = DeviceCheck.Checked(Compatibility.Compatible())
     private val notReady = DeviceCheck.NotReady("not ready")
 
     private fun installing(): InstallStateMachine = InstallStateMachine().apply {
-        supported(parsedFiles, compatible)
+        supported(files, compatible)
         assertTrue(start())
     }
 
@@ -42,40 +42,40 @@ class InstallStateMachineTest {
     @Test
     fun supportedAndCompatibleIsReady() {
         val machine = InstallStateMachine()
-        machine.supported(parsedFiles, DeviceCheck.Checked(Compatibility.Compatible(listOf("warning"))))
-        assertEquals(InstallState.Ready(parsedFiles, listOf("warning")), machine.state.value)
+        machine.supported(files, DeviceCheck.Checked(Compatibility.Compatible(listOf("warning"))))
+        assertEquals(InstallState.Ready(files, listOf("warning")), machine.state.value)
     }
 
     @Test
     fun waitsForDeviceUntilItIsReady() {
         val machine = InstallStateMachine()
-        machine.supported(parsedFiles, notReady)
-        assertEquals(InstallState.WaitingForDevice(parsedFiles, "not ready"), machine.state.value)
+        machine.supported(files, notReady)
+        assertEquals(InstallState.WaitingForDevice(files, "not ready"), machine.state.value)
 
         machine.deviceChecked(compatible)
-        assertEquals(InstallState.Ready(parsedFiles, emptyList()), machine.state.value)
+        assertEquals(InstallState.Ready(files, emptyList()), machine.state.value)
 
         machine.deviceChecked(notReady)
-        assertEquals(InstallState.WaitingForDevice(parsedFiles, "not ready"), machine.state.value)
+        assertEquals(InstallState.WaitingForDevice(files, "not ready"), machine.state.value)
     }
 
     @Test
     fun blockedByTheDeviceCanBecomeReady() {
         val machine = InstallStateMachine()
-        machine.supported(parsedFiles, DeviceCheck.Checked(Compatibility.Incompatible("not supported")))
-        assertEquals(InstallState.Blocked("not supported", parsedFiles.items), machine.state.value)
+        machine.supported(files, DeviceCheck.Checked(Compatibility.Incompatible("not supported")))
+        assertEquals(InstallState.Blocked("not supported", files.items), machine.state.value)
 
         machine.deviceChecked(compatible)
-        assertEquals(InstallState.Ready(parsedFiles, emptyList()), machine.state.value)
+        assertEquals(InstallState.Ready(files, emptyList()), machine.state.value)
     }
 
     @Test
     fun startOnlyFromReady() {
         val machine = InstallStateMachine()
         assertFalse(machine.start())
-        machine.supported(parsedFiles, notReady)
+        machine.supported(files, notReady)
         assertFalse(machine.start())
-        assertEquals(InstallState.WaitingForDevice(parsedFiles, "not ready"), machine.state.value)
+        assertEquals(InstallState.WaitingForDevice(files, "not ready"), machine.state.value)
     }
 
     @Test
@@ -138,10 +138,10 @@ class InstallStateMachineTest {
     @Test
     fun reportsBeforeStartAreIgnored() {
         val machine = InstallStateMachine()
-        machine.supported(parsedFiles, compatible)
+        machine.supported(files, compatible)
         machine.progress(first, 10)
         machine.outcome(first, ItemStatus.Installed)
-        assertEquals(InstallState.Ready(parsedFiles, emptyList()), machine.state.value)
+        assertEquals(InstallState.Ready(files, emptyList()), machine.state.value)
     }
 
     @Test
@@ -178,10 +178,10 @@ class InstallStateMachineTest {
         machine.outcome(second, ItemStatus.Installed)
 
         machine.restart()
-        assertEquals(InstallState.WaitingForDevice(parsedFiles, "not ready"), machine.state.value)
+        assertEquals(InstallState.WaitingForDevice(files, "not ready"), machine.state.value)
 
         machine.deviceChecked(compatible)
-        assertEquals(InstallState.Ready(parsedFiles, emptyList()), machine.state.value)
+        assertEquals(InstallState.Ready(files, emptyList()), machine.state.value)
         assertTrue(machine.start())
     }
 

@@ -194,6 +194,9 @@ object DeviceCardItemBinder {
     ) {
         val action = item.action
         icon.setImageResource(action.getIcon(device))
+        action.getIconTint(device, context)?.let {
+            ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(it))
+        }
         setDescription(view, action.getDescription(device, context))
         setLabel(label, action.getLabel(device, context))
         if (item.busyIndicator && device.isBusy) {
