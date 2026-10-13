@@ -492,7 +492,9 @@ object DeviceSettingRenderer {
                         if (setting.icon != 0) setIcon(setting.icon)
                         setDefaultValue(setting.defaultValue)
                         isEnabled = setting.enabled
-                        if (setting.summary != 0) {
+                        if (setting.summaryProvider != null) {
+                            summaryPairs.add(this to setting.summaryProvider)
+                        } else if (setting.summary != 0) {
                             setSummary(setting.summary)
                         } else if (setting.defaultSummary != null && setting.summaryTemplate != 0) {
                             summaryProvider = GBSimpleSummaryProvider(

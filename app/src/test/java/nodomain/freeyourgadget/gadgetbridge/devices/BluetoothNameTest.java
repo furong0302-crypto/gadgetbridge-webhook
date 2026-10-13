@@ -43,6 +43,7 @@ public class BluetoothNameTest extends TestBase {
             put("CMF Buds 2", DeviceType.NOTHING_CMF_BUDS_2); // #5579
             put("CMF Buds 2a", DeviceType.NOTHING_CMF_BUDS_2A); // #6028
             put("HC96", DeviceType.HC96);
+            put("FireBoltt 069", DeviceType.FIREBOLTT_069);
             put("Soundcore Q30", DeviceType.SOUNDCORE_Q30); // #4316
             put("soundcore Q30", DeviceType.SOUNDCORE_Q30); // #6371
             put("soundcore  Q30", DeviceType.SOUNDCORE_Q30); // #6371 - unsure
@@ -296,6 +297,8 @@ public class BluetoothNameTest extends TestBase {
             put("UCS LS2", DeviceType.CARDO_LS24X);
             put("Health Scale", DeviceType.ONEBYONE_SCALE); // LeFu / 1byone / Veeway, #6695
             put("F8", DeviceType.F8SCALE); // #5748
+            put("Stratos 4 Pro", DeviceType.ZEBLAZE_STRATOS_4_PRO); // #6884
+            put("Stratos 4 Pro 2", null); // #6884
         }};
 
         for (Map.Entry<String, DeviceType> e : bluetoothNameToExpectedType.entrySet()) {

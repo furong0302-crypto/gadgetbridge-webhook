@@ -54,9 +54,12 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -66,6 +69,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.bytehamster.lib.preferencesearch.SearchConfiguration;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -124,6 +128,8 @@ import nodomain.freeyourgadget.gadgetbridge.util.preferences.SubtitleListPrefere
 public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment implements DeviceSpecificSettingsHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceSpecificSettingsFragment.class);
+
+    private static final String PREF_DEVELOPER_SETTINGS_WARNING_ACCEPTED = "developer_settings_warning_accepted";
 
     private DeviceSpecificSettings deviceSpecificSettings;
     private DeviceSpecificSettingsCustomizer deviceSpecificSettingsCustomizer;
@@ -1976,6 +1982,39 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
     @Override
     public void navigateToScreen(@NonNull final PreferenceScreen screen) {
         onNavigateToScreen(screen);
+    }
+
+    @Override
+    public void onNavigateToScreen(@NonNull final PreferenceScreen preferenceScreen) {
+        if (DeviceSpecificSettingsScreen.DEVELOPER.getKey().equals(preferenceScreen.getKey()) &&
+            !GBApplication.getPrefs().getBoolean(PREF_DEVELOPER_SETTINGS_WARNING_ACCEPTED, false)) {
+            showDeveloperSettingsWarning(preferenceScreen);
+            return;
+        }
+        super.onNavigateToScreen(preferenceScreen);
+    }
+
+    private void showDeveloperSettingsWarning(@NonNull final PreferenceScreen preferenceScreen) {
+        final View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_developer_settings_warning, null);
+        final CheckBox understandCheckBox = view.findViewById(R.id.developer_settings_warning_understand);
+
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.pref_title_developer_settings)
+            .setIcon(R.drawable.ic_developer_mode)
+            .setMessage(R.string.developer_settings_warning_message)
+            .setView(view)
+            .setPositiveButton(android.R.string.ok, (d, which) -> {
+                GBApplication.getPrefs().getPreferences().edit()
+                        .putBoolean(PREF_DEVELOPER_SETTINGS_WARNING_ACCEPTED, true)
+                        .apply();
+                super.onNavigateToScreen(preferenceScreen);
+            })
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
+
+        final Button okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        okButton.setEnabled(false);
+        understandCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> okButton.setEnabled(isChecked));
     }
 
     @Override

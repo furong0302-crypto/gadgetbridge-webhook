@@ -7,8 +7,8 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.Device
 fun DeviceSettingsScope.keepActivityDataOnDevice() {
     switchSetting(
         key = DeviceSettingsPreferenceConst.PREF_KEEP_ACTIVITY_DATA_ON_DEVICE,
-        title = R.string.pref_title_keep_data_on_device,
-        summary = R.string.pref_summary_keep_data_on_device,
+        title = R.string.pref_title_do_not_archive_activity_data,
+        summary = R.string.pref_summary_do_not_archive_activity_data,
         icon = R.drawable.ic_keep,
         defaultValue = false,
         connectedOnly = false,

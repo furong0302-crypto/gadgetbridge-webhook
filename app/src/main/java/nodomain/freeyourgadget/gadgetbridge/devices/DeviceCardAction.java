@@ -19,6 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.devices;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +46,16 @@ public interface DeviceCardAction {
 
     @Nullable
     default String getLabel(@NonNull final GBDevice device, @NonNull final Context context) {
+        return null;
+    }
+
+    /**
+     * Colour for the icon, or {@code null} to keep the card's default tint. The card tints every
+     * action icon, so a colour drawn into the drawable itself never shows.
+     */
+    @Nullable
+    @ColorInt
+    default Integer getIconTint(@NonNull final GBDevice device, @NonNull final Context context) {
         return null;
     }
 

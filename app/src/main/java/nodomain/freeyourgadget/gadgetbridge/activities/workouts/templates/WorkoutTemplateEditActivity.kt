@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Canvas
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.Color
 import android.os.Bundle
@@ -25,6 +26,7 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -559,8 +561,10 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
      * - a REPEAT group drags as a single block and may only ever be at the top level
      * - a repeat group can never contain another one
      *
-     * The adapter reorders its own list during the drag. The tree is rebuilt once, in [clearView],
-     * from the final order.
+     * The children of a dragged group stay in the list and move with the parent header.
+     * The group swaps places with the step or group above or below it.
+     * The adapter reorders its own list during the drag.
+     * The tree is rebuilt once, in [clearView], from the final order.
      */
     private inner class StepDragCallback : ItemTouchHelper.SimpleCallback(
         ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0,
@@ -575,6 +579,8 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
          */
         private var draggedDepth: Int? = null
 
+        private var draggingGroup = false
+
         override fun isLongPressDragEnabled(): Boolean = true
 
         override fun onMove(
@@ -585,17 +591,63 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
             val from = holder.bindingAdapterPosition
             val to = target.bindingAdapterPosition
             if (from < 0 || to < 0) return false
-            adapter.moveItem(from, to)
+            if (draggingGroup) adapter.swapBlocks(from, to) else adapter.moveItem(from, to)
             adapter.restyleAttached(rv)
             return true
         }
 
-        override fun canDropOver(
+        /**
+         * For a group, the first row of the step or group next to it, when the dragged block
+         * passes the middle of it.
+         */
+        override fun chooseDropTarget(
+            selected: RecyclerView.ViewHolder,
+            dropTargets: MutableList<RecyclerView.ViewHolder>,
+            curX: Int,
+            curY: Int
+        ): RecyclerView.ViewHolder? {
+            if (!draggingGroup) return super.chooseDropTarget(selected, dropTargets, curX, curY)
+            val rv = binding.workoutTemplateStepList
+            val position = selected.bindingAdapterPosition
+            if (position < 0) return null
+            val block = adapter.blockAt(position)
+            val movingUp = curY < selected.itemView.top
+            val neighbor = (if (movingUp) adapter.blockBefore(block.first) else adapter.blockAfter(block.last))
+                ?: return null
+            val neighborFirst = rv.findViewHolderForAdapterPosition(neighbor.first) ?: return null
+            val neighborLast = rv.findViewHolderForAdapterPosition(neighbor.last) ?: return null
+            val neighborMiddle = (neighborFirst.itemView.top + neighborLast.itemView.bottom) / 2
+            if (movingUp) return neighborFirst.takeIf { curY < neighborMiddle }
+            val blockLast = rv.findViewHolderForAdapterPosition(block.last) ?: return null
+            val blockBottom = curY + blockLast.itemView.bottom - selected.itemView.top
+            return neighborFirst.takeIf { blockBottom > neighborMiddle }
+        }
+
+        /**
+         * For a group, keeps the first row of the swapped rows at the old top of these rows, so
+         * that the surrounding rows do not move.
+         */
+        override fun onMoved(
             recyclerView: RecyclerView,
-            current: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean =
-            adapter.canDropOnto(current.bindingAdapterPosition, target.bindingAdapterPosition)
+            viewHolder: RecyclerView.ViewHolder,
+            fromPos: Int,
+            target: RecyclerView.ViewHolder,
+            toPos: Int,
+            x: Int,
+            y: Int
+        ) {
+            val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+            if (!draggingGroup || layoutManager == null) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+                return
+            }
+            val anchor = (if (toPos < fromPos) target else viewHolder).itemView
+            val topMargin = (anchor.layoutParams as ViewGroup.MarginLayoutParams).topMargin
+            layoutManager.scrollToPositionWithOffset(
+                minOf(fromPos, toPos),
+                layoutManager.getDecoratedTop(anchor) - topMargin
+            )
+        }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         }
@@ -607,8 +659,7 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
                 val row = adapter.itemAt(position)
                 draggedLocalId = row?.node?.localId
                 draggedDepth = row?.depth
-                adapter.collapseChildrenAt(position)
-                adapter.restyleAttached(binding.workoutTemplateStepList)
+                draggingGroup = row != null && row.node.type != WorkoutNodeType.STEP
             }
         }
 
@@ -622,10 +673,16 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
             isCurrentlyActive: Boolean,
         ) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            if (actionState != ItemTouchHelper.ACTION_STATE_DRAG || !isCurrentlyActive || viewHolder !is StepAdapter.ViewHolder) return
+            if (actionState != ItemTouchHelper.ACTION_STATE_DRAG || viewHolder !is StepAdapter.ViewHolder) return
             val position = viewHolder.bindingAdapterPosition
-            val row = adapter.itemAt(position) ?: return
-            if (row.node.type != WorkoutNodeType.STEP) return
+            if (position < 0) return
+            if (draggingGroup) {
+                forEachGroupChild(recyclerView, position) { child ->
+                    getDefaultUIUtil().onDraw(c, recyclerView, child, dX, dY, actionState, isCurrentlyActive)
+                }
+                return
+            }
+            if (!isCurrentlyActive) return
             val depth = adapter.previewDepthAt(position, dY, viewHolder.itemView.height)
             draggedDepth = depth
             if (adapter.setPreviewDepth(position, depth)) adapter.restyleAttached(recyclerView)
@@ -633,11 +690,22 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
 
         override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
             super.clearView(recyclerView, viewHolder)
+            val position = viewHolder.bindingAdapterPosition
+            if (draggingGroup && position >= 0) {
+                forEachGroupChild(recyclerView, position) { getDefaultUIUtil().clearView(it) }
+            }
             val order = adapter.finishDrag(draggedLocalId, draggedDepth)
             draggedLocalId = null
             draggedDepth = null
+            draggingGroup = false
             adapter.restyleAttached(recyclerView)
             if (order.isNotEmpty()) viewModel.applyReorder(order)
+        }
+
+        private fun forEachGroupChild(recyclerView: RecyclerView, headerPosition: Int, action: (View) -> Unit) {
+            for (childPosition in adapter.blockAt(headerPosition).drop(1)) {
+                recyclerView.findViewHolderForAdapterPosition(childPosition)?.let { action(it.itemView) }
+            }
         }
     }
 
@@ -652,12 +720,6 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
          * The first validation issue of each row, by [WorkoutStepNode.localId].
          */
         private var issuesByNode: Map<Long, WorkoutValidationIssue> = emptyMap()
-
-        /**
-         * The children of the dragged REPEAT or LEG, removed from [items] for the duration of the
-         * drag.
-         */
-        private var collapsedChildren: List<WorkoutStepRow>? = null
 
         @SuppressLint("NotifyDataSetChanged")
         fun submit(newItems: List<WorkoutStepRow>, issues: List<WorkoutValidationIssue>) {
@@ -683,32 +745,49 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
         }
 
         /**
-         * A STEP can be dropped anywhere. A REPEAT or LEG row can only be dropped at a top-level
-         * position: before a top-level row when it moves up, and after the end of a group or a
-         * top-level step when it moves down.
+         * The positions of the row at [position] and of its children.
          */
-        fun canDropOnto(currentPosition: Int, targetPosition: Int): Boolean {
-            val current = itemAt(currentPosition) ?: return true
-            val target = itemAt(targetPosition) ?: return true
-            if (current.node.type == WorkoutNodeType.STEP) return true
-            if (targetPosition < currentPosition) return target.depth == 0
-            return (itemAt(targetPosition + 1)?.depth ?: 0) == 0
+        fun blockAt(position: Int): IntRange {
+            val row = items[position]
+            var end = position + 1
+            if (row.node.type != WorkoutNodeType.STEP) {
+                while (end < items.size && items[end].depth > row.depth) end++
+            }
+            return position until end
         }
 
         /**
-         * Removes the children of the REPEAT or LEG at [position] from the list, into
-         * [collapsedChildren].
+         * The top-level block that ends right before [position], or null at the start of the list.
          */
-        fun collapseChildrenAt(position: Int) {
-            val row = itemAt(position) ?: return
-            if (row.node.type == WorkoutNodeType.STEP) return
-            val start = position + 1
-            var end = start
-            while (end < items.size && items[end].depth > row.depth) end++
-            if (end == start) return
-            collapsedChildren = items.subList(start, end).toList()
-            repeat(end - start) { items.removeAt(start) }
-            notifyItemRangeRemoved(start, end - start)
+        fun blockBefore(position: Int): IntRange? {
+            var start = position - 1
+            while (start >= 0 && items[start].depth > 0) start--
+            return if (start < 0) null else start until position
+        }
+
+        /**
+         * The top-level block that starts right after [position], or null at the end of the list.
+         */
+        fun blockAfter(position: Int): IntRange? =
+            if (position + 1 < items.size) blockAt(position + 1) else null
+
+        /**
+         * Swaps the block at [headerPosition] with the block that starts at [neighborPosition].
+         */
+        fun swapBlocks(headerPosition: Int, neighborPosition: Int) {
+            val block = blockAt(headerPosition)
+            if (neighborPosition < headerPosition) {
+                repeat(headerPosition - neighborPosition) {
+                    items.add(block.last, items.removeAt(neighborPosition))
+                    notifyItemMoved(neighborPosition, block.last)
+                }
+            } else {
+                val neighbor = blockAt(neighborPosition)
+                for (i in 0 until neighbor.count()) {
+                    items.add(block.first + i, items.removeAt(neighbor.first + i))
+                    notifyItemMoved(neighbor.first + i, block.first + i)
+                }
+            }
         }
 
         /**
@@ -884,22 +963,11 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
         }
 
         /**
-         * Ends the drag. Puts [collapsedChildren] back after the row of [draggedLocalId], sets
-         * the row to [draggedDepth], and returns the (node id, depth) of every row for
-         * [WorkoutTemplateEditViewModel.applyReorder].
+         * Ends the drag. Sets the row of [draggedLocalId] to [draggedDepth], and returns the
+         * (node id, depth) of every row for [WorkoutTemplateEditViewModel.applyReorder].
          */
         fun finishDrag(draggedLocalId: Long?, draggedDepth: Int?): List<Pair<Long, Int>> {
-            val pending = collapsedChildren
-            collapsedChildren = null
             dropTarget = null
-            if (pending != null && draggedLocalId != null) {
-                val headerIndex = indexOf(draggedLocalId)
-                if (headerIndex >= 0) {
-                    items.addAll(headerIndex + 1, pending)
-                    notifyItemRangeInserted(headerIndex + 1, pending.size)
-                }
-            }
-
             if (draggedLocalId != null) {
                 val index = indexOf(draggedLocalId)
                 val row = items.getOrNull(index)
@@ -915,6 +983,7 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val frame: View = view.findViewById(R.id.workout_step_frame)
             val card: MaterialCardView = view.findViewById(R.id.workout_step_card)
+            val content: View = view.findViewById(R.id.workout_step_content)
             val colorBar: View = view.findViewById(R.id.workout_step_color_bar)
             val title: TextView = view.findViewById(R.id.workout_step_title)
             val detail: TextView = view.findViewById(R.id.workout_step_detail)
@@ -924,6 +993,11 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
         }
 
         override fun getItemCount(): Int = items.size
+
+        override fun onViewRecycled(holder: ViewHolder) {
+            // A child of a dragged group can leave the screen
+            ItemTouchHelper.Callback.getDefaultUIUtil().clearView(holder.itemView)
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_workout_template_step, parent, false)
@@ -936,9 +1010,6 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
             val context = holder.itemView.context
             styleRow(holder, position)
 
-            val childCount = node.children.size
-            val childCountText =
-                context.resources.getQuantityString(R.plurals.workout_template_step_count, childCount, childCount)
             val colorRes = when (node.type) {
                 WorkoutNodeType.STEP -> {
                     val sportSpec = spec.sports[viewModel.template.activityKind]
@@ -954,18 +1025,23 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
 
                 WorkoutNodeType.REPEAT -> {
                     holder.title.text = context.getString(R.string.workout_template_repeat_title, node.repeatCount ?: 0)
-                    holder.detail.text = childCountText
+                    holder.detail.text = ""
                     R.color.workout_step_color_group
                 }
 
                 WorkoutNodeType.LEG -> {
                     holder.title.text = node.legActivityKind?.getLabel(context)
                         ?: context.getString(R.string.workout_template_multisport_leg_title)
-                    holder.detail.text = childCountText
+                    val childCount = node.children.size
+                    holder.detail.text =
+                        context.resources.getQuantityString(
+                            R.plurals.workout_template_step_count,
+                            childCount,
+                            childCount
+                        )
                     R.color.workout_step_color_group
                 }
             }
-            holder.colorBar.setBackgroundColor(ContextCompat.getColor(context, colorRes))
 
             val issue = issuesByNode[node.localId]
             if (issue != null) {
@@ -988,6 +1064,27 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
                     )
                 )
             }
+            holder.detail.isVisible = holder.detail.text.isNotEmpty()
+
+            // A row with only the title is shorter, with a dot instead of the color bar
+            val singleLine = !holder.detail.isVisible
+            holder.colorBar.updateLayoutParams<ViewGroup.LayoutParams> {
+                width = dp(context, if (singleLine) COLOR_DOT_SIZE_DP else COLOR_BAR_WIDTH_DP)
+                height = dp(context, if (singleLine) COLOR_DOT_SIZE_DP else COLOR_BAR_HEIGHT_DP)
+            }
+            holder.colorBar.background = GradientDrawable().apply {
+                shape = if (singleLine) GradientDrawable.OVAL else GradientDrawable.RECTANGLE
+                setColor(ContextCompat.getColor(context, colorRes))
+            }
+            val verticalPadding = dp(context, if (singleLine) 0 else ROW_PADDING_VERTICAL_DP)
+            holder.content.setPaddingRelative(
+                holder.content.paddingStart,
+                verticalPadding,
+                holder.content.paddingEnd,
+                verticalPadding
+            )
+            holder.content.minimumHeight =
+                dp(context, if (singleLine) ROW_MIN_HEIGHT_SINGLE_LINE_DP else ROW_MIN_HEIGHT_DP)
 
             holder.card.setOnClickListener {
                 when (node.type) {
@@ -1016,6 +1113,12 @@ class WorkoutTemplateEditActivity : AbstractGBActivity() {
         private const val MENU_DUPLICATE = 4
 
         private const val CARD_RADIUS_DP = 20
+        private const val COLOR_BAR_WIDTH_DP = 4
+        private const val COLOR_BAR_HEIGHT_DP = 32
+        private const val COLOR_DOT_SIZE_DP = 8
+        private const val ROW_PADDING_VERTICAL_DP = 8
+        private const val ROW_MIN_HEIGHT_DP = 56
+        private const val ROW_MIN_HEIGHT_SINGLE_LINE_DP = 40
         private const val CARD_GAP_DP = 6
         private const val CHILD_CARD_RADIUS_DP = 14
         private const val CHILD_CARD_INSET_DP = 8

@@ -167,7 +167,7 @@ public class AlarmDetails extends AbstractGBActivity {
             for (int i = 0; i < items.length; i++) {
                 final ALARM_SOUND alarmSound = ALARM_SOUND.values()[i + 1]; // skip unused
                 items[i] = getString(alarmSound.getLabel());
-                if (alarm.getSoundCode() == i) {
+                if (alarm.getSoundCode() == alarmSound.ordinal()) {
                     binding.soundModeSpinner.setText(items[i], false);
                 }
                 textToAlarmSound.put(items[i], alarmSound);

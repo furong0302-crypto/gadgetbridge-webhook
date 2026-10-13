@@ -314,6 +314,7 @@ class DeviceSettingsScope {
         onBindEditText: ((android.widget.EditText) -> Unit)? = null,
         defaultSummary: ((Context) -> String)? = null,
         @StringRes summaryTemplate: Int = 0,
+        summaryProvider: ((Context, Prefs) -> CharSequence?)? = null,
     ) {
         items.add(
             TextSetting(
@@ -332,6 +333,7 @@ class DeviceSettingsScope {
                 onBindEditText = onBindEditText,
                 defaultSummary = defaultSummary,
                 summaryTemplate = summaryTemplate,
+                summaryProvider = summaryProvider,
             )
         )
     }
