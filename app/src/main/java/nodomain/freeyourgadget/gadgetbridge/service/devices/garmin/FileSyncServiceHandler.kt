@@ -91,7 +91,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         LOG.debug("Got file response: {}", fileResponse)
 
         if (fileResponse.status != 0) {
-            LOG.warn("File download failed with status {}", fileResponse.status)
+            LOG.warn("File download failed with status={} - {}", fileResponse.status, fileResponse)
             // Signal to the support class that the download failed so it can also continue to the next one
             val fileDownloadedDeviceEvent = FileDownloadedDeviceEvent()
             fileDownloadedDeviceEvent.success = false
@@ -104,13 +104,21 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
     }
 
     private fun handleFileListResponse(fileListResponse: GdiFileSyncService.FileListResponse): GdiFileSyncService.FileSyncService? {
-        LOG.debug(
-            "Handling file list response with status={}, files={}, cursorId={}, nextPageId={}",
-            if (fileListResponse.hasStatus()) fileListResponse.status else null,
-            fileListResponse.fileList.size,
-            if (fileListResponse.hasCursorId()) fileListResponse.cursorId else null,
-            if (fileListResponse.hasNextPageId()) fileListResponse.nextPageId else null,
-        )
+        if (!fileListResponse.hasStatus() || fileListResponse.status != 0) {
+            LOG.warn(
+                "Handling file list response with failed status={} - {}",
+                if (fileListResponse.hasStatus()) fileListResponse.status else null,
+                fileListResponse
+            )
+        } else {
+            LOG.debug(
+                "Handling file list response with status={}, files={}, cursorId={}, nextPageId={}",
+                if (fileListResponse.hasStatus()) fileListResponse.status else null,
+                fileListResponse.fileList.size,
+                if (fileListResponse.hasCursorId()) fileListResponse.cursorId else null,
+                if (fileListResponse.hasNextPageId()) fileListResponse.nextPageId else null,
+            )
+        }
 
         // Only the first entry for a type seems to contain the type name, so keep track of them
         val nameMap: MutableMap<Int?, String?> = HashMap()

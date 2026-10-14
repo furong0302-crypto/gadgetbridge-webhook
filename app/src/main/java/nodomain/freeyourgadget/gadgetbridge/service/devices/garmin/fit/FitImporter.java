@@ -483,7 +483,7 @@ public class FitImporter {
                 final Integer level = fitEnduranceScore.getLevel();
                 addMetric(ts, enduranceScore, MetricSample.Metric.GARMIN_ENDURANCE_SCORE, level);
             } else if (record instanceof FitFunctionalMetrics fitFunctionalMetrics) {
-                final Integer cyclingLactaceThresholdHr = fitFunctionalMetrics.getCyclingLactaceThresholdHr();
+                final Integer cyclingLactaceThresholdHr = fitFunctionalMetrics.getCyclingLactateThresholdHr();
                 final Integer functionalThresholdPower = fitFunctionalMetrics.getFunctionalThresholdPower();
                 addMetric(ts, functionalThresholdPower, MetricSample.Metric.GARMIN_FUNCTIONAL_THRESHOLD_POWER, cyclingLactaceThresholdHr);
 
