@@ -275,6 +275,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.generic_headphones.GenericHe
 import nodomain.freeyourgadget.gadgetbridge.devices.generic_hr.GenericHeartRateCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.generic_scale.GenericWeightScaleCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.BlackviewR3MaxCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.ColmiP10Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.D3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.DotnP66DCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.GrvFc1Coordinator;
@@ -286,6 +287,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.QecnatoS10C
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.R1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.S52Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.SwissPeakCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.T70Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.Y66Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.Y6Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfitpro.watches.DM58Coordinator;
@@ -642,6 +644,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.H59Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.YawellR05Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.YawellR10Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.YawellR11Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.YawellY27Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.zendure.SolarFlowDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.zetime.ZeTimeCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.gatt_client.BleGattClientCoordinator;
@@ -1177,6 +1180,7 @@ public enum DeviceType {
     D3(D3Coordinator.class),
     Y6(Y6Coordinator.class),
     Y66(Y66Coordinator.class),
+    T70(T70Coordinator.class),
     DM58(DM58Coordinator.class),
     REALME_BUDS_T110(RealmeBudsT110Coordinator.class),
     REALME_BUDS_T100(RealmeBudsT100Coordinator.class),
@@ -1197,6 +1201,7 @@ public enum DeviceType {
     YAWELL_R05(YawellR05Coordinator.class),
     YAWELL_R10(YawellR10Coordinator.class),
     YAWELL_R11(YawellR11Coordinator.class),
+    YAWELL_Y27(YawellY27Coordinator.class),
     COLMI_R02(ColmiR02Coordinator.class),
     COLMI_R03(ColmiR03Coordinator.class),
     COLMI_R06(ColmiR06Coordinator.class),
@@ -1207,6 +1212,7 @@ public enum DeviceType {
     H59(H59Coordinator.class),
     COLMI_I28_ULTRA(ColmiI28UltraCoordinator.class),
     COLMI_I31(ColmiI31Coordinator.class),
+    COLMI_P10(ColmiP10Coordinator.class),
     COLMI_P76(ColmiP76Coordinator.class),
     COLMI_P80(ColmiP80Coordinator.class),
     COLMI_P81(ColmiP81Coordinator.class),
