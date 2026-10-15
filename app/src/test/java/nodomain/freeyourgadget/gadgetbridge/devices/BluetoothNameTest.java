@@ -51,11 +51,13 @@ public class BluetoothNameTest extends TestBase {
             put("P8", DeviceType.WASPOS); // from wasp-os source
             put("P8DFU", DeviceType.WASPOS); // from wasp-os source
             put("P80", DeviceType.COLMI_P80);
+            put("P10(ID-3B00)", DeviceType.COLMI_P10); // #2892
             put("P81c", DeviceType.COLMI_P81); // #6822
             put("i31", DeviceType.COLMI_I31);
             put("L 70", DeviceType.L70);
             put("V73", DeviceType.COLMI_V73); // #5715
             put("R05_9805", DeviceType.YAWELL_R05); // #3896
+            put("Y27_8B07", DeviceType.YAWELL_Y27); // #7049
             put("H59MAX_8502", DeviceType.H59); // #6906
             put("Swiss Peak-BA93", DeviceType.GLORYFIT_SWISS_PEAK); //#6626
             put("FC1(ID-8309)", DeviceType.GRV_FC1); //#6531
@@ -68,6 +70,8 @@ public class BluetoothNameTest extends TestBase {
             put("HAYLOU Watch 2 Pro", DeviceType.HAYLOU_WATCH_2_PRO);
             put("Y6(ID-28A8)", DeviceType.Y6); // #3949
             put("Y66(ID-AB01)", DeviceType.Y66);
+            put("T70(ID-AB01)", DeviceType.T70); // #7070
+            put("T70 (ID-AB01)", DeviceType.T70); // #7070
             put("D3(ID-417F)", DeviceType.D3);
             put("R3Max(ID-FC45)", DeviceType.BLACKVIEW_R3MAX); // matrix
             put("S10", DeviceType.QECNATO_S10);
