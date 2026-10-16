@@ -388,7 +388,7 @@ message ValueTimeOfDay {
 message ValueDuration {
   optional uint32 seconds = 1;
   optional Label formatted = 2;
-  optional Label titel = 3;
+  optional Label title = 3;
 }
 
 message ValueFloat {
@@ -503,7 +503,7 @@ message ChangeNotification {
 }
 
 message MenuMessage {
-  optional Label titel = 1;
+  optional Label title = 1;
   optional Label message = 2;
   optional Label yes = 3;
   optional Label no = 4;
@@ -640,7 +640,7 @@ enum RowType {
     ROW_PREFERRED_ACTIVITY_TRACKER = 11;
     ROW_ALERT_VOLUME = 12;
     ROW_HELP_AND_INFO = 13;
-    ROW_SORTABLE_AND_DELETEABLE = 15;
+    ROW_SORTABLE_AND_DELETABLE = 15;
     ROW_TEXT = 16;
     ROW_ICON = 17;
     ROW_SINGLE_ACTION = 18;

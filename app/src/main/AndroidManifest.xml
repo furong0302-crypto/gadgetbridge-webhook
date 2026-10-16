@@ -366,7 +366,8 @@
         <activity
             android:name=".activities.AppBlacklistActivity"
             android:label="@string/title_activity_notification_management"
-            android:parentActivityName=".activities.SettingsActivity" />
+            android:parentActivityName=".activities.SettingsActivity"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activities.CalendarSelectionActivity"
             android:label="@string/pref_title_calendar_sync_choose"

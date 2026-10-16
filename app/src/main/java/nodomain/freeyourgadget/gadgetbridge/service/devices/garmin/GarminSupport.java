@@ -2038,7 +2038,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
                         LOG.info("Saving {} bytes to {}", inflated.length, outputFile.getAbsolutePath());
                         final File parentFile = outputFile.getParentFile();
                         parentFile.mkdirs();
-                        // overwrite the file even if it exists - meta data of non-FIT files not always available
+                        // overwrite the file even if it exists - metadata of non-FIT files not always available
                         // potentially resulting in the same name for a newer file
                         FileUtils.writeToFile(inflated, outputFile);
                         if (fileDate != null) {

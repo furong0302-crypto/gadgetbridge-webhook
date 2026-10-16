@@ -71,6 +71,10 @@ public class DeviceActionHandler {
             case ACTION_NOTIFICATION: {
                 final NotificationSpec notificationSpec = intentCopy.getParcelableExtra(EXTRA_NOTIFICATION_SPEC);
                 if (notificationSpec != null) {
+                if (notificationSpec.getType() == NotificationType.GENERIC_SMS && notificationSpec.getPhoneNumber() != null) {
+                    GBApplication.getIDSenderLookup().add(notificationSpec.getId(), notificationSpec.getPhoneNumber());
+                }
+
                 //TODO: check if at least one of the attached actions is a reply action instead?
                 if ((notificationSpec.getAttachedActions() != null && !notificationSpec.getAttachedActions().isEmpty())
                         || (notificationSpec.getType() == NotificationType.GENERIC_SMS && notificationSpec.getPhoneNumber() != null)) {

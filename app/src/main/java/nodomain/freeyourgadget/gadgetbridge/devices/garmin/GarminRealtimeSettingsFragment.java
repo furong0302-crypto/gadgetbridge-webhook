@@ -597,7 +597,7 @@ public class GarminRealtimeSettingsFragment extends AbstractPreferenceFragment {
                         pref.setVisible(debug);
                         pref.setEnabled(false);
                         break;
-                    case ROW_SORTABLE_AND_DELETEABLE: // sortable + delete
+                    case ROW_SORTABLE_AND_DELETABLE: // sortable + delete
                         // Add all sortable items and then continue
                         for (int i = 0; i < entry.getSortOptions().getEntriesCount(); i++) {
                             final SortEntry sortEntry = entry.getSortOptions().getEntries(i);

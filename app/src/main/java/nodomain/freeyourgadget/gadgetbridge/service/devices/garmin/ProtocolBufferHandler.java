@@ -355,7 +355,7 @@ public class ProtocolBufferHandler implements MessageHandler {
                 final int endDateSeconds;
 
                 if (mEvt.isAllDay()) {
-                    // For all-day events, garmin expects the start and end date to match the midnight boundaries
+                    // For all-day events, Garmin expects the start and end date to match the midnight boundaries
                     // in the user's timezone. However, the calendar event will have them in the UTC timezone,
                     // so we need to convert it
                     startDateSeconds = (int) (DateTimeUtils.utcDateTimeToLocal(mEvt.getBegin()) / 1000);

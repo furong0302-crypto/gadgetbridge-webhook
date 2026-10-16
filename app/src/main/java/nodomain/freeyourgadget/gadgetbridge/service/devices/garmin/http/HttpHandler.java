@@ -334,7 +334,7 @@ public class HttpHandler {
                 try (final InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(response.getBody()))) {
                     jsonElement = JsonParser.parseReader(reader);
                 } catch (IOException e) {
-                    LOG.error("Failed to decode body as json", e);
+                    LOG.error("Failed to decode body as JSON", e);
                     return GdiHttpService.HttpService.WebResponse.newBuilder()
                             .setStatus(GdiHttpService.HttpService.Status.DATA_TRANSFER_ITEM_FAILURE)
                             .setHttpStatus(0)
@@ -363,7 +363,7 @@ public class HttpHandler {
 
             return builder.build();
         } catch (final GarminJsonException e) {
-            LOG.error("Garmin json error (?)", e);
+            LOG.error("Garmin JSON error (?)", e);
             return null;
         }
     }

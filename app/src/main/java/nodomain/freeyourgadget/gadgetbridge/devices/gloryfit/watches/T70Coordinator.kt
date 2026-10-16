@@ -31,7 +31,7 @@ class T70Coordinator : GloryFitCoordinator() {
     }
 
     override fun getDeviceNameResource(): Int {
-        return R.string.devicetype_y66
+        return R.string.devicetype_t70
     }
 
     override fun getAlarmSlotCount(device: GBDevice): Int {

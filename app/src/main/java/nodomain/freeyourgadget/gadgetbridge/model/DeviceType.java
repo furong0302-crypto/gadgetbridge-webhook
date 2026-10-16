@@ -293,6 +293,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.Y6Coordinat
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfitpro.watches.DM58Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gree.GreeAcCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hama.fit6900.HamaFit6900DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatch6.HuaweiWatch6Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatch6.HuaweiWatch6ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt7.HuaweiWatchGT7Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt7.HuaweiWatchGT7ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.C20ProCoordinator;
@@ -598,6 +600,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.WearFitCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand11Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand4CCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand7ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand8ActiveCoordinator;
@@ -708,6 +711,7 @@ public enum DeviceType {
     MIBAND9PRO(MiBand9ProCoordinator.class),
     MIBAND10(MiBand10Coordinator.class),
     MIBAND10PRO(MiBand10ProCoordinator.class),
+    MIBAND11(MiBand11Coordinator.class),
     MIWATCHLITE(MiWatchLiteCoordinator.class),
     MIWATCHCOLORSPORT(MiWatchColorSportCoordinator.class),
     REDMIBUDS3PRO(RedmiBuds3ProCoordinator.class),
@@ -1153,6 +1157,8 @@ public enum DeviceType {
     HUAWEIWATCH3(HuaweiWatch3Coordinator.class),
     HUAWEIWATCH4PRO(HuaweiWatch4ProCoordinator.class),
     HUAWEIWATCH5(HuaweiWatch5Coordinator.class),
+    HUAWEIWATCH6(HuaweiWatch6Coordinator.class),
+    HUAWEIWATCH6PRO(HuaweiWatch6ProCoordinator.class),
     HUAWEI_FREEARC(HuaweiFreearcCoordinator.class),
     HUAWEI_FREECLIP2(HuaweiFreeClip2Coordinator.class),
     HUAWEI_FREEBUDS5I(HuaweiFreebuds5iCoordinator.class),

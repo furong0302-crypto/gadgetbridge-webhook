@@ -149,7 +149,7 @@ public class CommunicatorV2 implements ICommunicator {
             return;
         final Integer gfdiHandle = handleByService.get(Service.GFDI);
         if (gfdiHandle == null) {
-            LOG.error("CANNOT SENT GFDI MESSAGE, HANDLE NOT YET SET. MESSAGE {}", message);
+            LOG.error("CANNOT SEND GFDI MESSAGE, HANDLE NOT YET SET. MESSAGE {}", message);
             return;
         }
         final byte[] payload = CobsCoDec.encode(message);

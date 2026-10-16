@@ -4325,6 +4325,8 @@
         <item>@string/hungarian</item>
         <item>@string/armenian</item>
         <item>@string/italian</item>
+        <item>@string/khmer</item>
+        <item>@string/thai</item>
     </string-array>
 
     <string-array name="pref_transliteration_languages_values">
@@ -4354,6 +4356,8 @@
         <item>hungarian</item>
         <item>armenian</item>
         <item>italian</item>
+        <item>khmer</item>
+        <item>thai</item>
     </string-array>
 
     <string-array name="pref_transliteration_languages_default">

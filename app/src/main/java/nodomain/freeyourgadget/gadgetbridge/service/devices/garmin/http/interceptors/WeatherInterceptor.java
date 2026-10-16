@@ -208,7 +208,7 @@ public class WeatherInterceptor implements HttpInterceptor {
 
     @GsonSerialized
     public static class WeatherForecastDay {
-        public int dayOfWeek; // v2: 1 monday .. 7 sunday, v1: 1 sunday
+        public int dayOfWeek; // v2: 1 Monday .. 7 Sunday, v1: 1 Sunday
         public String description;
         public String summary;
         public WeatherValue high;
@@ -346,8 +346,8 @@ public class WeatherInterceptor implements HttpInterceptor {
     public static class WeatherAltimeterCalibration {
         public UncertainValue temperature; // Celsius - 11.89999... / 100
         public UncertainValue pressure; // Pa - 101494.79xxx... / 100
-        public Long forecastTime; // unix epoch seconds
-        public Long forecastIssueTime; // unix epoch seconds
+        public Long forecastTime; // Unix epoch seconds
+        public Long forecastIssueTime; // Unix epoch seconds
     }
 
     @GsonSerialized

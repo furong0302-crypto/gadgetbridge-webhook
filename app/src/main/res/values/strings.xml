@@ -1457,6 +1457,7 @@
     <string name="serbian">Serbian</string>
     <string name="ukranian">Ukrainian</string>
     <string name="armenian">Armenian</string>
+    <string name="khmer">Khmer</string>
     <string name="italian">Italian</string>
     <string name="french">French</string>
     <string name="french_ca">French (Canada)</string>
@@ -2118,6 +2119,7 @@
     <string name="devicetype_miband9pro" translatable="false">Xiaomi Smart Band 9 Pro</string>
     <string name="devicetype_miband10" translatable="false">Xiaomi Smart Band 10</string>
     <string name="devicetype_miband10pro" translatable="false">Xiaomi Smart Band 10 Pro</string>
+    <string name="devicetype_miband11" translatable="false">Xiaomi Smart Band 11</string>
     <string name="devicetype_amazfit_balance" translatable="false">Amazfit Balance</string>
     <string name="devicetype_amazfit_balance_2" translatable="false">Amazfit Balance 2</string>
     <string name="devicetype_amazfit_balance_2_xt" translatable="false">Amazfit Balance 2 XT</string>
@@ -2519,6 +2521,8 @@
     <string name="devicetype_huawei_watch3" translatable="false">Huawei Watch 3 (Pro)</string>
     <string name="devicetype_huawei_watch4pro" translatable="false">Huawei Watch 4 (Pro)</string>
     <string name="devicetype_huawei_watch5" translatable="false">Huawei Watch 5</string>
+    <string name="devicetype_huawei_watch6" translatable="false">Huawei Watch 6</string>
+    <string name="devicetype_huawei_watch6pro" translatable="false">Huawei Watch 6 Pro</string>
     <string name="devicetype_huawei_freearc" translatable="false">Huawei FreeArc</string>
     <string name="devicetype_huawei_freeclip_2" translatable="false">Huawei FreeClip 2</string>
     <string name="devicetype_huawei_freebuds_5i" translatable="false">Huawei FreeBuds 5i</string>
@@ -5643,9 +5647,11 @@
     </plurals>
     <string name="activity_send_waypoint_name_missing">name is empty</string>
     <string name="activity_send_waypoint_paste">Paste</string>
+    <string name="activity_send_waypoint_paste_hint">Paste or share coordinates, a geo: link or a Plus Code (8FVC9G8F+6X).</string>
     <string name="activity_send_waypoint_titel">Send Waypoint</string>
     <string name="activity_send_waypoint_no_location">No Location</string>
     <string name="activity_send_waypoint_no_location_details">No location information found in the received data.</string>
+    <string name="activity_send_waypoint_short_plus_code_details">A short Plus Code needs a nearby position to find its place. Set your location in the Gadgetbridge settings, or use the full code (for example 8FVC9G8F+6X instead of 9G8F+6X).</string>
     <string name="activity_send_waypoint_to_device">Send</string>
 
     <!-- Export Health Connect preferences -->

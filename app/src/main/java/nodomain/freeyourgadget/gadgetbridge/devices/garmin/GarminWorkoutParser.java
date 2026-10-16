@@ -1276,7 +1276,7 @@ public class GarminWorkoutParser implements ActivitySummaryParser {
         if (garminSport.isPresent()) {
             return garminSport.get().getActivityKind();
         } else {
-            LOG.warn("Unknown garmin sport {}/{}", sport, subsport);
+            LOG.warn("Unknown Garmin sport {}/{}", sport, subsport);
 
             final Optional<GarminSport> optGarminSportFallback = GarminSport.fromCodes(sport, 0);
             if (!optGarminSportFallback.isEmpty()) {

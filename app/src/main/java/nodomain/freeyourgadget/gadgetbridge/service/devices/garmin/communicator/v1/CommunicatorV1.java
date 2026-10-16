@@ -19,7 +19,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.communicator.
 public class CommunicatorV1 implements ICommunicator {
     private static final Logger LOG = LoggerFactory.getLogger(CommunicatorV1.class);
 
-    // Seen in Vivovit / Forerunner 620
+    // Seen in Vivofit / Forerunner 620
     public static final UUID UUID_SERVICE_GARMIN_GFDI_V0 = UUID.fromString("9B012401-BC30-CE9A-E111-0F67E491ABDE");
     public static final UUID UUID_CHARACTERISTIC_GARMIN_GFDI_V0_SEND = UUID.fromString("DF334C80-E6A7-D082-274D-78FC66F85E16");
     public static final UUID UUID_CHARACTERISTIC_GARMIN_GFDI_V0_RECEIVE = UUID.fromString("4ACBCD28-7425-868E-F447-915C8F00D0CB");

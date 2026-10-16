@@ -82,7 +82,7 @@ class AppConfigHandler(private val deviceSupport: GarminSupport) {
             val value = jsonElement.get(key)
             if (value !is JsonPrimitive) {
                 LOG.error(
-                    "App setting value for {} is not a json primitive: {}",
+                    "App setting value for {} is not a JSON primitive: {}",
                     key,
                     value.javaClass
                 )
@@ -147,7 +147,7 @@ class AppConfigHandler(private val deviceSupport: GarminSupport) {
         try {
             configsBytes = GarminJson.encode(jsonObject)
         } catch (e: GarminJsonException) {
-            LOG.error("Failed to encode configs to garmin json", e)
+            LOG.error("Failed to encode configs to Garmin JSON", e)
             deviceSupport.evaluateGBDeviceEvent(GBDeviceEventAppConfig(uuid, GBDeviceEventAppConfig.Event.APP_CONFIG_SET_FAILED))
             return null
         }

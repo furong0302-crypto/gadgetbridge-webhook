@@ -81,6 +81,12 @@
             android:title="picturePath - Include picture"
             app:iconSpaceReserved="false" />
 
+        <Preference
+            android:dependency="pref_debug_notifications_picturePath_bool"
+            android:key="pref_debug_notifications_picture_select"
+            android:title="picturePath - Select picture"
+            app:iconSpaceReserved="false" />
+
         <EditTextPreference
             android:key="pref_debug_notifications_phoneNumber"
             android:title="phoneNumber"

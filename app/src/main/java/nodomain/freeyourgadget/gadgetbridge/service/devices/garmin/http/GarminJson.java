@@ -134,7 +134,7 @@ public class GarminJson {
                     }
                     writeUint32BE(out, offset);
                 } else {
-                    throw new GarminJsonException("Unexpected json primitive: " + jsonPrimitive.getClass().getName());
+                    throw new GarminJsonException("Unexpected JSON primitive: " + jsonPrimitive.getClass().getName());
                 }
             } else if (obj instanceof String str) {
                 out.write(TYPE_STRING);

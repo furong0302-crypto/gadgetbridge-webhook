@@ -96,7 +96,7 @@ public class GarminActivitySampleProvider extends AbstractSampleProvider<GarminA
     @Override
     protected List<GarminActivitySample> getGBActivitySamples(final int timestamp_from, final int timestamp_to) {
         LOG.trace(
-                "Getting garmin activity samples between {} and {}",
+                "Getting Garmin activity samples between {} and {}",
                 timestamp_from,
                 timestamp_to
         );
