@@ -78,7 +78,7 @@ message HttpService {
     optional bool useDataXfer = 6;
     optional bytes rawBody = 7;
     repeated MultiPartForm multiPartForms = 8;
-    optional uint32 conenctionTimeout = 9;
+    optional uint32 connectionTimeout = 9;
     optional uint32 readTimeout = 10;
   }
 
