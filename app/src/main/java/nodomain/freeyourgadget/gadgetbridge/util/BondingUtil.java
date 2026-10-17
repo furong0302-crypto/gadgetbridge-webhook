@@ -279,7 +279,7 @@ public class BondingUtil {
             }
 
             // Theoretically we shouldn't be doing this
-            // because this function shouldn't've been called
+            // because this function shouldn't have been called
             // with an already bonded device
             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                 LOG.warn("For some reason the device is already bonded, but let's try first connect");

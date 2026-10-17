@@ -1518,6 +1518,9 @@
     <string name="weeksleepchart_sleep_a_week_or_month">Sleep per week/month</string>
     <string name="pref_title_chart_sleep_rolling_24_hour">Sleep range</string>
     <string name="pref_summary_chart_sleep_range">Determines which day a sleep session is assigned to</string>
+    <string name="pref_title_chart_sleep_day_chart">Sleep chart</string>
+    <string name="pref_chart_sleep_day_chart_hypnogram">Hypnogram</string>
+    <string name="pref_chart_sleep_day_chart_legacy">Legacy hypnogram</string>
     <string name="pref_chart_sleep_range_rolling_24h">Rolling 24 hours</string>
     <string name="pref_chart_sleep_range_noon">Noon (12:00)</string>
     <string name="pref_chart_sleep_range_18h">Evening (18:00)</string>
@@ -5794,7 +5797,6 @@
     <string name="endurain_uploading_started">Uploading to Endurain…</string>
     <string name="endurain_successfully_uploaded_toast">Successfully uploaded to Endurain</string>
     <string name="endurain_error_while_uploading_toast">Error while uploading to Endurain</string>
-    <string name="endurain_unable_to_upload_gpx_file_toast">Unable to upload activity file to Endurain: %1$s</string>
     <string name="endurain_setup_title">Endurain setup</string>
     <string name="endurain_setup_server">Endurain server</string>
     <string name="endurain_setup_login_type_local">Local</string>
@@ -5837,6 +5839,9 @@
     <string name="workout_upload_status_disabled">Auto-upload off</string>
     <string name="workout_upload_status_remote_id">Activity %1$s</string>
     <string name="workout_upload_status_open">View activity</string>
+    <string name="workout_upload_toast_already_uploaded">%1$s already has this workout</string>
+    <string name="workout_upload_toast_updated">Updated the activity on %1$s</string>
+    <string name="workout_upload_toast_no_payload">Could not build the file to upload to %1$s</string>
     <string name="pref_endurain_replace_on_track_change_title">Replace workouts when the track changes</string>
     <string name="pref_endurain_replace_on_track_change_summary">Changing the track of an uploaded workout means deleting the activity and uploading it again, so it gets a new address. Activities you edited on Endurain are left untouched.</string>
 

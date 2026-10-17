@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.activities.endurain
+package nodomain.freeyourgadget.gadgetbridge.externalservices.wanderer
 
 import androidx.core.net.toUri
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
@@ -170,6 +170,31 @@ class WandererApiClient(
                 callback(false, e.localizedMessage)
             }
         }.start()
+    }
+
+    /**
+     * Whether the trail [trailId] still exists: true or false, or null when the request failed.
+     * Blocking. Wanderer answers 404 both for a deleted trail and for one this account cannot
+     * see, which for a trail it uploaded itself means the same thing.
+     */
+    fun trailExists(trailId: String): Boolean? {
+        return try {
+            val response = InternetUtils.doStringRequestWithStatus(
+                uri = "$baseUrl/api/v1/trail/$trailId".toUri(),
+                requestHeaders = buildHeaders()
+            )
+            when (response.statusCode) {
+                in 200..299 -> true
+                404 -> false
+                else -> {
+                    LOG.warn("Looking up trail {} failed (status {})", trailId, response.statusCode)
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            LOG.error("Error looking up trail {}", trailId, e)
+            null
+        }
     }
 
     /**

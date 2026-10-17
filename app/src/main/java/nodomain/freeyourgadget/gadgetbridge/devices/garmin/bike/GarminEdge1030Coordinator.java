@@ -24,9 +24,4 @@ public class GarminEdge1030Coordinator extends GarminBikeComputerCoordinator {
     public int getDeviceNameResource() {
         return R.string.devicetype_garmin_edge_1030;
     }
-
-    @Override
-    public boolean supportsMusicInfo(@NonNull final GBDevice device) {
-        return false;
-    }
 }

@@ -105,6 +105,9 @@ public final class MapsManager {
         tileRendererLayer.setXmlRenderTheme(mapDataLoader.resolveTheme());
         // Do not add the tile renderer layer before setting the bounding box in setTrack,
         // otherwise we load the entire map to memory and might crash with OOM
+        if (tileRenderedAdded) {
+            mapView.getLayerManager().getLayers().add(0, tileRendererLayer);
+        }
     }
 
     public boolean isMapLoaded() {

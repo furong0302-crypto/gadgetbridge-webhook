@@ -59,6 +59,7 @@ class GbChartView @JvmOverloads constructor(
     private val tooltip = ChartTooltipPainter(context, theme)
     private val accessibility = ChartSlotAccessibilityHelper(this)
     private val pointPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val stagesRenderer = StagesRenderer()
     private val gestures = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent) = true
 
@@ -109,7 +110,9 @@ class GbChartView @JvmOverloads constructor(
         private set
 
     init {
-        renderer = RoundedCandleRenderer.Combined(this, animator, viewPortHandler)
+        renderer = RoundedCandleRenderer.Combined(this, animator, viewPortHandler).apply {
+            drawBehindData = { canvas -> drawStages(canvas) }
+        }
         isClipDataToContentEnabled = false
         rendererXAxis = xAxisLabels
         description.isEnabled = false
@@ -413,6 +416,14 @@ class GbChartView @JvmOverloads constructor(
         if (spec == null || data == null) return
         drawSelectedPoints(canvas, spec, selected)
         selection?.let { drawTooltip(canvas, it, selected) }
+    }
+
+    private fun drawStages(canvas: Canvas) {
+        val spec = spec ?: return
+        for (series in spec.series.filter { it.style is SeriesStyle.Stages }) {
+            val trans = getTransformer(if (series.axis == AxisSide.END) AxisDependency.RIGHT else AxisDependency.LEFT)
+            stagesRenderer.draw(canvas, series, xOrigin, trans, viewPortHandler)
+        }
     }
 
     private fun timeLabelsFor(spec: AxisSpec): List<Double>? {

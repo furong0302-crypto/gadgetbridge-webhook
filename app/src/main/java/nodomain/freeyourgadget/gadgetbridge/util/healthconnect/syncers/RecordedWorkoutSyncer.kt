@@ -470,7 +470,7 @@ internal object RecordedWorkoutSyncer {
 
             if (droppedOutOfWindow > 0 || droppedInvalidCoords > 0 || droppedDuplicateTime > 0) {
                 LOG.info(
-                    "[HC_SYNC] GPS route sanitisation for device '{}': dropped {} out-of-window, {} invalid coords, {} duplicate timestamps; kept {}.",
+                    "[HC_SYNC] GPS route sanitization for device '{}': dropped {} out-of-window, {} invalid coords, {} duplicate timestamps; kept {}.",
                     deviceName, droppedOutOfWindow, droppedInvalidCoords, droppedDuplicateTime, locations.size
                 )
             }

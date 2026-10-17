@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.protobuf.ByteString;
@@ -91,6 +92,7 @@ import nodomain.freeyourgadget.gadgetbridge.proto.igpsport.Common;
 import nodomain.freeyourgadget.gadgetbridge.proto.igpsport.Factory;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.MediaManager;
+import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 
 public class IGPSportDeviceSupport extends AbstractBTLESingleDeviceSupport {
@@ -530,7 +532,14 @@ public class IGPSportDeviceSupport extends AbstractBTLESingleDeviceSupport {
     public void onNotification(NotificationSpec notificationSpec) {
         LOG.debug("iGPSport notification: " + notificationSpec.getType());
         TransactionBuilder builder = createTransactionBuilder("notification");
+        Ins.ins_msg insMsg = buildNotificationMessage(notificationSpec);
+        byte[] callData = craftData(insMsg.getServiceType().getNumber(), insMsg.getInsServiceType().getNumber(), insMsg.getInsOperateType().getNumber(), insMsg.toByteArray());
+        builder.write(writeCharacteristic, callData);
+        builder.queue();
+    }
 
+    @VisibleForTesting
+    static Ins.ins_msg buildNotificationMessage(NotificationSpec notificationSpec) {
         Ins.ins_msg.Builder insMsgBuilder = Ins.ins_msg.newBuilder();
         insMsgBuilder.setServiceType(Common.service_type_index.enum_SERVICE_TYPE_INDEX_INS);
         insMsgBuilder.setInsServiceType(Ins.INS_SERVICE_TYPE.enum_INS_SERVICE_TYPE_NOTE);
@@ -545,16 +554,12 @@ public class IGPSportDeviceSupport extends AbstractBTLESingleDeviceSupport {
 
         if (notificationSpec.getPhoneNumber() != null)
             insDataMsgBuilder.setTelNum(ByteString.copyFromUtf8(notificationSpec.getPhoneNumber()));
-        if (notificationSpec.getTitle() != null)
-            insDataMsgBuilder.setName(notificationSpec.getTitle());
-        if (notificationSpec.getBody() != null)
-            insDataMsgBuilder.setContent(notificationSpec.getBody());
+        insDataMsgBuilder.setName(StringUtils.ensureNotNull(notificationSpec.getTitle()));
+        insDataMsgBuilder.setContent(StringUtils.ensureNotNull(notificationSpec.getBody()));
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
         insDataMsgBuilder.setTime(timeStamp);
         insMsgBuilder.setInsDataMsg(insDataMsgBuilder);
-        byte[] callData = craftData(insMsgBuilder.getServiceType().getNumber(), insMsgBuilder.getInsServiceType().getNumber(), insMsgBuilder.getInsOperateType().getNumber(), insMsgBuilder.build().toByteArray());
-        builder.write(writeCharacteristic, callData);
-        builder.queue();
+        return insMsgBuilder.build();
     }
 
     @Override
