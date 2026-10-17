@@ -55,12 +55,12 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
     private static final Logger LOG = LoggerFactory.getLogger(HuaweiSampleProvider.class);
 
     /*
-     * We save all data by saving a marker at the begin and end. We do not actively use these for
+     * We save all data by saving a marker at the beginning and end. We do not actively use these for
      * showing the data at the moment, but the samples are still saved as such, to keep the table
      * entries consistent.
      * Meaning of fields that are not self-explanatory:
      *  - `otherTimestamp`
-     *    The timestamp of the other marker, if it's larger this is the begin, otherwise the end
+     *    The timestamp of the other marker, if it's larger this is the beginning, otherwise the end
      *  - `source`
      *    The source of the data, which Huawei Band message the data came from
      *    0x0d for sleep data from activity, 0x0a for TruSleep data

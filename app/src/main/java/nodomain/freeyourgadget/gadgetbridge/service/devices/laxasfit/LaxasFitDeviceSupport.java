@@ -659,7 +659,7 @@ public class LaxasFitDeviceSupport extends AbstractBTLESingleDeviceSupport {
                 languageCode = LaxasFitConstants.LANG.GERMAN;
                 break;
             case "pt":
-                languageCode = LaxasFitConstants.LANG.PORTUGESE;
+                languageCode = LaxasFitConstants.LANG.PORTUGUESE;
                 break;
 
             default:

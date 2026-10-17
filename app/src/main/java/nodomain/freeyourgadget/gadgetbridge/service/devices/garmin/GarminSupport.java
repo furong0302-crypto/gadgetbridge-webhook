@@ -1317,6 +1317,11 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
 
     @Override
     public void onFindDevice(boolean start) {
+        if (!getCoordinator().supportsFindDevice(gbDevice)){
+            LOG.warn("onFindDevice: supportsFindDevice=false");
+            return;
+        }
+
         final GdiFindMyWatch.FindMyWatchService.Builder a = GdiFindMyWatch.FindMyWatchService.newBuilder();
         if (start) {
             a.setFindRequest(
@@ -1585,6 +1590,11 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
     }
 
     private void sendMusicState(final MusicStateSpec stateSpec, final int progress) {
+        if (!getCoordinator().supportsMusicInfo(getDevice())) {
+            LOG.warn("sendMusicState: supportsMusicInfo=false");
+            return;
+        }
+
         final int playing;
         final float playRate;
         if (stateSpec.getState() == MusicStateSpec.STATE_PLAYING) {

@@ -248,7 +248,7 @@ public class XiaomiSettingsCustomizer implements DeviceSpecificSettingsCustomize
         }
 
         try {
-            // Some files may have been wrongly written, see javadoc for fixAndWrap
+            // Some files may have been wrongly written, see Javadoc for fixAndWrap
             final byte[] fixedData = XiaomiActivityParser.fixAndWrap(data).array();
             if (activityParser.parse(context, device, fileId, fixedData)) {
                 LOG.info("Successfully parsed {}", fileId);

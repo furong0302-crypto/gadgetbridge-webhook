@@ -235,7 +235,7 @@ public class XiaomiSampleProvider extends AbstractSampleProvider<XiaomiActivityS
         }
 
 
-        // Find last sleep sample before the requested range, as the recorded wake up time may be
+        // Find last sleep sample before the requested range, as the recorded wake-up time may be
         // in the current range
         final XiaomiSleepTimeSample lastSleepTimesBeforeRange = sleepTimeSampleProvider.getLastSampleBefore(timestamp_from * 1000L);
 
