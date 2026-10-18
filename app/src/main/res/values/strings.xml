@@ -286,7 +286,9 @@
     <string name="map_theme_motorider">Motorider</string>
     <string name="map_theme_biker">Biker</string>
     <string name="map_theme_indigo">Indigo</string>
+    <string name="map_theme_dark_low_contrast">Dark (low contrast)</string>
     <string name="map_theme_custom">Custom…</string>
+    <string name="map_theme_dark_title">Theme in dark mode</string>
     <string name="map_theme_custom_file_title">Custom theme file</string>
     <string name="map_theme_custom_file_summary">Zip archive with the render theme and its icons, used when the theme above is set to Custom</string>
     <string name="map_theme_custom_file_invalid">Not a valid mapsforge render theme: %1$s</string>
@@ -4552,6 +4554,8 @@
     <string name="loyalty_cards_sync_starred">Sync only starred cards</string>
     <string name="loyalty_cards_sync_title">Sync Loyalty Cards</string>
     <string name="loyalty_cards_sync_summary">Tap to sync the cards to the watch</string>
+    <string name="loyalty_cards_sync_watch_request_title">Sync automatically</string>
+    <string name="loyalty_cards_sync_watch_request_summary">Allow the watch to sync the latest cards automatically</string>
     <string name="loyalty_cards_sync_options">Sync Options</string>
     <string name="loyalty_cards_sync">Sync</string>
     <string name="loyalty_cards_catima">Catima</string>

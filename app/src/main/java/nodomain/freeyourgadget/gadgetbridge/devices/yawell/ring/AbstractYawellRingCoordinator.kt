@@ -31,6 +31,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.ColmiStressSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.ColmiTemperatureSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.ComputedHrvSummarySampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
+import nodomain.freeyourgadget.gadgetbridge.devices.SleepSessionProvider
+import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.samples.ColmiSleepSessionProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.yawell.ring.samples.ColmiActivitySampleProvider
@@ -146,6 +148,10 @@ abstract class AbstractYawellRingCoordinator : AbstractBLEDeviceCoordinator() {
 
     open fun hasDisplay(): Boolean {
         return false
+    }
+
+    override fun getSleepSessionProvider(device: GBDevice, session: DaoSession): SleepSessionProvider {
+        return ColmiSleepSessionProvider(device, session)
     }
 
     override fun getSampleProvider(

@@ -10,9 +10,29 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartValueFor
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LimitLineSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.LineCurve
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.SeriesStyle
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
+import nodomain.freeyourgadget.gadgetbridge.model.SleepSession
 
 object SleepStagesChartData {
     private const val MAX_INTENSITY = 1.0
+
+    data class SessionSamples(val seconds: LongArray, val stages: IntArray)
+
+    /** Stage boundaries from the shared sessions, including gaps between separate sessions. */
+    @JvmStatic
+    fun sessionSamples(
+        sessions: List<SleepSession>,
+        stageIndex: (ActivityKind) -> Int,
+        gapIndex: Int,
+    ): SessionSamples {
+        val points = sortedMapOf<Long, Int>()
+        for (stage in sessions.flatMap { it.stages }.sortedBy { it.startTime }) {
+            if (stage.endTime <= stage.startTime) continue
+            points[stage.startTime / 1000L] = stageIndex(stage.kind)
+            points[stage.endTime / 1000L] = gapIndex
+        }
+        return SessionSamples(points.keys.toLongArray(), points.values.toIntArray())
+    }
 
     /**
      * A line on the end axis over a sleep chart, e.g. heart rate or SpO2.

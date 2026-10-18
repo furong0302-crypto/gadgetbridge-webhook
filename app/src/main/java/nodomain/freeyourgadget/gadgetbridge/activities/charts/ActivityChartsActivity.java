@@ -76,7 +76,6 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBFragment;
-import nodomain.freeyourgadget.gadgetbridge.activities.charts.vico.AbstractVicoChartFragment;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -469,8 +468,8 @@ public class ActivityChartsActivity extends AbstractGBActivity implements Charts
             if (fragment instanceof AbstractChartFragment) {
                 return ((AbstractChartFragment<?>) fragment).getAvailableDataRange(getDevice(), db);
             }
-            if (fragment instanceof AbstractVicoChartFragment) {
-                return ((AbstractVicoChartFragment<?>) fragment).getAvailableDataRange(getDevice(), db);
+            if (fragment instanceof AbstractCoroutineChartFragment) {
+                return ((AbstractCoroutineChartFragment<?>) fragment).getAvailableDataRange(getDevice(), db);
             }
             if (fragment instanceof AbstractCollectionFragment) {
                 return findAvailableDataRange(fragment.getChildFragmentManager(), db);

@@ -37,6 +37,8 @@ public abstract class GFDIMessage {
             final GarminMessage garminMessage = GarminMessage.fromId(messageType);
             if (garminMessage == null) {
                 return new UnhandledMessage(messageType);
+            } else if (garminMessage.objectClass == null) {
+                return new UnhandledMessage(garminMessage);
             }
             final Method m = garminMessage.objectClass.getMethod("parseIncoming", MessageReader.class, GarminMessage.class);
             supportedType = true;
@@ -95,18 +97,25 @@ public abstract class GFDIMessage {
         UPLOAD_REQUEST(5003, UploadRequestMessage.class),
         FILE_TRANSFER_DATA(5004, FileTransferDataMessage.class),
         CREATE_FILE(5005, CreateFileMessage.class),
+        DELETE_FILE(5006, null),
         FILTER(5007, FilterMessage.class),
         SET_FILE_FLAG(5008, SetFileFlagsMessage.class),
         FILE_AVAILABLE(5009, FileAvailableMessage.class),
         FIT_DEFINITION(5011, FitDefinitionMessage.class),
         FIT_DATA(5012, FitDataMessage.class),
         WEATHER_REQUEST(5014, WeatherMessage.class),
-        GPS_EPHEMERIS_DATA_REQUEST(5019, GpsEphemerisDataRequest.class),
+        WEATHER_ALERT(5015, null),
+        LIVE_TRACK_TRACKING_REQUEST(5016, null),
+        EPHEMERIS_DATA_REQUEST(5019, null),
+        EPHEMERIS_DATA(5020, null),
+        CANCEL_FILE_TRANSFER(5022, null),
         BATTERY_STATUS(5023, BatteryStatusMessage.class),
         DEVICE_INFORMATION(5024, DeviceInformationMessage.class),
-        LIVE_TRACK_STOP(5025, LiveTrackStopMessage.class),
+        LIVE_TRACK_STOP_TRACKING(5025, null),
         DEVICE_SETTINGS(5026, SetDeviceSettingsMessage.class),
-        GPS_EPHEMERIS_EPO_REQUEST(5028, GpsEphemerisEpoRequest.class),
+        QUEUED_DOWNLOAD(5027, null),
+        EPHEMERIS_EPO_REQUEST(5028, null),
+        EPHEMERIS_EPO_DATA(5029, null),
         SYSTEM_EVENT(5030, SystemEventMessage.class),
         SUPPORTED_FILE_TYPES_REQUEST(5031, SupportedFileTypesMessage.class),
         NOTIFICATION_UPDATE(5033, NotificationUpdateMessage.class),
@@ -120,16 +129,33 @@ public abstract class GFDIMessage {
         MUSIC_CONTROL_CAPABILITIES(5042, MusicControlCapabilitiesMessage.class),
         PROTOBUF_REQUEST(5043, ProtobufMessage.class),
         PROTOBUF_RESPONSE(5044, ProtobufMessage.class),
-        LIVE_TRACK_AUTO_START(5046, LiveTrackAutoStartMessage.class),
-        LIVE_TRACK_AUTO_STOP(5047, LiveTrackAutoStopMessage.class),
+        CANCEL_PROTOBUF(5045, null),
+        LIVE_TRACK_AUTO_START(5046, null),
+        LIVE_TRACK_AUTO_START_CANCEL(5047, null),
+        LIVE_TRACK_AUTO_START_FAILURE(5048, null),
         MUSIC_CONTROL_ENTITY_UPDATE(5049, MusicControlEntityUpdateMessage.class),
         CONFIGURATION(5050, ConfigurationMessage.class),
         CURRENT_TIME_REQUEST(5052, CurrentTimeRequestMessage.class),
-        AUTH_NEGOTIATION(5101, AuthNegotiationMessage.class);
+        COMPRESSED_FILE_DATA(5054, null),
+        AUTH_NEGOTIATION(5101, AuthNegotiationMessage.class),
+        LTK_RECONNECT(5102,null),
+        STK_BEGIN_GENERATION(5103,null),
+        CONFIRM_NUMBER(5104,null),
+        STK_RANDOM_NUMBER(5105,null),
+        STK_GENERATION_STATUS(5106,null),
+        LTK_KEY_DISTRIBUTION(5107,null),
+        SESSION_SKD_DISTRIBUTION(5108,null),
+        SESSION_KEY_VERIFICATION(5109,null),
+        PASSKEY_REDISPLAY(5110,null),
+        SECURE_SESSION(5111,null),
+        OUT_OF_BAND_PASSKEY_DATA(5112,null),
+        ;
+
+        @Nullable
         private final Class<? extends GFDIMessage> objectClass;
         private final int id;
 
-        GarminMessage(int id, Class<? extends GFDIMessage> objectClass) {
+        GarminMessage(int id, @Nullable Class<? extends GFDIMessage> objectClass) {
             this.id = id;
             this.objectClass = objectClass;
         }

@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.activities.charts.vico
+package nodomain.freeyourgadget.gadgetbridge.activities.charts
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,22 +8,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.format.DateUtils
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import nodomain.freeyourgadget.gadgetbridge.R
+import kotlinx.coroutines.launch
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBFragment
-import nodomain.freeyourgadget.gadgetbridge.activities.charts.ChartDataRange
-import nodomain.freeyourgadget.gadgetbridge.activities.charts.ChartDataScope
-import nodomain.freeyourgadget.gadgetbridge.activities.charts.ChartsHost
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils
@@ -31,11 +21,10 @@ import org.slf4j.LoggerFactory
 import java.util.Date
 
 /**
- * Base class for chart fragments backed by vico, hosted in a [ComposeView].
- * Mirrors AbstractChartFragment.
+ * Base class for chart fragments with data loaded by a [ChartViewModel].
  */
-abstract class AbstractVicoChartFragment<T> : AbstractGBFragment() {
-    protected val viewModel: ChartViewModel<T> by viewModels()
+abstract class AbstractCoroutineChartFragment<T> : AbstractGBFragment() {
+    private val viewModel: ChartViewModel<T> by viewModels()
 
     private val loadingHandler = Handler(Looper.getMainLooper())
     private var chartDirty = true
@@ -88,15 +77,14 @@ abstract class AbstractVicoChartFragment<T> : AbstractGBFragment() {
     protected abstract suspend fun loadChart(scope: ChartDataScope, host: ChartsHost): T
 
     /**
-     * Whether a successfully loaded [data] should be shown as "no data" instead of [RenderChart].
+     * Renders a successfully loaded [data]. Called on the UI thread.
      */
-    protected open fun isEmpty(data: T): Boolean = false
+    protected abstract fun renderChart(data: T)
 
     /**
-     * Renders a successfully loaded, non-empty [data]. Called on the UI thread.
+     * Renders a failed load. Called on the UI thread.
      */
-    @Composable
-    protected abstract fun RenderChart(data: T)
+    protected abstract fun renderError()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,40 +100,24 @@ abstract class AbstractVicoChartFragment<T> : AbstractGBFragment() {
         LocalBroadcastManager.getInstance(requireActivity()).registerReceiver(receiver, filter)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = ComposeView(requireContext()).also(::bindChartComposeView)
-
-    /**
-     * Renders this fragment's chart state into [composeView]: the default [onCreateView] calls
-     * this on the [ComposeView] it creates; a fragment with its own layout should call this (from
-     * `onCreateView`, after inflating) on the `ComposeView` it found in that layout.
-     */
-    protected fun bindChartComposeView(composeView: ComposeView) {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        composeView.setContent {
-            val state by viewModel.state.collectAsStateWithLifecycle()
-            LaunchedEffect(state) { onStateChanged(state) }
-            ChartFrame(state)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loading.collect(::onLoadingChanged)
         }
-    }
-
-    @Composable
-    private fun ChartFrame(state: ChartUiState<T>) {
-        when (state) {
-            is ChartUiState.Loading -> Unit // the host's has a progress bar
-            is ChartUiState.Error -> ChartMessage(chartNoDataText())
-            is ChartUiState.Ready -> if (isEmpty(state.data)) {
-                ChartMessage(chartNoDataText())
-            } else {
-                RenderChart(state.data)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    is ChartUiState.Loading -> Unit
+                    is ChartUiState.Error -> renderError()
+                    is ChartUiState.Ready -> renderChart(state.data)
+                }
             }
         }
+        if (chartDirty) {
+            refresh()
+        }
     }
-
-    private fun chartNoDataText(): String = getString(R.string.chart_no_data_synchronize)
 
     override fun onResume() {
         super.onResume()
@@ -174,9 +146,9 @@ abstract class AbstractVicoChartFragment<T> : AbstractGBFragment() {
 
     private fun chartsHostOrNull(): ChartsHost? = activity as? ChartsHost
 
-    private fun onStateChanged(state: ChartUiState<T>) {
+    private fun onLoadingChanged(loading: Boolean) {
         val host = chartsHostOrNull() ?: return
-        if (state is ChartUiState.Loading) {
+        if (loading) {
             // Delay the loading slightly to prevent quick flashes on fast loading
             loadingHandler.postDelayed({ host.setLoading(true) }, LOADING_SPINNER_DELAY_MS)
         } else {
@@ -255,6 +227,6 @@ abstract class AbstractVicoChartFragment<T> : AbstractGBFragment() {
 
     companion object {
         private const val LOADING_SPINNER_DELAY_MS = 300L
-        private val LOG = LoggerFactory.getLogger(AbstractVicoChartFragment::class.java)
+        private val LOG = LoggerFactory.getLogger(AbstractCoroutineChartFragment::class.java)
     }
 }

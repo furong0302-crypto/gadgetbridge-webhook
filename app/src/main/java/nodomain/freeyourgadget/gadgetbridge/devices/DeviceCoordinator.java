@@ -580,6 +580,13 @@ public interface DeviceCoordinator {
     TimeSampleProvider<? extends SleepScoreSample> getSleepScoreProvider(@NonNull final GBDevice device, @NonNull final DaoSession session);
 
     /**
+     * Returns the {@link SleepSessionProvider} for the device being supported. A device that records
+     * sleep sessions natively can override this to supply them directly.
+     */
+    @NonNull
+    SleepSessionProvider getSleepSessionProvider(@NonNull final GBDevice device, @NonNull final DaoSession session);
+
+    /**
      * Returns the sample provider for blood pressure data, for the device being supported.
      */
     @Nullable
@@ -1200,6 +1207,11 @@ public interface DeviceCoordinator {
     HeartRateZonesSpec getHeartRateZonesSpec(@NonNull final GBDevice device);
 
     Set<BarcodeFormat> getSupportedBarcodeFormats(@NonNull final GBDevice device);
+
+    /**
+     * Whether the device can request a sync of loyalty cards.
+     */
+    boolean supportsLoyaltyCardsSyncRequest(@NonNull final GBDevice device);
 
     /**
      * @return delay in ms for this device to wait before a reconnection attempt is made.

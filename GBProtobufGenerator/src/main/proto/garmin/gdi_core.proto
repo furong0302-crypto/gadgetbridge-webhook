@@ -12,12 +12,14 @@ message CoreService {
     optional LocationUpdatedSetEnabledRequest location_updated_set_enabled_request = 5;
     optional LocationUpdatedSetEnabledResponse location_updated_set_enabled_response = 6;
     optional LocationUpdatedNotification location_updated_notification = 7;
-    optional Message9 unk9 = 9;
+    optional FeatureCapabilitiesRequest feature_capabilities_request = 8;
+    optional FeatureCapabilitiesResponse feature_capabilities_response = 9;
     optional Message11 unk11 = 11;
-    optional ConnectedNotification connected_notification = 14;
-    optional Message18 unk18 = 18;
+    optional ConnectionReadyNotification connection_ready_notification = 14;
+    optional TimeSyncRequest time_sync_request = 17;
+    optional TimeSyncResponse time_sync_response = 18;
 
-    message ConnectedNotification {
+    message ConnectionReadyNotification {
     }
 
     message SyncRequest {
@@ -117,15 +119,51 @@ message CoreService {
         required sint32 lon = 2;
     }
 
-    message Message9 {
-        optional uint32 unk2 = 2;
+    message FeatureCapabilitiesRequest {
+        message GNCSCapabilitiesRequest {
+            enum DisabledReason {
+                LOW_RAM_MOBILE_DEVICE = 1;
+                PERMISSION_NOT_GRANTED = 2;
+                SERVICE_NOT_BOUND = 3;
+            }
+            optional uint32 np_version = 1;
+            optional DisabledReason notification_disabled_reason = 2;
+            optional string default_messaging_app_id = 3;
+            optional string default_dialer_app_id = 4;
+        }
+
+        optional bytes garmin_guid = 1;
+        optional uint32 client_version = 2;
+        optional string display_name = 3;
+
+        optional GNCSCapabilitiesRequest gncs_capabilities_request = 12;
+    }
+
+    message FeatureCapabilitiesResponse {
+        enum FeatureStatus {
+            UNSET = 0;
+            MATCH = 1;
+            NO_MATCH = 2;
+        }
+        optional FeatureStatus guid_status = 1;
+        optional uint32 version = 2;
+
+        message GNCSCapabilitiesResponse {
+            optional uint32 nc_version = 1;
+            optional bool support_blocked_apps = 2;
+        }
+        optional GNCSCapabilitiesResponse gncs_capabilities_response = 12;
     }
 
     message Message11 {
         optional uint32 unk1 = 1;
     }
 
-    message Message18 {
-        optional uint64 unk1 = 1; // current time ?
+    message TimeSyncRequest {
     }
+
+    message TimeSyncResponse {
+        optional uint64 current_time = 1;
+    }
+
 }

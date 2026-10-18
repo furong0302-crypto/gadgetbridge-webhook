@@ -25,6 +25,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.Loyal
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
@@ -60,10 +61,25 @@ public class CatimaManager {
      * @return the number of cards to be sent, or -1 if the sync was not triggered.
      */
     public int sync(final GBDevice gbDevice) {
+        final ArrayList<LoyaltyCard> cardsToSync = getCardsToSync(gbDevice);
+        if (cardsToSync == null) {
+            return -1;
+        }
+
+        GBApplication.deviceService(gbDevice).onSetLoyaltyCards(cardsToSync);
+
+        return cardsToSync.size();
+    }
+
+    /**
+     * Returns the cards that match the sync options for the device, or null if the cards cannot be read.
+     */
+    @Nullable
+    public ArrayList<LoyaltyCard> getCardsToSync(final GBDevice gbDevice) {
         final List<CharSequence> installedCatimaPackages = findInstalledCatimaPackages();
         if (installedCatimaPackages.isEmpty()) {
             LOG.warn("Catima is not installed");
-            return -1;
+            return null;
         }
 
         final Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
@@ -80,7 +96,7 @@ public class CatimaManager {
 
         if (!catima.isCatimaCompatible()) {
             LOG.warn("Catima is not compatible");
-            return -1;
+            return null;
         }
 
         // FossWallet does not support starred sync
@@ -122,9 +138,7 @@ public class CatimaManager {
 
         LOG.debug("Will sync cards: {}", cardsToSync);
 
-        GBApplication.deviceService(gbDevice).onSetLoyaltyCards(cardsToSync);
-
-        return cardsToSync.size();
+        return cardsToSync;
     }
 
     public static void notifySynced(final Context context, final GBDevice device, final boolean success) {

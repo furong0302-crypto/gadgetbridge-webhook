@@ -30,13 +30,13 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
 
     fun handle(fileSyncService: GdiFileSyncService.FileSyncService): GdiFileSyncService.FileSyncService? {
         return when {
-            fileSyncService.hasNewFileNotification() -> handleNewFileNotification(fileSyncService.newFileNotification)
-            fileSyncService.hasFileListResponse() -> handleFileListResponse(fileSyncService.fileListResponse)
-            fileSyncService.hasFileResponse() -> handleFileResponse(fileSyncService.fileResponse)
-            fileSyncService.hasFileModifiedFlags() -> handleFileModifiedFlags(fileSyncService.fileModifiedFlags)
+            fileSyncService.hasItemAddedNotification() -> handleItemAddedNotification(fileSyncService.itemAddedNotification)
+            fileSyncService.hasItemListResponse() -> handleItemListResponse(fileSyncService.itemListResponse)
+            fileSyncService.hasPullItemResponse() -> handlePullItemResponse(fileSyncService.pullItemResponse)
+            fileSyncService.hasModifyFlagsResponse() -> handleModifyFlagsResponse(fileSyncService.modifyFlagsResponse)
             fileSyncService.hasTransferStatusRequest() -> handleTransferStatusRequest(fileSyncService.transferStatusRequest)
-            fileSyncService.hasFileUpdateNotification() -> handleFileUpdateNotification(fileSyncService.fileUpdateNotification)
-            fileSyncService.hasStartSyncNotification() -> handleStartSyncNotification(fileSyncService.startSyncNotification)
+            fileSyncService.hasItemUpdatedNotification() -> handleItemUpdatedNotification(fileSyncService.itemUpdatedNotification)
+            fileSyncService.hasSyncButtonNotification() -> handleSyncButtonNotification(fileSyncService.syncButtonNotification)
             else -> {
                 LOG.warn("Unhandled file sync service: {}", fileSyncService)
                 return null
@@ -44,20 +44,20 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         }
     }
 
-    private fun handleStartSyncNotification(startSyncNotification: GdiFileSyncService.StartSyncNotification): GdiFileSyncService.FileSyncService? {
+    private fun handleSyncButtonNotification(startSyncNotification: GdiFileSyncService.SyncButtonNotification): GdiFileSyncService.FileSyncService? {
         LOG.debug("Got start sync notification: {}", startSyncNotification)
         deviceSupport.onFetchRecordedData(RecordedDataTypes.TYPE_ALL)
         return null
     }
 
 
-    private fun handleFileUpdateNotification(fileUpdateNotification: GdiFileSyncService.FileUpdateNotification): GdiFileSyncService.FileSyncService? {
+    private fun handleItemUpdatedNotification(fileUpdateNotification: GdiFileSyncService.ItemUpdatedNotification): GdiFileSyncService.FileSyncService? {
         LOG.debug("Got file updated flags: {}", fileUpdateNotification)
         // no action required
         return null
     }
 
-    private fun handleFileModifiedFlags(fileModifiedFlags: GdiFileSyncService.FileModifiedFlags): GdiFileSyncService.FileSyncService? {
+    private fun handleModifyFlagsResponse(fileModifiedFlags: GdiFileSyncService.ModifyFlagsResponse): GdiFileSyncService.FileSyncService? {
         LOG.debug("Got file modified flags: {}", fileModifiedFlags)
         // no action required
         return null
@@ -73,7 +73,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         }
     }
 
-    private fun handleNewFileNotification(newFileNotification: GdiFileSyncService.NewFileNotification): GdiFileSyncService.FileSyncService? {
+    private fun handleItemAddedNotification(newFileNotification: GdiFileSyncService.ItemAddedNotification): GdiFileSyncService.FileSyncService? {
         LOG.debug("Got new file notification: {}", newFileNotification)
 
         for (file in newFileNotification.fileList) {
@@ -87,7 +87,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         return null
     }
 
-    private fun handleFileResponse(fileResponse: GdiFileSyncService.FileResponse): GdiFileSyncService.FileSyncService? {
+    private fun handlePullItemResponse(fileResponse: GdiFileSyncService.PullItemResponse): GdiFileSyncService.FileSyncService? {
         LOG.debug("Got file response: {}", fileResponse)
 
         if (fileResponse.status != 0) {
@@ -103,7 +103,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         return null
     }
 
-    private fun handleFileListResponse(fileListResponse: GdiFileSyncService.FileListResponse): GdiFileSyncService.FileSyncService? {
+    private fun handleItemListResponse(fileListResponse: GdiFileSyncService.ItemListResponse): GdiFileSyncService.FileSyncService? {
         if (!fileListResponse.hasStatus() || fileListResponse.status != 0) {
             LOG.warn(
                 "Handling file list response with failed status={} - {}",
@@ -166,7 +166,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
     fun requestFileList(): GdiFileSyncService.FileSyncService {
         LOG.debug("Requesting file list starting at page {} (cursorId={})", nextPageId, cursorId)
 
-        val fileListRequestBuilder = GdiFileSyncService.FileListRequest.newBuilder().apply {
+        val fileListRequestBuilder = GdiFileSyncService.ItemListRequest.newBuilder().apply {
             // Exclusion flags? If we omit this, it sends back already synced files going back months.
             addFlags1(GdiFileSyncService.FileId.newBuilder().setId1(FLAGS_SYNCED).setId2(FLAGS_SYNCED).build())
             addFlags2(GdiFileSyncService.FileId.newBuilder().setId1(FLAGS_SYNCED).setId2(FLAGS_SYNCED).build())
@@ -180,7 +180,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         }
 
         return GdiFileSyncService.FileSyncService.newBuilder().buildWith {
-            fileListRequest = fileListRequestBuilder.build()
+            itemListRequest = fileListRequestBuilder.build()
         }
     }
 
@@ -192,7 +192,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
             fileToRequest.type.name
         )
         return GdiFileSyncService.FileSyncService.newBuilder().buildWith {
-            fileRequest = GdiFileSyncService.FileRequest.newBuilder().buildWith {
+            pullItemRequest = GdiFileSyncService.PullItemRequest.newBuilder().buildWith {
                 file = fileToRequest
                 unk2 = 24
                 unk3 = 0
@@ -224,7 +224,7 @@ class FileSyncServiceHandler(val deviceSupport: GarminSupport) {
         }
 
         return GdiFileSyncService.FileSyncService.newBuilder().buildWith {
-            fileSetFlags = GdiFileSyncService.FileSetFlags.newBuilder().buildWith {
+            modifyFlagsRequest = GdiFileSyncService.ModifyFlagsRequest.newBuilder().buildWith {
                 file = syncFile.id
                 setFlags = GdiFileSyncService.FileId.newBuilder().setId1(FLAGS_SYNCED).setId2(FLAGS_SYNCED).build()
             }
