@@ -27,6 +27,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.Loyal
 import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.LOYALTY_CARDS_SYNC_GROUPS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.LOYALTY_CARDS_SYNC_GROUPS_ONLY;
 import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.LOYALTY_CARDS_SYNC_STARRED;
+import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.LOYALTY_CARDS_SYNC_WATCH_REQUEST;
 import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.PREF_KEY_HEADER_LOYALTY_CARDS_CATIMA;
 import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.PREF_KEY_HEADER_LOYALTY_CARDS_SYNC;
 import static nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst.PREF_KEY_HEADER_LOYALTY_CARDS_SYNC_OPTIONS;
@@ -282,6 +283,11 @@ public class LoyaltyCardsSettingsFragment extends AbstractPreferenceFragment {
                 }
                 return true;
             });
+        }
+
+        final Preference syncWatchRequestPreference = findPreference(LOYALTY_CARDS_SYNC_WATCH_REQUEST);
+        if (syncWatchRequestPreference != null) {
+            syncWatchRequestPreference.setVisible(device.getDeviceCoordinator().supportsLoyaltyCardsSyncRequest(device));
         }
 
         final PreferenceCategory headerCatima = findPreference(PREF_KEY_HEADER_LOYALTY_CARDS_CATIMA);

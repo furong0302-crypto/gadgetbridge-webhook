@@ -151,6 +151,9 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     private final PendingSleepAsAndroidAction pendingSleepAsAndroidAction = new PendingSleepAsAndroidAction();
     private boolean allowBluetoothIntentApi = false;
     private boolean reconnectViaScan = GBPrefs.RECONNECT_SCAN_DEFAULT;
+    private boolean previousProcessFailed = false;
+
+    private static final long RESTART_RECONNECT_MIN_INTERVAL_MS = 10 * 60 * 1000L;
 
     private final String API_LEGACY_COMMAND_BLUETOOTH_CONNECT = "nodomain.freeyourgadget.gadgetbridge.BLUETOOTH_CONNECT";
     private final String API_LEGACY_COMMAND_BLUETOOTH_DISCONNECT = "nodomain.freeyourgadget.gadgetbridge.BLUETOOTH_DISCONNECT";
@@ -428,9 +431,55 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 LOG.info("Previous process exit: reason={} status={} importance={} at {} ({})",
                         exit.getReason(), exit.getStatus(), exit.getImportance(),
                         new Date(exit.getTimestamp()), exit.getDescription());
+                previousProcessFailed = switch (exit.getReason()) {
+                    case ApplicationExitInfo.REASON_CRASH,
+                         ApplicationExitInfo.REASON_CRASH_NATIVE,
+                         ApplicationExitInfo.REASON_ANR -> true;
+                    default -> false;
+                };
             }
         } catch (final Exception e) {
             LOG.warn("Failed to read the previous process exit reason", e);
+        }
+    }
+
+    private void reconnectAfterRestart() {
+        if (previousProcessFailed) {
+            LOG.warn("Not reconnecting after restart, the previous process crashed");
+            return;
+        }
+        if (!hasPrefs()) {
+            LOG.warn("Not reconnecting after restart, no prefs");
+            return;
+        }
+        final GBPrefs prefs = getPrefs();
+        if (!prefs.getBoolean(GBPrefs.AUTO_CONNECT_BLUETOOTH, false)) {
+            LOG.info("Not reconnecting after restart, auto-connect is disabled");
+            return;
+        }
+        // Avoid crash -> restart loops
+        final long now = System.currentTimeMillis();
+        final long lastReconnect = prefs.getLong(GBPrefs.LAST_RESTART_RECONNECT_TS, 0);
+        if (lastReconnect <= now && now - lastReconnect < RESTART_RECONNECT_MIN_INTERVAL_MS) {
+            LOG.warn("Not reconnecting after restart, the last restart reconnect was at {}", new Date(lastReconnect));
+            return;
+        }
+        prefs.getPreferences().edit().putLong(GBPrefs.LAST_RESTART_RECONNECT_TS, now).apply();
+
+        final Set<String> lastDeviceAddresses = prefs.getStringSet(GBPrefs.LAST_DEVICE_ADDRESSES, Collections.emptySet());
+        for (final GBDevice device : GBApplication.app().getDeviceManager().getDevices()) {
+            if (!lastDeviceAddresses.contains(device.getAddress())) {
+                continue;
+            }
+            if (!prefs.getAutoReconnect(device)) {
+                LOG.debug("Not reconnecting to {} after restart, auto-reconnect is disabled", device);
+                continue;
+            }
+            if (getDeviceStructOrNull(device) != null) {
+                continue;
+            }
+            LOG.info("Reconnecting to {} after restart", device);
+            connectToDevice(device, false);
         }
     }
 
@@ -628,10 +677,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     @Override
     public synchronized int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
-            // The system restarting the service after the process died: reconnect what was
-            // connected then, as the notification's reconnect action does.
-            LOG.info("no intent, reconnecting");
-            connectToDevice(null, false);
+            LOG.info("no intent");
+            reconnectAfterRestart();
             return START_STICKY;
         }
 

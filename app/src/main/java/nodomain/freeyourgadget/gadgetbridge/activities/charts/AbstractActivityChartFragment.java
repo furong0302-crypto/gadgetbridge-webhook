@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -453,30 +452,6 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
         int tsStart = getTSStart();
         int tsEnd = getTSEnd();
         return getSamplesHighRes(db, device, tsStart, tsEnd);
-    }
-
-    protected List<? extends ActivitySample> getSamplesofSleep(DBHandler db, GBDevice device) {
-        final String chartSleepRangeMode = GBApplication.getPrefs().getString("chart_sleep_range_mode", "18:00");
-        final int SLEEP_HOUR_LIMIT = "18:00".equals(chartSleepRangeMode) ? 18 : 12;
-
-        int tsStart = getTSStart();
-        Calendar day = GregorianCalendar.getInstance();
-        day.setTimeInMillis(tsStart * 1000L);
-        day.set(Calendar.HOUR_OF_DAY, SLEEP_HOUR_LIMIT);
-        day.set(Calendar.MINUTE, 0);
-        day.set(Calendar.SECOND, 0);
-        tsStart = toTimestamp(day.getTime());
-
-        int tsEnd = getTSEnd();
-        day.setTimeInMillis(tsEnd * 1000L);
-        day.set(Calendar.HOUR_OF_DAY, SLEEP_HOUR_LIMIT);
-        day.set(Calendar.MINUTE, 0);
-        day.set(Calendar.SECOND, 0);
-        tsEnd = toTimestamp(day.getTime());
-
-        List<ActivitySample> samples = (List<ActivitySample>) getSamples(db, device, tsStart, tsEnd);
-        ensureStartAndEndSamples(samples, tsStart, tsEnd);
-        return samples;
     }
 
     protected void ensureStartAndEndSamples(List<ActivitySample> samples, int tsStart, int tsEnd) {

@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.activities.charts.vico
+package nodomain.freeyourgadget.gadgetbridge.activities.charts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import nodomain.freeyourgadget.gadgetbridge.activities.charts.ChartDataScope
 import org.slf4j.LoggerFactory
 
 sealed interface ChartUiState<out T> {
@@ -22,6 +21,10 @@ class ChartViewModel<T> : ViewModel() {
     private val _state = MutableStateFlow<ChartUiState<T>>(ChartUiState.Loading)
     val state: StateFlow<ChartUiState<T>> = _state.asStateFlow()
 
+    private val _loading = MutableStateFlow(false)
+
+    val loading: StateFlow<Boolean> = _loading.asStateFlow()
+
     private var refreshJob: Job? = null
 
     /**
@@ -30,15 +33,18 @@ class ChartViewModel<T> : ViewModel() {
     fun refresh(load: suspend (ChartDataScope) -> T) {
         refreshJob?.cancel()
         _state.value = ChartUiState.Loading
+        _loading.value = true
         refreshJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 val data = load(ChartDataScope())
                 _state.value = ChartUiState.Ready(data)
+                _loading.value = false
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 LOG.error("Failed to load chart data", e)
                 _state.value = ChartUiState.Error(e)
+                _loading.value = false
             }
         }
     }

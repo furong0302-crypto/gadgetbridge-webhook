@@ -498,12 +498,12 @@ public class ProtocolBufferHandler implements MessageHandler {
                     GdiCore.CoreService.newBuilder().setLocationUpdatedSetEnabledResponse(response)).build();
         }
 
-        if (coreService.hasConnectedNotification()) {
+        if (coreService.hasConnectionReadyNotification()) {
             LOG.info("Got ConnectedNotification");
             // ping-pong to notify the gadget that the connection is live and working
             return Smart.newBuilder().setCoreService(
-                    GdiCore.CoreService.newBuilder().setConnectedNotification(
-                            GdiCore.CoreService.ConnectedNotification.newBuilder().build()
+                    GdiCore.CoreService.newBuilder().setConnectionReadyNotification(
+                            GdiCore.CoreService.ConnectionReadyNotification.newBuilder().build()
                     )).build();
         }
 

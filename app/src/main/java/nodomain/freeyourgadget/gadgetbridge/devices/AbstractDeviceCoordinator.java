@@ -493,6 +493,12 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    @NonNull
+    public SleepSessionProvider getSleepSessionProvider(@NonNull final GBDevice device, @NonNull final DaoSession session) {
+        return new DefaultSleepSessionProvider(device, session);
+    }
+
+    @Override
     @Nullable
     public ActivitySummaryParser getActivitySummaryParser(final GBDevice device, final Context context) {
         return new ActivitySummaryParser.NoopActivitySummaryParser();
@@ -1368,6 +1374,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     @Override
     public Set<BarcodeFormat> getSupportedBarcodeFormats(@NonNull final GBDevice device) {
         return Collections.emptySet();
+    }
+
+    @Override
+    public boolean supportsLoyaltyCardsSyncRequest(@NonNull final GBDevice device) {
+        return false;
     }
 
     @Override

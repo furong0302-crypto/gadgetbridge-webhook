@@ -20,7 +20,7 @@ interface DeviceChartsProvider {
     fun getChartFragment(device: GBDevice, chartName: String, allowSwipe: Boolean): Fragment
 
     /**
-     * Returns a short human-readable text with the value of the chart for the day from [tsStart] to [tsEnd], in seconds.
+     * Returns a short human-readable text with the value of the chart for the day of [timestamp], in seconds.
      * Returns null if the chart has no single value, or if there is no data.
      */
     fun getChartValue(
@@ -28,8 +28,7 @@ interface DeviceChartsProvider {
         db: DBHandler,
         device: GBDevice,
         chartName: String,
-        tsStart: Int,
-        tsEnd: Int
+        timestamp: Int
     ): String?
 
     fun getDailySleepStats(

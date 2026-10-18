@@ -27,6 +27,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
+import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -251,11 +252,13 @@ open class DefaultChartsProvider : DeviceChartsProvider {
         db: DBHandler,
         device: GBDevice,
         chartName: String,
-        tsStart: Int,
-        tsEnd: Int,
+        timestamp: Int,
     ): String? {
         val coordinator = device.deviceCoordinator
         val session = db.daoSession
+        val date = Date(timestamp * 1000L)
+        val tsStart = (DateTimeUtils.dayStart(date).time / 1000L).toInt()
+        val tsEnd = (DateTimeUtils.dayEnd(date).time / 1000L).toInt()
         val start = tsStart * 1000L
         val end = tsEnd * 1000L
 
@@ -268,7 +271,7 @@ open class DefaultChartsProvider : DeviceChartsProvider {
 
             // Sleep - score (if available), followed by sleep time
             "sleep" -> {
-                val minutes = DailyTotals.getDailyTotalsForDevice(device, calendarOf(tsEnd), db).sleep
+                val minutes = DailyTotals.getDailyTotalsForDevice(device, calendarOf(timestamp), db).sleep
                 val score = if (coordinator.supportsSleepScore(device)) {
                     coordinator.getSleepScoreProvider(device, db.daoSession)
                         ?.getAllSamples(start, end)

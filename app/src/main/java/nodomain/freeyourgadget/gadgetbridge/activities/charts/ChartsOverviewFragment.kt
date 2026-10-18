@@ -24,7 +24,6 @@ import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.applyStatTileStyle
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
-import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils
 import org.slf4j.LoggerFactory
 
 /**
@@ -74,14 +73,13 @@ class ChartsOverviewFragment : AbstractChartFragment<ChartsOverviewFragment.Over
     override fun refreshInBackground(chartsHost: ChartsHost, db: DBHandler, device: GBDevice): OverviewData {
         val context = GBApplication.getContext()
         val provider = device.deviceCoordinator.chartsProvider
-        val tsStart = toTimestamp(DateTimeUtils.dayStart(chartsHost.endDate))
-        val tsEnd = toTimestamp(DateTimeUtils.dayEnd(chartsHost.endDate))
+        val timestamp = toTimestamp(chartsHost.endDate)
 
         val refreshGeneration = generation
 
         val loadedItems = createItems(context, device).map { item ->
             val value = try {
-                provider.getChartValue(context, db, device, item.chartName, tsStart, tsEnd)
+                provider.getChartValue(context, db, device, item.chartName, timestamp)
             } catch (e: Exception) {
                 LOG.error("Failed to get the value for {}", item.chartName, e)
                 null

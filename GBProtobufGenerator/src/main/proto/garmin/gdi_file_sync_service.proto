@@ -5,54 +5,82 @@ package garmin_vivomovehr;
 option java_package = "nodomain.freeyourgadget.gadgetbridge.proto.garmin";
 
 message FileSyncService {
-  optional FileRequest file_request = 1;
-  optional FileResponse file_response = 2;
-  optional Message4 unk4 = 4;
+  optional PullItemRequest pull_item_request = 1;
+  optional PullItemResponse pull_item_response = 2;
+  optional PushItemRequest push_item_request = 3;
+  optional PushItemResponse push_item_response = 4;
   optional TransferStatusRequest transfer_status_request = 5;
-  optional Message7 unk7 = 7;
-  optional FileListRequest file_list_request = 9;
-  optional FileListResponse file_list_response = 10;
-  optional NewFileNotification new_file_notification = 12;
-  optional Message14 unk14 = 14;
-  optional FileSetFlags file_set_flags = 15;
-  optional FileModifiedFlags file_modified_flags = 16;
-  optional FileUpdateNotification file_update_notification = 17;
-  optional Message19 unk19 = 19;
-  optional Notification20 notification20 = 20;
+  optional PriorityUpdateResponse priority_update_response = 7;
+  optional ItemListRequest item_list_request = 9;
+  optional ItemListResponse item_list_response = 10;
+  optional ItemListCancelNotification item_list_cancel_notification = 11;
+  optional ItemAddedNotification item_added_notification = 12;
+  optional DeleteItemRequest delete_item_request = 13;
+  optional DeleteItemResponse delete_item_response = 14;
+  optional ModifyFlagsRequest modify_flags_request = 15;
+  optional ModifyFlagsResponse modify_flags_response = 16;
+  optional ItemUpdatedNotification item_updated_notification = 17;
+  optional CancelTransferRequest cancel_transfer_request = 18;
+  optional CancelTransferResponse cancel_transfer_response = 19;
+  optional ResourceUpdateNotification resource_update_notification = 20;
   optional TransferStatusResponse transfer_status_response = 21;
-  optional StartSyncNotification start_sync_notification = 22;
-  optional Message24 unk24 = 24;
+  optional SyncButtonNotification sync_button_notification = 22;
+  optional SoftwareUpdatePartNumberRequest software_update_part_number_request = 23;
+  optional SoftwareUpdatePartNumberResponse software_update_part_number_response = 24;
+  optional GetItemChecksumRequest get_item_checksum_request = 25;
+  optional GetItemChecksumResponse get_item_checksum_response = 26;
+}
 
-  message Message4 {
+message ItemListCancelNotification{
+}
+
+message PushItemRequest {
+}
+
+message DeleteItemRequest {
+}
+
+message CancelTransferRequest {
+}
+
+message SoftwareUpdatePartNumberRequest {
+}
+
+message GetItemChecksumRequest {
+}
+
+message GetItemChecksumResponse {
+}
+
+message PushItemResponse {
     optional uint32 unk1 = 1;
     optional uint32 unk6 = 6;
     optional uint32 unk7 = 7;
-  }
+}
 
-  message Message7 {
+message PriorityUpdateResponse {
     optional uint32 unk1 = 1;
-  }
+}
 
-  message Message14 {
+message DeleteItemResponse {
     optional uint32 unk1 = 1;
     optional uint32 unk2 = 2;
     optional uint32 unk3 = 3;
-  }
-
-  message Message19 {
-    optional uint32 unk1 = 1;
-  }
-
-  message Message24 {
-  }
 }
 
-message Notification20 {
+message CancelTransferResponse {
+    optional uint32 unk1 = 1;
+}
+
+message SoftwareUpdatePartNumberResponse {
+}
+
+message ResourceUpdateNotification {
   optional uint32 unk1 = 1;
   optional uint32 unk2 = 2;
 }
 
-message FileModifiedFlags {
+message ModifyFlagsResponse {
   optional uint32 status = 1; // 0: success
   optional uint32 unk2 = 2;
   optional uint32 unk3 = 3;
@@ -67,11 +95,11 @@ message TransferStatusResponse {
   optional uint32 unk1 = 1;
 }
 
-message StartSyncNotification {
+message SyncButtonNotification {
   // user pressed button on device to start syncing files
 }
 
-message NewFileNotification {
+message ItemAddedNotification {
   repeated File file = 1;
   optional uint32 unk2 = 2; // 24
   optional uint32 unk3 = 3; // 0
@@ -80,19 +108,19 @@ message NewFileNotification {
   optional uint32 unk6 = 6; // 1
 }
 
-message FileSetFlags {
+message ModifyFlagsRequest {
   optional FileId file = 1;
   optional FileId set_flags = 2;
   optional FileId remove_flags = 3;
 }
 
-message FileUpdateNotification {
+message ItemUpdatedNotification {
   optional FileId file = 1;
   optional FileId flags_set = 2;
   optional FileId flags_removed = 3;
 }
 
-message FileRequest {
+message PullItemRequest {
   optional File file = 1;
   optional uint32 unk2 = 2; // 24
   optional uint32 unk3 = 3; // 0
@@ -100,7 +128,7 @@ message FileRequest {
   optional uint32 unk5 = 5; // 15
 }
 
-message FileResponse {
+message PullItemResponse {
   optional uint32 status = 1; // 0 success 3 failure
   optional uint32 unk2 = 2; // 0
   optional uint32 handle = 3; // varies
@@ -111,7 +139,7 @@ message FileResponse {
   optional sint32 unk9 = 9; // error related
 }
 
-message FileListRequest {
+message ItemListRequest {
   // Set to FileListResponse.cursor_id to continue an in-progress listing.
   // Mutually exclusive with start_page_id: only set one of the two.
   optional uint32 cursor_id = 1;
@@ -125,7 +153,7 @@ message FileListRequest {
   repeated uint32 include_metadata = 7; // 0: include File.timestamp
 }
 
-message FileListResponse {
+message ItemListResponse {
   optional uint32 status = 1; // 0 - OK
   // Present when more items are pending for *this* listing (> 100 items) - send it back
   // on the next FileListRequest.cursor_id to get the remaining items.
@@ -156,5 +184,5 @@ message FileId {
 message FileType {
   optional uint32 code = 1; // 0 fit, 3 binary
   optional string name = 2;
-  optional uint32 name_id = 3; // 8 monitor 9 sports
+  optional uint32 name_id = 3; // id-name-mapping is ephemeral
 }

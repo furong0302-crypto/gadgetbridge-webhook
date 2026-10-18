@@ -405,6 +405,9 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
         }
 
         communicator.onMtuChanged(mtu);
+        if (watchAppCommunicator != null) {
+            watchAppCommunicator.onMtuChanged(mtu);
+        }
     }
 
     @Override

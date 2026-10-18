@@ -64,12 +64,11 @@ import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.HrvSummarySample;
 import nodomain.freeyourgadget.gadgetbridge.model.HrvValueSample;
+import nodomain.freeyourgadget.gadgetbridge.model.SleepSession;
 import nodomain.freeyourgadget.gadgetbridge.util.Accumulator;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 
@@ -597,27 +596,18 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         final int startTs = (int) (searchStart.getTimeInMillis() / 1000);
         final int endTs = (int) (searchEnd.getTimeInMillis() / 1000);
 
-        final SampleProvider<? extends AbstractActivitySample> sampleProvider =
-                device.getDeviceCoordinator().getSampleProvider(device, db.getDaoSession());
-        final List<? extends AbstractActivitySample> activitySamples =
-                sampleProvider.getAllActivitySamples(startTs, endTs);
-
-        if (activitySamples.isEmpty()) {
-            return new LastNightData(new ArrayList<>(), searchStart, searchEnd);
-        }
-
-        final SleepAnalysis sleepAnalysis = new SleepAnalysis();
-        final List<SleepAnalysis.SleepSession> sleepSessions =
-                sleepAnalysis.calculateSleepSessions(activitySamples);
+        final List<SleepSession> sleepSessions = device.getDeviceCoordinator()
+                .getSleepSessionProvider(device, db.getDaoSession())
+                .getSleepSessions(startTs, endTs);
         if (sleepSessions.isEmpty()) {
             return new LastNightData(new ArrayList<>(), searchStart, searchEnd);
         }
 
-        final SleepAnalysis.SleepSession lastSession = sleepSessions.get(sleepSessions.size() - 1);
+        final SleepSession lastSession = sleepSessions.get(sleepSessions.size() - 1);
         final Calendar sleepStart = Calendar.getInstance();
-        sleepStart.setTime(lastSession.getSleepStart());
+        sleepStart.setTimeInMillis(lastSession.getStartTime());
         final Calendar sleepEnd = Calendar.getInstance();
-        sleepEnd.setTime(lastSession.getSleepEnd());
+        sleepEnd.setTimeInMillis(lastSession.getEndTime());
 
         final List<? extends HrvValueSample> samples = getHrvValueSamples(
                 db,
