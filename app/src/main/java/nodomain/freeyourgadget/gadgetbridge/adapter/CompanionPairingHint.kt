@@ -11,6 +11,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil
+import nodomain.freeyourgadget.gadgetbridge.util.CompanionDeviceUtil
 import org.slf4j.LoggerFactory
 
 object CompanionPairingHint {
@@ -36,10 +37,10 @@ object CompanionPairingHint {
         if (GBApplication.getDeviceSpecificSharedPrefs(device.address).getBoolean(PREF_DISMISSED, false)) {
             return false
         }
-        if (BondingUtil.getCompanionDeviceManager(context) == null) {
+        if (CompanionDeviceUtil.getCompanionDeviceManager(context) == null) {
             return false
         }
-        return !BondingUtil.isCompanionAssociated(context, device.address)
+        return !CompanionDeviceUtil.isCompanionAssociated(context, device.address)
     }
 
     @JvmStatic
@@ -58,14 +59,14 @@ object CompanionPairingHint {
             ?.getRemoteDevice(device.address)
             ?.bondState == BluetoothDevice.BOND_BONDED
         val useLe = !bonded && device.deviceCoordinator.connectionType == DeviceCoordinator.ConnectionType.BLE
-        BondingUtil.associateCompanion(activity, device.address, useLe, REQUEST_CODE, null)
+        CompanionDeviceUtil.associateCompanion(activity, device.address, useLe, REQUEST_CODE, null, null)
     }
 
     @JvmStatic
     fun onChooserClosed(context: Context, address: String) {
-        if (BondingUtil.isCompanionAssociated(context, address)) {
+        if (CompanionDeviceUtil.isCompanionAssociated(context, address)) {
             LOG.debug("{} is now associated as companion", address)
-            BondingUtil.StartObserving(context, address)
+            CompanionDeviceUtil.StartObserving(context, address)
         }
     }
 }

@@ -68,8 +68,6 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.nio.ByteOrder;
-import java.nio.ByteBuffer;
 
 import lineageos.weather.util.TemperatureUtils;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -170,7 +168,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.ini
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.update.UpdateFirmwareOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miband.NotificationStrategy;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miband.RealtimeSamplesSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.NotificationUtils;
@@ -275,7 +272,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_HEIGHT_CM;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_NAME;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_WEIGHT_KG;
-import static nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL;
+import static nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic.CHARACTERISTIC_ALERT_LEVEL;
 
 public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
         implements Huami2021Handler, HuamiFetcher.HuamiFetchSupport {
@@ -344,12 +341,12 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
 
     public HuamiSupport(Logger logger) {
         super(logger);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
-        addSupportedService(GattService.UUID_SERVICE_HEART_RATE);
-        addSupportedService(GattService.UUID_SERVICE_IMMEDIATE_ALERT);
-        addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
-        addSupportedService(GattService.UUID_SERVICE_ALERT_NOTIFICATION);
+        addSupportedService(GattService.SERVICE_GAP.uuid);
+        addSupportedService(GattService.SERVICE_GATT.uuid);
+        addSupportedService(GattService.SERVICE_HEART_RATE.uuid);
+        addSupportedService(GattService.SERVICE_IMMEDIATE_ALERT.uuid);
+        addSupportedService(GattService.SERVICE_DEVICE_INFORMATION.uuid);
+        addSupportedService(GattService.SERVICE_ALERT_NOTIFICATION.uuid);
 
         addSupportedService(MiBandService.UUID_SERVICE_MIBAND_SERVICE);
         addSupportedService(MiBandService.UUID_SERVICE_MIBAND2_SERVICE);
@@ -437,7 +434,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
             } else {
                 new InitOperation(authenticate, authFlags, cryptFlags, this, builder).perform();
             }
-            characteristicHRControlPoint = getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_HEART_RATE_CONTROL_POINT);
+            characteristicHRControlPoint = getCharacteristic(GattCharacteristic.CHARACTERISTIC_HEART_RATE_CONTROL_POINT.uuid);
             characteristicChunked = getCharacteristic(HuamiService.UUID_CHARACTERISTIC_CHUNKEDTRANSFER);
         } catch (IOException e) {
             GB.toast(getContext(), "Initializing Huami device failed", Toast.LENGTH_SHORT, GB.ERROR, e);
@@ -526,7 +523,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
     public void setCurrentTime(TransactionBuilder builder) {
         final Calendar now = createCalendar();
         byte[] bytes = getTimeBytes(now, TimeUnit.SECONDS);
-        builder.write(GattCharacteristic.UUID_CHARACTERISTIC_CURRENT_TIME, bytes);
+        builder.write(GattCharacteristic.CHARACTERISTIC_CURRENT_TIME.uuid, bytes);
     }
 
     /**
@@ -1241,7 +1238,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
     public void onSetCallState(CallSpec callSpec) {
         if (callSpec.getCommand() == CallSpec.CALL_INCOMING) {
             telephoneRinging = true;
-            StopNotificationAction abortAction = new StopNotificationAction(getCharacteristic(UUID_CHARACTERISTIC_ALERT_LEVEL)) {
+            StopNotificationAction abortAction = new StopNotificationAction(getCharacteristic(CHARACTERISTIC_ALERT_LEVEL.uuid)) {
                 @Override
                 protected boolean shouldAbort() {
                     return !isTelephoneRinging();
@@ -1571,7 +1568,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
 
     protected void enableNotifyHeartRateMeasurements(boolean enable, TransactionBuilder builder) {
         if (heartRateNotifyEnabled != enable) {
-            BluetoothGattCharacteristic heartrateCharacteristic = getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT);
+            BluetoothGattCharacteristic heartrateCharacteristic = getCharacteristic(GattCharacteristic.CHARACTERISTIC_HEART_RATE_MEASUREMENT.uuid);
             if (heartrateCharacteristic != null) {
                 builder.notify(heartrateCharacteristic, enable);
                 heartRateNotifyEnabled = enable;
@@ -1603,7 +1600,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
     }
 
     protected void sendFindDeviceCommand(boolean start) {
-        BluetoothGattCharacteristic characteristic = getCharacteristic(UUID_CHARACTERISTIC_ALERT_LEVEL);
+        BluetoothGattCharacteristic characteristic = getCharacteristic(CHARACTERISTIC_ALERT_LEVEL.uuid);
         try {
             TransactionBuilder builder = performInitialized("find huami");
             builder.write(characteristic, start ? new byte[] {3} : new byte[] {0});
@@ -1644,7 +1641,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
 
     // this could go though onion code with preferred notification, but I this should work on all huami devices
     private void vibrateOnce() {
-        BluetoothGattCharacteristic characteristic = getCharacteristic(UUID_CHARACTERISTIC_ALERT_LEVEL);
+        BluetoothGattCharacteristic characteristic = getCharacteristic(CHARACTERISTIC_ALERT_LEVEL.uuid);
         try {
             TransactionBuilder builder = performInitialized("Vibrate once");
             builder.write(characteristic,new byte[] {3});
@@ -2105,7 +2102,7 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
         } else if (MiBandService.UUID_CHARACTERISTIC_REALTIME_STEPS.equals(characteristicUUID)) {
             handleRealtimeSteps(value);
             return true;
-        } else if (GattCharacteristic.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT.equals(characteristicUUID)) {
+        } else if (GattCharacteristic.CHARACTERISTIC_HEART_RATE_MEASUREMENT.equals(characteristicUUID)) {
             handleHeartrate(value);
             return true;
         } else if (HuamiService.UUID_CHARACTERISTIC_AUTH.equals(characteristicUUID)) {
@@ -2154,13 +2151,13 @@ public abstract class HuamiSupport extends AbstractBTLESingleDeviceSupport
         }
 
         UUID characteristicUUID = characteristic.getUuid();
-        if (GattCharacteristic.UUID_CHARACTERISTIC_DEVICE_NAME.equals(characteristicUUID)) {
+        if (GattCharacteristic.CHARACTERISTIC_DEVICE_NAME.equals(characteristicUUID)) {
             handleDeviceName(value, status);
             return true;
         } else if (HuamiService.UUID_CHARACTERISTIC_6_BATTERY_INFO.equals(characteristicUUID)) {
             handleBatteryInfo(value, status);
             return true;
-        } else if (GattCharacteristic.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT.equals(characteristicUUID)) {
+        } else if (GattCharacteristic.CHARACTERISTIC_HEART_RATE_MEASUREMENT.equals(characteristicUUID)) {
             logHeartrate(value, status);
             return true;
         } else if (HuamiService.UUID_CHARACTERISTIC_7_REALTIME_STEPS.equals(characteristicUUID)) {

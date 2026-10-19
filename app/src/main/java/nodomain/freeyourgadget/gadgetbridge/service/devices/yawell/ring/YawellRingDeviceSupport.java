@@ -93,7 +93,7 @@ public class YawellRingDeviceSupport extends AbstractBTLESingleDeviceSupport {
         super(LOG);
         addSupportedService(YawellRingConstants.CHARACTERISTIC_SERVICE_V1);
         addSupportedService(YawellRingConstants.CHARACTERISTIC_SERVICE_V2);
-        addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
+        addSupportedService(GattService.SERVICE_DEVICE_INFORMATION.uuid);
 
         IntentListener mListener = intent -> {
             String action = intent.getAction();

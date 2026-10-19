@@ -27,7 +27,7 @@ class AppConfigHandler(private val deviceSupport: GarminSupport) {
             val status = appConfigService.appConfigSetStatus.status
             LOG.debug("Got app config set status for {}: {}", uuid, status)
             if (status != 1) {
-                LOG.warn("Failed to get configs for {}, status={}", uuid, status)
+                LOG.warn("Failed to set configs for {}, status={}", uuid, status)
                 evaluateEvent(uuid, GBDeviceEventAppConfig.Event.APP_CONFIG_SET_FAILED)
             } else {
                 evaluateEvent(uuid, GBDeviceEventAppConfig.Event.APP_CONFIG_SET_SUCCESS)

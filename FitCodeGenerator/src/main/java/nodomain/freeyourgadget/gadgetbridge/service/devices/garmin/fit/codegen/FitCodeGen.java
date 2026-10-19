@@ -277,7 +277,7 @@ public enum FitCodeGen {
                                                            final File fieldTarget,
                                                            final File fieldManual) throws IOException {
         final File manualFile = new File(fieldManual, "FieldDefinition" + enumeration.name + ".java");
-        if (manualFile.exists()) {
+        if (manualFile.exists() || new File(fieldManual, "FieldDefinition" + enumeration.name + ".kt").exists()) {
             // a manually defined FieldDefinition exists
             return;
         }
@@ -665,7 +665,9 @@ public enum FitCodeGen {
 
     private static void generateFitMessageClassFile(final FitMessage nativeFITMessage, final File messagesDir, final File manualMessageDir) throws IOException {
         String className = "Fit" + capitalize(toCamelCase(nativeFITMessage.name));
-        if (new File(manualMessageDir, className + ".java").exists()) {
+        if (new File(manualMessageDir, className + ".java").exists()
+            || new File(manualMessageDir, className + ".kt").exists())
+        {
             className = "Abstract" + className;
         }
         final File outputFile = new File(

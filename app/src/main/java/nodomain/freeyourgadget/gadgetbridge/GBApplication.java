@@ -86,7 +86,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.weather.WeatherCacheManager;
 import nodomain.freeyourgadget.gadgetbridge.prefs.GBPrefsMigrator;
 import nodomain.freeyourgadget.gadgetbridge.service.NotificationCollectorMonitorService;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
+import nodomain.freeyourgadget.gadgetbridge.util.CompanionDeviceUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.InternetHelperSingleton;
@@ -134,7 +134,7 @@ public class GBApplication extends Application {
 
     public static void quit() {
         LOG.info("Quitting Gadgetbridge...");
-        BondingUtil.StopObservingAll(getContext());
+        CompanionDeviceUtil.StopObservingAll(getContext());
         Intent quitIntent = new Intent(GBApplication.ACTION_QUIT);
         LocalBroadcastManager.getInstance(context).sendBroadcast(quitIntent);
         GBApplication.deviceService().quit();
@@ -144,7 +144,7 @@ public class GBApplication extends Application {
 
     public static void restart() {
         LOG.info("Restarting Gadgetbridge...");
-        BondingUtil.StopObservingAll(getContext());
+        CompanionDeviceUtil.StopObservingAll(getContext());
         final Intent quitIntent = new Intent(GBApplication.ACTION_QUIT);
         LocalBroadcastManager.getInstance(context).sendBroadcast(quitIntent);
         GBApplication.deviceService().quit();
@@ -284,7 +284,7 @@ public class GBApplication extends Application {
         }
         startNotificationCollectorMonitorService();
 
-        BondingUtil.StartObservingAll(getBaseContext());
+        CompanionDeviceUtil.StartObservingAll(getBaseContext());
 
         if (prefs.getBoolean(GBPrefs.HEALTH_CONNECT_ENABLED, false)) {
             HealthConnectPermissionManager.checkAndRectifyPermissions(this);

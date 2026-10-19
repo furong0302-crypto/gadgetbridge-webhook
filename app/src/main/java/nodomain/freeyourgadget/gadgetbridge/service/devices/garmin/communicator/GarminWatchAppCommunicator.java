@@ -38,7 +38,7 @@ public class GarminWatchAppCommunicator {
     private static final Logger LOG = LoggerFactory.getLogger(GarminWatchAppCommunicator.class);
 
     // The characteristics are the same as Communicator V1, but different service?
-    public static final UUID UUID_SERVICE = UUID.fromString(String.format(CommunicatorV2.BASE_UUID, 0x8022));
+    public static final UUID UUID_SERVICE_GARMIN_WATCH_APPS = UUID.fromString( "6a4e8022-667b-11e3-949a-0800200c9a66");
     public static final UUID UUID_CHARACTERISTIC_WATCH_APP_TX = UUID.fromString("6a4e4c80-667b-11e3-949a-0800200c9a66");
     public static final UUID UUID_CHARACTERISTIC_WATCH_APP_RX = UUID.fromString("6a4ecd28-667b-11e3-949a-0800200c9a66");
 

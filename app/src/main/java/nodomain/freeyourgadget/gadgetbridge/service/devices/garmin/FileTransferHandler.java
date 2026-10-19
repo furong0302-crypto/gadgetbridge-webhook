@@ -33,8 +33,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;

@@ -108,8 +108,8 @@ public class ZeTimeDeviceSupport extends AbstractBTLESingleDeviceSupport {
 
     public ZeTimeDeviceSupport() {
         super(LOG);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
+        addSupportedService(GattService.SERVICE_GAP.uuid);
+        addSupportedService(GattService.SERVICE_GATT.uuid);
         addSupportedService(ZeTimeConstants.UUID_SERVICE_BASE);
         addSupportedService(ZeTimeConstants.UUID_SERVICE_EXTEND);
         addSupportedService(ZeTimeConstants.UUID_SERVICE_HEART_RATE);

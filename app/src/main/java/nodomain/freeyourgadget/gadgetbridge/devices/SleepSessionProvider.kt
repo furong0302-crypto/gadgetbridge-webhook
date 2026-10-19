@@ -15,7 +15,17 @@ interface SleepSessionProvider {
      */
     fun getSleepSessions(tsFrom: Int, tsTo: Int): List<SleepSession>
 
+    /**
+     * Returns all sleep sessions that END within (tsFrom, tsTo] (epoch seconds), in full.
+     */
+    fun getSleepSessionsEndingIn(tsFrom: Int, tsTo: Int): List<SleepSession> {
+        return getSleepSessions(tsFrom - MAX_SESSION_SECONDS, tsTo)
+            .filter { (it.endTime / 1000L) in (tsFrom + 1L)..tsTo }
+    }
+
     companion object {
+        private const val MAX_SESSION_SECONDS: Int = 24 * 60 * 60
+
         /**
          * Sanitizes a list of sleep stages, into a known sleep session start /end times. Returns null
          * if the session ends at or before its start.

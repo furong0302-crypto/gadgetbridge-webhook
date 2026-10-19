@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.os.Bundle
 import io.kaitai.struct.KaitaiStruct
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.kaitai.DumlWifi
@@ -99,6 +100,7 @@ class DjiBleSupport : AbstractBTLESingleDeviceSupport(LOG) {
                     )
                 } else {
                     LOG.warn("Unexpected pairing pin status {}", payload.status())
+                    reportPairingError("Unexpected pairing pin status: ${payload.status()}", false)
                 }
             }
 

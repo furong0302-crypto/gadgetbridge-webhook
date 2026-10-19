@@ -84,7 +84,7 @@ public class OVTouch26DeviceSupport extends AbstractBTLESingleDeviceSupport {
         super(LOG);
 
         addSupportedService(OVTouch26Constants.UUID_SERVICE);
-        addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
+        addSupportedService(GattService.SERVICE_DEVICE_INFORMATION.uuid);
 
         IntentListener mListener = new IntentListener() {
             @Override

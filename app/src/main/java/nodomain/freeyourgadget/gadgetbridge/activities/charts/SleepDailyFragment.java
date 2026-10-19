@@ -109,7 +109,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
 
         final List<SleepSession> sleepSessions = device.getDeviceCoordinator()
                 .getSleepSessionProvider(device, db.getDaoSession())
-                .getSleepSessions(range[0], range[1]);
+                .getSleepSessionsEndingIn(range[0], range[1]);
 
         // In ROLLING_24H mode, or when there is nothing to anchor on, the chart spans the whole
         // requested range. Otherwise, it spans exactly the sessions found in that range, so the chart
@@ -320,7 +320,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
             legendStats.add(buildSleepStageTile(R.color.chart_rem_sleep_dark, R.string.sleep_colored_stats_rem,
                     hasSleepSessions ? timeStringFormat(pieData.getTotalRem()) : "-"));
         }
-        if (supportsAwakeSleep(getChartsHost().getDevice())) {
+        if (showAwakeSleep(pieData)) {
             legendStats.add(buildSleepStageTile(R.color.chart_awake_sleep_dark, R.string.abstract_chart_fragment_kind_awake_sleep,
                     hasSleepSessions ? timeStringFormat(pieData.getTotalAwake()) : "-"));
         }
@@ -399,7 +399,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
             if (supportsRemSleep(getChartsHost().getDevice())) {
                 legend.add(ChartLegendView.squareItem(getString(R.string.sleep_colored_stats_rem), akRemSleep.color));
             }
-            if (supportsAwakeSleep(getChartsHost().getDevice())) {
+            if (showAwakeSleep(mcd.getPieData())) {
                 legend.add(ChartLegendView.squareItem(getString(R.string.abstract_chart_fragment_kind_awake_sleep), akAwakeSleep.color));
             }
             if (spec.getEndYAxis() != null) {
@@ -410,6 +410,10 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
             }
         }
         binding.sleepchartLegend.setSeries(legend);
+    }
+
+    private boolean showAwakeSleep(final MySleepChartsData pieData) {
+        return supportsAwakeSleep(getChartsHost().getDevice()) || pieData.getTotalAwake() > 0;
     }
 
     private Triple<Float, Integer, Integer> calculateHrData(List<? extends ActivitySample> samples) {

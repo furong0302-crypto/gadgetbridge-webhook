@@ -52,7 +52,6 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventDisplayMessage;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportRouteInstallHandler;
@@ -123,8 +122,8 @@ public class IGPSportDeviceSupport extends AbstractBTLESingleDeviceSupport {
         downloadManager = new IGPSportDownloadManager(this);
         weatherManager = new IGPSportWeather(this);
 
-        addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
-        addSupportedService(GattService.UUID_SERVICE_BATTERY_SERVICE);
+        addSupportedService(GattService.SERVICE_DEVICE_INFORMATION.uuid);
+        addSupportedService(GattService.SERVICE_BATTERY.uuid);
 
 
         IntentListener mListener = new IntentListener() {

@@ -278,6 +278,9 @@
             android:exported="true"
             android:label="@string/fit_file_viewer" />
         <activity
+            android:name=".activities.files.TextFileViewerActivity"
+            android:label="@string/text_file_viewer" />
+        <activity
             android:name=".activities.BackupRestoreProgressActivity"
             android:label="@string/activity_db_management_backup_restore_label"
             android:parentActivityName=".activities.DataManagementActivity" />
@@ -846,8 +849,9 @@
             android:label="@string/pref_title_authkey"
             android:parentActivityName=".activities.discovery.DiscoveryActivityV2" />
         <activity
-            android:name=".activities.AndroidPairingActivity"
-            android:label="@string/title_activity_android_pairing" />
+            android:name=".activities.pairing.DevicePairingActivity"
+            android:label="@string/title_activity_android_pairing"
+            android:parentActivityName=".activities.discovery.DiscoveryActivityV2" />
         <activity
             android:name=".devices.banglejs.AppsManagementActivity"
             android:label="@string/title_activity_appmanager"

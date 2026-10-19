@@ -76,7 +76,7 @@ public class PermissionsUtils {
 
     public static ArrayList<PermissionDetails> getRequiredPermissionsList(Activity activity) {
         ArrayList<PermissionDetails> permissionsList = new ArrayList<>();
-        if (BondingUtil.getCompanionAssociations(GBApplication.getContext()).isEmpty()) {
+        if (CompanionDeviceUtil.getCompanionAssociations(GBApplication.getContext()).isEmpty()) {
             permissionsList.add(new PermissionDetails(
                     CUSTOM_PERM_IGNORE_BATT_OPTIM,
                     activity.getString(R.string.permission_disable_doze_title),

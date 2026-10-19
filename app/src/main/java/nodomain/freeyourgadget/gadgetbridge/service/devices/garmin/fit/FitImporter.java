@@ -97,8 +97,6 @@ import nodomain.freeyourgadget.gadgetbridge.model.MetricSample;
 import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.FileType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminUtils;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.Event;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.EventType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.HrvStatus;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.SleepLevel;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.exception.FitParseException;

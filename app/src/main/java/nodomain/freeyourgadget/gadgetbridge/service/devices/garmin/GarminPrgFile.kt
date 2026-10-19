@@ -18,6 +18,8 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.garmin
 
 import android.content.Context
 import android.net.Uri
+import io.kaitai.struct.ByteBufferKaitaiStream
+import nodomain.freeyourgadget.gadgetbridge.kaitai.GarminPrg
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils
 import nodomain.freeyourgadget.gadgetbridge.util.UriHelper
 import org.slf4j.LoggerFactory
@@ -40,6 +42,34 @@ class GarminPrgFile private constructor(
         private val MAGIC = byteArrayOf(0xd0.toByte(), 0x00, 0xd0.toByte())
 
         private const val MAX_SIZE = 10L * 1024 * 1024
+
+        @JvmStatic
+        fun getFileType(bytes: ByteArray): FileType.FILETYPE? {
+            val prg = try {
+                GarminPrg(ByteBufferKaitaiStream(bytes)).also { it._read() }
+            } catch (e: Exception) {
+                LOG.error("Failed to parse PRG", e)
+                return null
+            }
+
+            val appType = prg.sections()
+                .firstOrNull { it.magic() == GarminPrg.SectionMagic.ENTRY_POINTS }
+                ?.let { (it.content() as GarminPrg.SectionEntryPoints).entryPoints().firstOrNull() }
+                ?.appType()
+            if (appType == null) {
+                LOG.error("PRG has no app type")
+                return null
+            }
+
+            LOG.debug("PRG app type is {}", appType)
+            return when (appType) {
+                GarminPrg.AppType.WATCH_FACE -> FileType.FILETYPE.IQWatchFaces
+                GarminPrg.AppType.DATAFIELD -> FileType.FILETYPE.IQDataFields
+                GarminPrg.AppType.WIDGET -> FileType.FILETYPE.IQWidgets
+                GarminPrg.AppType.AUDIO_CONTENT_PROVIDER_APP -> FileType.FILETYPE.IQAudioContentApps
+                else -> FileType.FILETYPE.IQWatchApps
+            }
+        }
 
         /**
          * Returns the PRG file at the uri, or null if it is not a PRG file.

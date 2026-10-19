@@ -48,9 +48,8 @@ message InstalledAppsService {
   }
 
   message DeleteAppRequest {
-    required uint32 nativeAppId = 1;
+    required bytes storeAppId = 1;
     required AppType appType = 2;
-    optional bytes storeAppId = 3;
   }
 
   message DeleteAppResponse {

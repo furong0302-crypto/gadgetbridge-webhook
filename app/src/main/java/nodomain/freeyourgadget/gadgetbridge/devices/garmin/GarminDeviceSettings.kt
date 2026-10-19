@@ -190,6 +190,16 @@ fun garminDeviceSettings(
         )
 
         switchSetting(
+            key = GarminPreferences.PREF_GARMIN_PRG_TRANSFER_MLR,
+            title = R.string.garmin_prg_transfer_mlr_title,
+            summary = R.string.garmin_prg_transfer_mlr_summary,
+            icon = R.drawable.ic_file_upload,
+            defaultValue = false,
+            dependency = GarminPreferences.PREF_GARMIN_MLR,
+            connectedOnly = false,
+        )
+
+        switchSetting(
             key = GarminPreferences.PREF_GARMIN_EXPLORE_SYNC,
             title = R.string.feature_exploresync_title,
             summary = R.string.feature_exploresync_summary,

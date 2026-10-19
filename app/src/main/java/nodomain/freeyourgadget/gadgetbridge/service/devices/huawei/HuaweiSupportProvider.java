@@ -685,7 +685,7 @@ public class HuaweiSupportProvider {
         @Override
         public void timeout(Request request) {
             LOG.error("Authentication timed out");
-            GB.toast(context, R.string.authentication_failed_negotiation, Toast.LENGTH_LONG, GB.ERROR);
+            (leSupport != null ? leSupport : brSupport).reportPairingError(context.getString(R.string.authentication_failed_negotiation), false);
             // Reconnect as no communication can succeed after this point
             final GBDevice device = getDevice();
             if (device != null) {
@@ -696,7 +696,7 @@ public class HuaweiSupportProvider {
         @Override
         public void handleException(Request.ResponseParseException e) {
             LOG.error("Authentication exception", e);
-            GB.toast(context, R.string.authentication_failed_negotiation, Toast.LENGTH_LONG, GB.ERROR);
+            (leSupport != null ? leSupport : brSupport).reportPairingError(context.getString(R.string.authentication_failed_negotiation), false);
             // Disconnect as no communication can succeed after this point
             final GBDevice device = getDevice();
             if (device != null) {
