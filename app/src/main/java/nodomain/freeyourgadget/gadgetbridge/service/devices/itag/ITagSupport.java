@@ -56,11 +56,11 @@ public class ITagSupport extends AbstractBTLESingleDeviceSupport {
 
     public ITagSupport() {
         super(LOG);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
-        addSupportedService(GattService.UUID_SERVICE_BATTERY_SERVICE);
+        addSupportedService(GattService.SERVICE_GAP.uuid);
+        addSupportedService(GattService.SERVICE_GATT.uuid);
+        addSupportedService(GattService.SERVICE_BATTERY.uuid);
 
-        addSupportedService(GattService.UUID_SERVICE_IMMEDIATE_ALERT);
+        addSupportedService(GattService.SERVICE_IMMEDIATE_ALERT.uuid);
         addSupportedService(ITagConstants.UUID_SERVICE_BUTTON);
 
 

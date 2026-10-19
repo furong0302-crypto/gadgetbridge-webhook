@@ -801,9 +801,12 @@
     <string name="action_discover">Connect new device</string>
     <string name="device_with_rssi">%1$s (%2$s)</string>
     <string name="title_activity_android_pairing">Pair device</string>
-    <string name="android_pairing_hint">Use the Android Bluetooth pairing dialog to pair the device.</string>
     <string name="title_activity_mi_band_pairing">Pair your Mi Band</string>
     <string name="pairing">Pairing with %s…</string>
+    <string name="pairing_step_bond">Bluetooth bond</string>
+    <string name="pairing_failed_connect">Could not connect to %1$s.</string>
+    <string name="pairing_success">Paired with %1$s</string>
+    <string name="pairing_change_auth_key">Change auth key</string>
     <string name="choose_device">Choose a device</string>
     <string name="no_supported_devices_found">No supported devices found</string>
     <string name="pairing_creating_bond_with">Creating bond with %1$s (%2$s)</string>
@@ -1290,6 +1293,8 @@
     <string name="miband_prefs_reserve_reminder_calendar">Reminders to reserve for upcoming events</string>
     <string name="prefs_reserve_reminder_calendar_summary">Number of calendar events that will be synchronized</string>
     <string name="miband_prefs_hr_sleep_detection">Use heart rate sensor to improve sleep detection</string>
+    <string name="pref_sleep_stage_estimation_title">Estimate sleep stages</string>
+    <string name="pref_sleep_stage_estimation_summary">Estimate light, deep and REM sleep from movement and heart rate, replacing any sleep information reported by the device.</string>
     <string name="pref_sleep_breathing_quality_monitoring">Sleep breathing quality monitoring</string>
     <string name="pref_sleep_respiratory_rate_monitoring">Sleep breathing rate monitoring</string>
     <string name="pref_heartrate_alert_irregular_rhythm">Irregular heart rhythm alert</string>
@@ -4544,6 +4549,8 @@
     <string name="changelog_show_full">More…</string>
     <string name="changelog_ok_button">OK</string>
     <string name="fit_file_viewer">FIT File Viewer</string>
+    <string name="text_file_viewer">Text File Viewer</string>
+    <string name="garmin_connect_iq_error_report">Connect IQ error report</string>
     <string name="reset">Reset</string>
     <string name="changelog_title">What\'s New</string>
     <string name="loyalty_cards_sync_groups_only">Sync only specific groups</string>
@@ -5485,6 +5492,8 @@
     <string name="huawei_send_gps_and_time_title">Send GPS and Time to device</string>
     <string name="huawei_send_gps_and_time_summary">Send GPS and Time to device for weather and search stars optimization. Location should be set in the settings</string>
     <string name="garmin_mlr_protocol">Multi-Link Reliable Protocol</string>
+    <string name="garmin_prg_transfer_mlr_title">Install PRG files using MLR</string>
+    <string name="garmin_prg_transfer_mlr_summary">Faster file transfer, but might be unstable.</string>
     <string name="garmin_legacy_sync_flush_title" translatable="false">Legacy flush on sync</string>
     <string name="garmin_legacy_sync_flush_summary" translatable="false">Use the legacy sync protocol to flush data before sync. Disable this if your watch freezes when syncing. Might result in delayed data.</string>
     <string name="feature_exploresync_title">ExploreSync Protocol</string>

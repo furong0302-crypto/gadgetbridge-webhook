@@ -37,7 +37,7 @@ import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.FindPhoneActivity;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
+import nodomain.freeyourgadget.gadgetbridge.util.CompanionDeviceUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class GBDeviceEventFindPhone extends GBDeviceEvent {
@@ -46,7 +46,7 @@ public class GBDeviceEventFindPhone extends GBDeviceEvent {
     public Event event = Event.UNKNOWN;
 
     @Override
-    public void evaluate(final Context context, final GBDevice device) {
+    public void evaluate(@NonNull final Context context, @NonNull final GBDevice device) {
         LOG.info("Got GBDeviceEventFindPhone: {}", this.event);
         switch (this.event) {
             case START:
@@ -95,7 +95,7 @@ public class GBDeviceEventFindPhone extends GBDeviceEvent {
     @RequiresApi(Build.VERSION_CODES.Q)
     private void handleGBDeviceEventFindPhoneStartNotification(final Context context, final boolean ring) {
         LOG.info("Got handleGBDeviceEventFindPhoneStartNotification");
-        if (BondingUtil.getCompanionAssociations(context).isEmpty()) {
+        if (CompanionDeviceUtil.getCompanionAssociations(context).isEmpty()) {
             // On Android Q and above, we need the device to be paired as companion. If it is not, display a notification
             // notifying the user and linking to further instructions
             final Intent instructionsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://gadgetbridge.org/basics/pairing/companion-device/"));

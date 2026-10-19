@@ -3,6 +3,7 @@ package nodomain.freeyourgadget.gadgetbridge.devices.huawei
 import nodomain.freeyourgadget.gadgetbridge.devices.HuaweiSleepStageSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.SleepSessionProvider
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession
+import nodomain.freeyourgadget.gadgetbridge.entities.HuaweiSleepStatsSample
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
 import nodomain.freeyourgadget.gadgetbridge.model.SleepSession
@@ -26,7 +27,15 @@ class HuaweiSleepSessionProvider(
 
         val sleepStagesSampleProvider = HuaweiSleepStageSampleProvider(device, session)
 
-        for (statsSample in sleepStatsSamples) {
+        // Some watches report partial records inside a full night. Process the longest
+        // records first, so that a record inside an already accepted one can be dropped.
+        val acceptedStatsSamples = ArrayList<HuaweiSleepStatsSample>()
+        for (statsSample in sleepStatsSamples.sortedByDescending { it.wakeupTime - it.timestamp }) {
+            if (acceptedStatsSamples.any { it.timestamp <= statsSample.timestamp && statsSample.wakeupTime <= it.wakeupTime }) {
+                continue
+            }
+            acceptedStatsSamples.add(statsSample)
+
             val startMillis = statsSample.timestamp
             val endMillis = statsSample.wakeupTime
             val stageSamples = sleepStagesSampleProvider.getAllSamples(startMillis, endMillis)

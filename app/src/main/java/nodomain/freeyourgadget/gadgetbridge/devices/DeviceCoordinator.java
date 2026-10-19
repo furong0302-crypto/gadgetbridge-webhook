@@ -241,10 +241,17 @@ public interface DeviceCoordinator {
      * Returns the Activity class to be started in order to perform a pairing of a
      * given device after its discovery.
      *
-     * @return the activity class for pairing/initial authentication, or null if none
+     * @return the activity class for pairing/initial authentication, or null for the default pairing activity
      */
     @Nullable
     Class<? extends Activity> getPairingActivity();
+
+    /**
+     * Returns a text that the default pairing activity displays during the pairing, for example a PIN or an
+     * action to do on the device.
+     */
+    @Nullable
+    CharSequence getPairingHint(Context context, GBDeviceCandidate candidate);
 
     @Nullable
     Class<? extends Activity> getCalibrationActivity();

@@ -29,7 +29,7 @@ public class MlrCommunicator {
     private static final int INITIAL_MAX_UNACKED_SEND = 0x20;
     private static final int MAX_RETRANSMISSION_TIMEOUT = 20000;
     private static final int INITIAL_RETRANSMISSION_TIMEOUT = 1000;
-    private static final int ACK_TIMEOUT = 250;
+    private static final int ACK_TIMEOUT = 20;
     private static final int ACK_TRIGGER_THRESHOLD = 5;
 
     private final int handle;
@@ -66,6 +66,10 @@ public class MlrCommunicator {
     private final MessageSender messageSender;
     private final MessageReceiver messageReceiver;
 
+    @GuardedBy("lock")
+    @Nullable
+    private AckListener ackListener;
+
     public MlrCommunicator(final int handle,
                            final int maxPacketSize,
                            final MessageSender messageSender,
@@ -80,6 +84,12 @@ public class MlrCommunicator {
     public void setMaxPacketSize(final int maxPacketSize) {
         synchronized (lock) {
             this.maxPacketSize = maxPacketSize;
+        }
+    }
+
+    public void setAckListener(@Nullable final AckListener listener) {
+        synchronized (lock) {
+            this.ackListener = listener;
         }
     }
 
@@ -211,14 +221,25 @@ public class MlrCommunicator {
         timeoutHandler.removeCallbacks(retransmissionRunnable);
 
         // Remove acked messages from the array
+        int ackedBytes = 0;
         for (int i = lastRcvAck; i != reqNum; i = (i + 1) % (MAX_SEQ_NUM + 1)) {
             if (sentFragments[i] == null) {
                 LOG.error("Attempting to expire null fragment at index {}", i);
+            } else {
+                ackedBytes += sentFragments[i].data().length;
             }
             sentFragments[i] = null;
         }
 
         lastRcvAck = reqNum;
+
+        // Recover from a retransmission backoff
+        retransmissionTimeout = INITIAL_RETRANSMISSION_TIMEOUT;
+        maxNumUnackedSend = Math.min(maxNumUnackedSend + numAcked, INITIAL_MAX_UNACKED_SEND);
+
+        if (ackListener != null && ackedBytes > 0) {
+            ackListener.onAcked(ackedBytes, fragmentQueue.isEmpty() && lastRcvAck == nextSendSeq);
+        }
 
         // Restart retransmission timer if there are still unacked packets
         if (lastRcvAck != nextSendSeq) {
@@ -268,17 +289,15 @@ public class MlrCommunicator {
             return;
         }
 
-        // Check if we can send more packets
-        final int numSentUnacked = (nextSendSeq - lastRcvAck + MAX_SEQ_NUM + 1) % (MAX_SEQ_NUM + 1);
+        Fragment fragment;
+        while ((fragment = fragmentQueue.peek()) != null) {
+            final int numSentUnacked = (nextSendSeq - lastRcvAck + MAX_SEQ_NUM + 1) % (MAX_SEQ_NUM + 1);
+            if (numSentUnacked >= maxNumUnackedSend) {
+                LOG.debug("Cannot send more packets: {} unacked, max {}", numSentUnacked, maxNumUnackedSend);
+                return;
+            }
+            fragmentQueue.poll();
 
-        if (numSentUnacked >= maxNumUnackedSend) {
-            LOG.debug("Cannot send more packets: {} unacked, max {}", numSentUnacked, maxNumUnackedSend);
-            return;
-        }
-
-        // Send next fragment if available
-        final Fragment fragment = fragmentQueue.poll();
-        if (fragment != null) {
             // Update the fragment with the current reqNum before storing it
             final Fragment fragmentWithReqNum = new Fragment(fragment.taskName, fragment.num, fragment.data, nextRcvSeq);
             final byte[] packet = createPacket(nextRcvSeq, nextSendSeq, fragment.data);
@@ -383,6 +402,14 @@ public class MlrCommunicator {
 
     public interface MessageReceiver {
         void onDataReceived(final byte[] data);
+    }
+
+    public interface AckListener {
+        /**
+         * Called for each acknowledgement, with the number of data bytes that it acknowledges, and whether all
+         * queued data is now acknowledged.
+         */
+        void onAcked(int ackedBytes, boolean allAcked);
     }
 
     private record Fragment(String taskName, int num, byte[] data, int reqNum) {

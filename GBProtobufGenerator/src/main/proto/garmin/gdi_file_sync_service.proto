@@ -34,7 +34,13 @@ message FileSyncService {
 message ItemListCancelNotification{
 }
 
+// Reserves a transfer slot for a PRG upload via MLR. The response contains the token for the control
+// message that the upload starts with.
 message PushItemRequest {
+  optional File file = 1;
+  optional uint32 unk2 = 2; // 24, 34 or 37, does not seem related to the app type
+  optional uint32 unk3 = 3; // 0
+  optional uint32 unk4 = 4; // 15
 }
 
 message DeleteItemRequest {
@@ -54,8 +60,12 @@ message GetItemChecksumResponse {
 
 message PushItemResponse {
     optional uint32 unk1 = 1;
+    optional uint32 unk2 = 2; // 0
+    optional uint32 unk3 = 3; // 0
+    optional uint32 token = 4;
     optional uint32 unk6 = 6;
     optional uint32 unk7 = 7;
+    optional uint32 unk8 = 8; // 10
 }
 
 message PriorityUpdateResponse {

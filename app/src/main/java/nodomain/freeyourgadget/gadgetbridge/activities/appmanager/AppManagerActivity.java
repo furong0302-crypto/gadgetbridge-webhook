@@ -53,6 +53,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.activities.install.InstallLauncher;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.util.BarShade;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
@@ -76,6 +77,9 @@ public class AppManagerActivity extends AbstractGBActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fragmentappmanager);
+        if (BarShade.continuesToolbar(this, R.attr.tab_bar_bg)) {
+            setTopShade(findViewById(R.id.appmanager_tab_shade));
+        }
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -122,6 +126,9 @@ public class AppManagerActivity extends AbstractGBActivity {
                 (tab, position) -> {
                     tab.setText(getPageTitle(position));
                 }).attach();
+        if (enabledTabsList.size() <= 1) {
+            findViewById(R.id.appmanager_tab_bar).setVisibility(View.GONE);
+        }
     }
 
     public static synchronized void deleteFromAppOrderFile(String filename, UUID uuid) {

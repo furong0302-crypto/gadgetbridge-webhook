@@ -21,7 +21,6 @@ package nodomain.freeyourgadget.gadgetbridge.devices.fitpro;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,12 +68,6 @@ public class FitProDeviceCoordinator extends AbstractBLEDeviceCoordinator {
         // different devices seem to work differently.
         // user will unfortunately need to decide
         return BONDING_STYLE_ASK;
-    }
-
-    @Nullable
-    @Override
-    public Class<? extends Activity> getPairingActivity() {
-        return null;
     }
 
     @Override

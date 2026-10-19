@@ -1194,6 +1194,12 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
 
     @Nullable
     @Override
+    public CharSequence getPairingHint(final Context context, final GBDeviceCandidate candidate) {
+        return null;
+    }
+
+    @Nullable
+    @Override
     public Class<? extends Activity> getCalibrationActivity() {
         return null;
     }

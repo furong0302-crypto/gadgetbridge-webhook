@@ -313,6 +313,7 @@
         {"num":5,"name":"active","base":"ENUM","type":"Bool"},
         {"num":10,"name":"color","base":"UINT8","arrayLen":3},
         {"num":11,"name":"high_contrast","base":"ENUM","type":"Bool"},
+        {"num":12,"name":"activity_profile_index","base":"UINT8"},
         {"num":15,"name":"popularity_routing","base":"ENUM","type":"Bool"},
         {"num":17,"name":"navigation_prompt","base":"ENUM"},
         {"num":18,"name":"sharp_bend_warnings","base":"ENUM","type":"Bool"},
@@ -2053,7 +2054,10 @@
       "fields": [
         {"num":2,"name":"club_type","base":"ENUM"},
         {"num":3,"name":"club_nickname","base":"STRING"},
+        {"num":4,"name":"flex","base":"ENUM"},
         {"num":6,"name":"average_distance","base":"UINT32","scale":100,"UOM":"METER"},
+        {"num":8,"name":"loft","base":"UINT16","scale":100,"UOM":"DEGREES"},
+        {"num":9,"name":"lie","base":"UINT16","scale":100,"UOM":"DEGREES"},
         {"num":19,"name":"max_distance","base":"UINT32","scale":100,"UOM":"METER"},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
@@ -2432,7 +2436,17 @@
       "name": "SETTINGS_CHANGELOG",
       "fields": [
         {"num":0,"name":"message_number","base":"UINT16"},
+        {"num":1,"name":"message_idx","base":"UINT16"},
         {"num":2,"name":"field_number","base":"UINT8"},
+        {"num":3,"name":"field_idx","base":"UINT8"},
+        {"num":4,"name":"num_value","base":"UINT32"},
+        {"num":5,"name":"text_value","base":"STRING"},
+        {"num":6,"name":"sport","base":"ENUM"},
+        {"num":7,"name":"unk_7","base":"ENUM"},
+        {"num":8,"name":"activity_profile_index","base":"UINT8"},
+        {"num":9,"name":"unk_9","base":"ENUM"},
+        {"num":10,"name":"unk_10","base":"UINT32"},
+        {"num":11,"name":"unk_11","base":"UINT32"},
         {"num":251,"name":"pad","base":"BYTE","arrayLen":0},
         {"num":253,"name":"timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"}
       ]
@@ -3402,6 +3416,9 @@
         {"num":11,"name":"duration_units","base":"ENUM"},
         {"num":12,"name":"target_value","base":"UINT32"},
         {"num":13,"name":"target_units","base":"ENUM"},
+        {"num":14,"name":"sport","base":"ENUM"},
+        {"num":15,"name":"sub_sport","base":"ENUM"},
+        {"num":23,"name":"goal","base":"ENUM"},
         {"num":24,"name":"city","base":"STRING"},
         {"num":26,"name":"country","base":"STRING"}
       ]
@@ -7788,6 +7805,8 @@
     {"manufacturer":1,"product":4815,"name":"Forerunner 170","type":"DeviceType.GARMIN_FORERUNNER_170"},
     {"manufacturer":1,"product":4825,"name":"Approach J1"},
     {"manufacturer":1,"product":4838,"name":"Forerunner 55","type":"DeviceType.GARMIN_FORERUNNER_55"},
+    {"manufacturer":1,"product":4874,"name":"Approach S72"},
+    {"manufacturer":1,"product":4875,"name":"Approach S72"},
     {"manufacturer":1,"product":4879,"name":"D2 Mach 2","type":"DeviceType.GARMIN_D2_MACH_2"},
     {"manufacturer":1,"product":4916,"name":"Forerunner 70","type":"DeviceType.GARMIN_FORERUNNER_70"},
     {"manufacturer":1,"product":4927,"name":"Xero C2"},

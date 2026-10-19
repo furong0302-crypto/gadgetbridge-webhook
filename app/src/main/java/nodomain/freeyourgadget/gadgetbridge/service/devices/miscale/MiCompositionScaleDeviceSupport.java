@@ -35,7 +35,6 @@ import java.util.UUID;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
-import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.MiScaleWeightSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.MiScaleWeightSample;
@@ -61,10 +60,10 @@ public class MiCompositionScaleDeviceSupport extends AbstractBTLESingleDeviceSup
 
     public MiCompositionScaleDeviceSupport() {
         super(LOG);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
-        addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
-        addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
-        addSupportedService(GattService.UUID_SERVICE_BODY_COMPOSITION);
+        addSupportedService(GattService.SERVICE_GAP.uuid);
+        addSupportedService(GattService.SERVICE_GATT.uuid);
+        addSupportedService(GattService.SERVICE_DEVICE_INFORMATION.uuid);
+        addSupportedService(GattService.SERVICE_BODY_COMPOSITION.uuid);
         addSupportedService(UUID.fromString("00001530-0000-3512-2118-0009af100700"));
 
         deviceInfoProfile = new DeviceInfoProfile<>(this);
@@ -90,7 +89,7 @@ public class MiCompositionScaleDeviceSupport extends AbstractBTLESingleDeviceSup
 
         // Weight and body composition
         builder.setCallback(this);
-        builder.notify(GattCharacteristic.UUID_CHARACTERISTIC_BODY_COMPOSITION_MEASUREMENT, true);
+        builder.notify(GattCharacteristic.CHARACTERISTIC_BODY_COMPOSITION_MEASUREMENT.uuid, true);
 
         return builder;
     }
@@ -102,7 +101,7 @@ public class MiCompositionScaleDeviceSupport extends AbstractBTLESingleDeviceSup
         }
 
         final UUID characteristicUUID = characteristic.getUuid();
-        if (characteristicUUID.equals(GattCharacteristic.UUID_CHARACTERISTIC_BODY_COMPOSITION_MEASUREMENT)) {
+        if (characteristicUUID.equals(GattCharacteristic.CHARACTERISTIC_BODY_COMPOSITION_MEASUREMENT.uuid)) {
             final byte flags = data[1];
             final boolean stabilized = testBit(flags, 5) && !testBit(flags, 7);
 

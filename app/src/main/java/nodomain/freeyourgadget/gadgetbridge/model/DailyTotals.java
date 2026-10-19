@@ -139,7 +139,7 @@ public class DailyTotals implements Serializable {
         long totalSecondsDeepSleep = 0;
         long totalSecondsRemSleep = 0;
         long totalSecondsAwakeSleep = 0;
-        for (SleepSession session : provider.getSleepSessions(range[0], range[1])) {
+        for (SleepSession session : provider.getSleepSessionsEndingIn(range[0], range[1])) {
             totalSecondsLightSleep += session.getLightSleepDuration();
             totalSecondsDeepSleep += session.getDeepSleepDuration();
             totalSecondsRemSleep += session.getRemSleepDuration();

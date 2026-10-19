@@ -242,6 +242,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_INACTIVITY_STEPS = "inactivity_warnings_steps";
 
     public static final String PREF_HEARTRATE_USE_FOR_SLEEP_DETECTION = "heartrate_sleep_detection";
+    public static final String PREF_SLEEP_STAGE_ESTIMATION = "sleep_stage_estimation";
     public static final String PREF_HEARTRATE_MEASUREMENT_INTERVAL = "heartrate_measurement_interval";
     public static final String PREF_BLOOD_PRESSURE_ACTIVE_USER = "blood_pressure_active_user";
     public static final String PREF_HEARTRATE_ACTIVITY_MONITORING = "heartrate_activity_monitoring";

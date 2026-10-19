@@ -54,6 +54,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ServiceCompat;
@@ -250,7 +251,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (GBDevice.ACTION_DEVICE_CHANGED.equals(action)) {
-                GBDevice device = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
+                final GBDevice device = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
                 if (device == null) {
                     // Should never happen
                     LOG.error("Got ACTION_DEVICE_CHANGED without device");
@@ -263,6 +264,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     cachedStruct.setDevice(device);
                     DeviceCoordinator newCoordinator = device.getDeviceCoordinator();
                     cachedStruct.setCoordinator(newCoordinator);
+                } else {
+                    LOG.trace("Got null struct for changed device {}", device);
                 }
                 updateReceiversState();
 
@@ -627,6 +630,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     LOG.debug("connectToDevice - create new device support for {} ({})", deviceAddress, gbDevice.getType());
                     deviceSupport = mFactory.createDeviceSupport(gbDevice);
                     LOG.debug("connectToDevice - created {} for {}", deviceSupport != null ? deviceSupport.getClass().getSimpleName() : "(null)", deviceAddress);
+                    // The struct might still contain the device from the previous support, which stays NOT_CONNECTED
+                    registeredStruct.setDevice(gbDevice);
                     registeredStruct.setDeviceSupport(deviceSupport);
                 }
 
@@ -748,7 +753,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     try {
                         handleAction(intent, action, device1);
                     } catch (DeviceNotFoundException e) {
-                        LOG.warn("exception in onStartCommand", e);
+                        LOG.warn("Failed to find device in onStartCommand: {}", device1);
                     } catch (Exception e) {
                         LOG.error("An exception was raised while handling the action {} for the device {}: ", action, device1, e);
                     }
@@ -763,7 +768,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             try {
                 removeDeviceSupport(device);
             } catch (DeviceNotFoundException e) {
-                LOG.error("Trying to disconnect unknown device: ", e);
+                LOG.error("Failed to find device in handleAction to disconnect: {}", device);
             }
             device.setState(GBDevice.State.NOT_CONNECTED);
             device.sendDeviceUpdateIntent(this);
@@ -793,19 +798,18 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         struct.setDeviceSupport(null);
     }
 
-    private DeviceStruct getDeviceStructOrNull(GBDevice device) {
-        DeviceStruct deviceStruct = null;
+    private DeviceStruct getDeviceStructOrNull(@NonNull final GBDevice device) {
         try {
-            deviceStruct = getDeviceStruct(device);
+            return getDeviceStruct(device);
         } catch (DeviceNotFoundException e) {
-            LOG.warn("exception in getDeviceStructOrNull", e);
+            LOG.trace("exception in getDeviceStructOrNull", e);
         }
-        return deviceStruct;
+        return null;
     }
 
     public DeviceStruct getDeviceStruct(GBDevice device) throws DeviceNotFoundException {
         if (device == null) {
-            throw new DeviceNotFoundException("null");
+            throw new DeviceNotFoundException("device is null");
         }
         for (DeviceStruct struct : deviceStructs) {
             if (struct.getDevice().equals(device)) {
@@ -920,7 +924,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 handleAction(notifCache.remove(0), ACTION_NOTIFICATION, device);
             }
         } catch (DeviceNotFoundException e) {
-            LOG.error("Error while sending cached notifications to {}", device.getAliasOrName(), e);
+            LOG.warn("Failed to find device in sendCachedNotifications: {}", device);
         }
     }
 
@@ -1031,7 +1035,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             try {
                 removeDeviceSupport(device);
             } catch (DeviceNotFoundException e) {
-                LOG.warn("exception in onDestroy", e);
+                LOG.warn("Failed to find device in onDestroy: {}", device);
             }
         }
         GB.removeNotification(GB.NOTIFICATION_ID, this); // need to do this because the updated notification won't be cancelled when service stops

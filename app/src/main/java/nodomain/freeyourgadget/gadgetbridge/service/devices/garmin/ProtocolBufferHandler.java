@@ -215,6 +215,11 @@ public class ProtocolBufferHandler implements MessageHandler {
                 }
             }
             if (smart.hasFileSyncService()) {
+                if (smart.getFileSyncService().hasPushItemResponse()) {
+                    // Handled outside of new_sync_protocol, since this only applies to file uploads
+                    processed = true;
+                    deviceSupport.onPushItemResponse(smart.getFileSyncService().getPushItemResponse());
+                }
                 if (deviceSupport.newSyncProtocol()) {
                     processed = true;
                     final GdiFileSyncService.FileSyncService response = fileSyncServiceHandler.handle(smart.getFileSyncService());

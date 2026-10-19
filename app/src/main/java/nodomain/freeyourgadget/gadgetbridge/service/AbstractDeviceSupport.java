@@ -21,13 +21,16 @@ package nodomain.freeyourgadget.gadgetbridge.service;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.usb.UsbAccessory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +64,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
 import nodomain.freeyourgadget.gadgetbridge.model.weather.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.navigation.NavigationNotificationSender;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs;
 
 // TODO: support option for a single reminder notification when notifications could not be delivered?
@@ -87,6 +91,11 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
     /// a task name for logging to {@link #onInstallApp(Uri, Bundle)}
     public static final String BUNDLE_EXTRA_INSTALL_TASK_NAME = "install_handler_task_name";
 
+    public static final String ACTION_PAIRING_ERROR = "nodomain.freeyourgadget.gadgetbridge.service.action.pairing_error";
+    public static final String EXTRA_PAIRING_ERROR_ADDRESS = "pairing_error_address";
+    public static final String EXTRA_PAIRING_ERROR_MESSAGE = "pairing_error_message";
+    public static final String EXTRA_PAIRING_ERROR_AUTH_KEY = "pairing_error_auth_key";
+
     @Override
     public void setContext(@NonNull final GBDevice gbDevice,
                            @NonNull final BluetoothAdapter btAdapter,
@@ -101,6 +110,23 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
                            @NonNull final Context context) {
         this.gbDevice = gbDevice;
         this.context = context;
+    }
+
+    /**
+     * Reports an error that stops the pairing process of the device. If no pairing activity received it, it is
+     * displayed as a toast.
+     *
+     * @param isAuthKeyError true if the auth key is wrong
+     */
+    public void reportPairingError(@NonNull final CharSequence message, final boolean isAuthKeyError) {
+        LOG.warn("Pairing error for {} (auth key error: {}): {}", gbDevice.getAddress(), isAuthKeyError, message);
+        final Intent intent = new Intent(ACTION_PAIRING_ERROR)
+            .putExtra(EXTRA_PAIRING_ERROR_ADDRESS, gbDevice.getAddress())
+            .putExtra(EXTRA_PAIRING_ERROR_MESSAGE, message.toString())
+            .putExtra(EXTRA_PAIRING_ERROR_AUTH_KEY, isAuthKeyError);
+        if (!LocalBroadcastManager.getInstance(context).sendBroadcast(intent)) {
+            GB.toast(context, message.toString(), Toast.LENGTH_LONG, GB.WARN);
+        }
     }
 
     /**
@@ -471,7 +497,7 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
 
     @Override
     public void onAppConfigSet(final UUID appId, final ArrayList<DynamicAppConfig> configs) {
-        
+
     }
 
     /**
