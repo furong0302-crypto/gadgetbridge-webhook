@@ -18,7 +18,6 @@
         <item>@string/pref_theme_system</item>
         <item>@string/pref_theme_light</item>
         <item>@string/pref_theme_dark</item>
-        <item>@string/map_theme_dark_low_contrast</item>
         <item>@string/pref_theme_dynamic</item>
     </string-array>
     <string-array name="pref_theme_values">

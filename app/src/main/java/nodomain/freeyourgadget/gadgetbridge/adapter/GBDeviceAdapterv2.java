@@ -221,7 +221,6 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         holder.deviceNameLabel.setText(folder.getName());
         holder.infoIcons.setVisibility(View.GONE);
         holder.companionHint.setVisibility(View.GONE);
-        holder.deviceImageView.setOnClickListener(null);
         holder.deviceImageView.setOnLongClickListener(null);
         holder.deviceInfoBox.setVisibility(View.GONE);
         holder.cardViewActivityCardLayout.setVisibility(View.GONE);
@@ -232,19 +231,18 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         holder.deviceStatusLabel.setText(context.getString(R.string.controlcenter_connected_fraction, connectedInFolder, countInFolder));
         DeviceStatusDot.apply(holder.deviceStatusDot, connectedInFolder > 0);
 
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (expandedFolderName.equals(folder.getName())) {
-                    // collapse open folder
-                    expandedFolderName = "";
-                } else {
-                    expandedFolderName = folder.getName();
-                }
-                rebuildFolders();
-                notifyDataSetChanged();
+        final View.OnClickListener toggleFolder = v -> {
+            if (expandedFolderName.equals(folder.getName())) {
+                // collapse open folder
+                expandedFolderName = "";
+            } else {
+                expandedFolderName = folder.getName();
             }
-        });
+            rebuildFolders();
+            notifyDataSetChanged();
+        };
+        holder.container.setOnClickListener(toggleFolder);
+        holder.deviceImageView.setOnClickListener(toggleFolder);
         holder.container.setOnLongClickListener(null);
     }
 

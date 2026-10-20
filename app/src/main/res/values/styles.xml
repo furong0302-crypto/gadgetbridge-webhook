@@ -424,7 +424,7 @@
         <item name="deviceIconPrimary">?attr/colorSurfaceContainerHighest</item>
         <item name="deviceIconLight">?attr/colorSurfaceContainerHighest</item>
         <item name="deviceIconDark">?attr/colorSurfaceContainerHighest</item>
-        <item name="deviceIconOnPrimary">?attr/colorPrimary</item>
+        <item name="deviceIconOnPrimary">?attr/colorOnSurfaceVariant</item>
         <item name="deviceIconBackground">@android:color/transparent</item>
         <item name="deviceIconBackgroundLight">@android:color/transparent</item>
         <item name="deviceIconBackgroundDark">@android:color/transparent</item>
@@ -437,9 +437,7 @@
         <item name="deviceIconOnPrimary">?attr/colorOnPrimaryContainer</item>
         <item name="deviceCardIconTile">?attr/colorPrimaryContainer</item>
     </style>
-    <style name="ThemeOverlay.App.DropdownDeviceIcon" parent="ThemeOverlay.App.DeviceCardIcon">
-        <item name="deviceIconOnPrimary">?attr/colorOnSurfaceVariant</item>
-    </style>
+    <style name="ThemeOverlay.App.DropdownDeviceIcon" parent="ThemeOverlay.App.DeviceCardIcon" />
     <style name="DeviceCardActionIcon">
         <item name="android:layout_width">40dp</item>
         <item name="android:layout_height">40dp</item>
@@ -504,11 +502,14 @@
     <style name="GadgetbridgeTheme.OverflowMenuStyle" parent="Widget.Material3.PopupMenu.Overflow" />
 
     <!-- splash screen -->
-    <style name="SplashTheme" parent="GadgetbridgeTheme.NoActionBar">
-        <item name="android:statusBarColor">@color/primarydark_dark</item>
-        <item name="android:navigationBarColor">@color/primarydark_dark</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
-        <item name="android:windowBackground">@drawable/splash</item>
+    <style name="SplashTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/window_background_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="postSplashScreenTheme">@style/GadgetbridgeTheme.NoActionBar</item>
+        <item name="android:statusBarColor">@color/window_background_light</item>
+        <item name="android:navigationBarColor">@color/window_background_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
     <!-- preferences screens -->
@@ -904,5 +905,25 @@
         <item name="toolbar_bg">?attr/stat_tile_bg</item>
         <item name="grid_tile_bg">@color/stat_tile_bg_amoled</item>
         <item name="bar_shade">@drawable/bar_shade_amoled</item>
+    </style>
+
+    <style name="GalleryViewerTheme" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+    </style>
+
+    <style name="GalleryViewerAction" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelMedium</item>
+        <item name="android:textColor">@color/gallery_viewer_action</item>
+        <item name="iconGravity">top</item>
+        <item name="iconPadding">4dp</item>
+        <item name="iconTint">@color/gallery_viewer_action</item>
     </style>
 </resources>

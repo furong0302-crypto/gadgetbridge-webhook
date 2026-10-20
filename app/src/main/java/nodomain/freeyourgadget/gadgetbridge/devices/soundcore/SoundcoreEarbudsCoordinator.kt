@@ -25,6 +25,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.Device
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.ListEntry
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.components.multipointPairing
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.deviceSettings
+import nodomain.freeyourgadget.gadgetbridge.activities.multipoint.MultipointPairingActivity
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLClassicDeviceCoordinator
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
@@ -95,6 +96,56 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
         ),
     }
 
+    enum class AncMode(
+        private val preferenceValue: String,
+        private val byteValue: Byte,
+    ) {
+        TRANSPORT("transport", 0x00),
+        OUTDOOR("outdoor", 0x01),
+        INDOOR("indoor", 0x02);
+
+        override fun toString(): String = preferenceValue
+
+        fun toByte(): Byte = byteValue
+
+        companion object {
+            @JvmStatic
+            fun fromPreference(preferenceValue: String?): AncMode? =
+                entries.find { it.preferenceValue == preferenceValue }
+
+            /** Unknown codes retain the calling protocol's fallback. */
+            @JvmStatic
+            fun fromByte(byteValue: Byte): AncMode? = entries.find { it.byteValue == byteValue }
+        }
+    }
+
+    enum class AmbientSoundMode(
+        private val preferenceValue: String,
+        private val byteValue: Byte,
+        @androidx.annotation.StringRes val label: Int,
+    ) {
+        NOISE_CANCELLING("noise_cancelling", 0x00, R.string.sony_ambient_sound_noise_cancelling),
+        AMBIENT_SOUND("ambient_sound", 0x01, R.string.sony_ambient_sound_ambient_sound),
+        OFF("off", 0x02, R.string.sony_ambient_sound_off),
+        // Model-specific aliases follow the standard modes to preserve fromByte lookups.
+        TRANSPARENCY("transparency", 0x01, R.string.prefs_active_noise_cancelling_transparency),
+        ADAPTIVE_ANC("adaptive_anc", 0x00, R.string.pref_adaptive_noise_cancelling_title);
+
+        override fun toString(): String = preferenceValue
+
+        fun toByte(): Byte = byteValue
+
+        companion object {
+            @JvmStatic
+            fun fromPreference(preferenceValue: String?): AmbientSoundMode? =
+                entries.find { it.preferenceValue == preferenceValue }
+
+            @JvmStatic
+            fun fromByte(byteValue: Byte): AmbientSoundMode =
+                entries.find { it.byteValue == byteValue } ?: OFF
+        }
+    }
+
     enum class TapFunction(
         val code: Int,
         @androidx.annotation.StringRes val label: Int,
@@ -121,7 +172,14 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
         get() = emptyList()
 
     /* TIP: Override this function in case you need conditions/exclusions based on Action. */
-    open fun getSupportedTapFunctions(action: ButtonAction): List<TapFunction> = supportedTapFunctions
+    open fun getSupportedTapFunctions(action: ButtonAction): List<TapFunction> =
+        when (action) {
+            ButtonAction.SINGLE_TAP -> supportedTapFunctions.filterNot {
+                it == TapFunction.VOICE_ASSISTANT ||
+                it == TapFunction.AMBIENT_SOUND_CONTROL
+            }
+            else -> supportedTapFunctions
+        }
 
     override fun getDefaultIconResource(): Int = R.drawable.ic_device_galaxy_buds
 
@@ -132,11 +190,20 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
         SoundcoreDeviceSupport::class.java
 
     /** Multipoint activity commands supported by this model. */
-    open fun getSupportedMultipointActions(): Set<String> = emptySet()
+    open fun getSupportedMultipointActions(): Set<String> = setOf(
+        MultipointPairingActivity.ACTION_MULTIPOINT_ENABLE,
+        MultipointPairingActivity.ACTION_MULTIPOINT_DISABLE,
+        MultipointPairingActivity.ACTION_MULTIPOINT_GET_DEVICES,
+        MultipointPairingActivity.ACTION_MULTIPOINT_GET_STATUS,
+        MultipointPairingActivity.ACTION_MULTIPOINT_CONNECT_DEVICE,
+        MultipointPairingActivity.ACTION_MULTIPOINT_DISCONNECT_DEVICE,
+        MultipointPairingActivity.ACTION_MULTIPOINT_FORGET_DEVICE,
+        MultipointPairingActivity.ACTION_MULTIPOINT_START_PAIRING,
+    )
 
     /** Creates the protocol implementation for this model. */
     open fun createProtocol(device: GBDevice): SoundcoreProtocolImplV1 =
-        throw UnsupportedOperationException("Soundcore coordinator must provide its protocol factory")
+        SoundcoreProtocolImplV1(device)
 
     /** Overrides the model-derived control service for devices using a different service. */
     open fun getServiceUUID(): UUID? = null
@@ -155,6 +222,10 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
     override fun getBondingStyle(): Int = BONDING_STYLE_NONE
 
     override fun getBatteryCount(device: GBDevice): Int = 3
+
+    data class BatteryProperties(val multiplier: Int = 20, val offset: Int = 0)
+
+    open fun getBatteryProperties(): BatteryProperties = BatteryProperties()
 
     override fun getBatteryConfig(device: GBDevice): Array<BatteryConfig> =
         when (getBatteryCount(device)) {
@@ -211,13 +282,15 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
     fun supports(device: GBDevice, capability: Capability): Boolean =
         getCapabilities(device).contains(capability)
 
-    open fun getNoiseCancellationLevelRange(): IntRange = 0..2
+    open fun getNoiseCancellationLevelRange(): ByteArray = byteArrayOf(0x00, 0x10, 0x20, 0x30)
 
     open fun getAutoPowerOffMinutes(): Array<Int> = arrayOf(10, 20, 30, 60)
 
     open fun getEqualizerVolumeRange(): IntRange = -6..6
 
-    open fun getSupportedEqualizerBands(): IntArray = intArrayOf()
+    open fun getSupportedEqualizerBands(): IntArray = intArrayOf(
+        100, 200, 400, 800, 1600, 3200, 6400, 12800,
+    )
 
     /** Per-band frequency choices in protocol index order. */
     open fun getSupportedEqualizerBandsRanges(): Array<IntArray> = emptyArray()
@@ -528,27 +601,27 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
 
             if (has(arrayOf(Capability.NoiseControl, Capability.AmbientSound))) {
                 val ambientSoundControlEntries = buildList {
-                    add(ListEntry.Res("off", R.string.sony_ambient_sound_off))
+                    add(AmbientSoundMode.OFF)
                     if (has(Capability.Transparency)) {
-                        add(ListEntry.Res("transparency", R.string.prefs_active_noise_cancelling_transparency))
+                        add(AmbientSoundMode.TRANSPARENCY)
                     }
                     if (has(Capability.NoiseControl)) {
-                        add(ListEntry.Res("noise_cancelling", R.string.sony_ambient_sound_noise_cancelling))
+                        add(AmbientSoundMode.NOISE_CANCELLING)
                     }
                     if (has(Capability.AdaptiveNoiseCancellationMode)) {
-                        add(ListEntry.Res("adaptive_anc", R.string.pref_adaptive_noise_cancelling_title))
+                        add(AmbientSoundMode.ADAPTIVE_ANC)
                     }
                     if (has(Capability.AmbientSound)) {
-                        add(ListEntry.Res("ambient_sound", R.string.sony_ambient_sound_ambient_sound))
+                        add(AmbientSoundMode.AMBIENT_SOUND)
                     }
-                }
+                }.map { ListEntry.Res(it.toString(), it.label) }
                 category(key = "pref_header_soundcore_ambient_sound_control", title = R.string.pref_header_sony_ambient_sound_control) {
                     list(
                         key = DeviceSettingsPreferenceConst.PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL,
                         title = R.string.sony_ambient_sound,
                         icon = R.drawable.ic_hearing,
                         entries = ambientSoundControlEntries,
-                        defaultValue = "off",
+                        defaultValue = AmbientSoundMode.OFF.toString(),
                     )
                     if (has(Capability.NoiseCancellationModes)) {
                         list(
@@ -572,14 +645,14 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
                         )
                     }
                     if (has(Capability.AdaptiveNoiseCancellation)) {
-                        val levelRange = getNoiseCancellationLevelRange()
+                        val levelRange = getNoiseCancellationLevelRange().indices
                         seekbar(
                             key = DeviceSettingsPreferenceConst.PREF_SONY_AMBIENT_SOUND_LEVEL,
                             title = R.string.prefs_active_noise_cancelling_level,
                             icon = R.drawable.ic_hearing,
-                            min = levelRange.first,
+                            min = 1,
                             max = levelRange.last,
-                            defaultValue = levelRange.first,
+                            defaultValue = 1,
                             dependency = if (separateAdaptiveToggle) DeviceSettingsPreferenceConst.PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING else null,
                         )
                     }
@@ -678,12 +751,12 @@ abstract class SoundcoreEarbudsCoordinator : AbstractBLClassicDeviceCoordinator(
                 }
             }
 
-            screen(
-                key = DeviceSpecificSettingsScreen.CONNECTION.key,
-                title = R.string.pref_header_connection,
-                icon = R.drawable.ic_mtu,
-            ) {
-                if (has(Capability.Multipoint)) {
+            if (has(Capability.Multipoint)) {
+                screen(
+                    key = DeviceSpecificSettingsScreen.CONNECTION.key,
+                    title = R.string.pref_header_connection,
+                    icon = R.drawable.ic_mtu,
+                ) {
                     multipointPairing()
                 }
             }

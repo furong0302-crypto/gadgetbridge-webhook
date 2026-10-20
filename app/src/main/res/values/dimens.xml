@@ -20,4 +20,6 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <!-- Space above and below the gauge or bar chart at the top of a chart tab -->
     <dimen name="chart_section_spacing">15dp</dimen>
     <dimen name="chart_gauge_bottom_spacing">24dp</dimen>
+    <dimen name="debug_device_icon_size">48dp</dimen>
+    <dimen name="debug_device_icon_inset">2dp</dimen>
 </resources>

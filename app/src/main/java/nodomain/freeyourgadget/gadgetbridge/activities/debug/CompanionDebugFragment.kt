@@ -44,7 +44,8 @@ class CompanionDebugFragment : AbstractDebugFragment() {
                 Device(
                     it,
                     deviceByAddress?.aliasOrName ?: getString(R.string.unknown),
-                    deviceByAddress?.deviceCoordinator?.defaultIconResource ?: R.drawable.ic_device_unknown
+                    deviceByAddress?.deviceCoordinator?.defaultIconResource ?: R.drawable.ic_device_unknown,
+                    deviceByAddress?.isConnected == true
                 )
             }
             .sortedBy { it.name }
@@ -55,13 +56,14 @@ class CompanionDebugFragment : AbstractDebugFragment() {
                 Device(
                     it.address,
                     it.aliasOrName,
-                    it.deviceCoordinator.defaultIconResource
+                    it.deviceCoordinator.defaultIconResource,
+                    it.isConnected
                 )
             }
 
         if (!companionDevices.isEmpty()) {
             for (device in companionDevices) {
-                addDynamicPref(companionDevicesHeader, device.name, device.address, device.icon) {
+                addDynamicDevicePref(companionDevicesHeader, device.name, device.address, device.icon, device.connected) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setCancelable(true)
                         .setIcon(device.icon)
@@ -79,7 +81,7 @@ class CompanionDebugFragment : AbstractDebugFragment() {
         if (!otherDevices.isEmpty()) {
             otherDevicesHeader.isVisible = true
             for (device in otherDevices) {
-                addDynamicPref(otherDevicesHeader, device.name, device.address, device.icon) {
+                addDynamicDevicePref(otherDevicesHeader, device.name, device.address, device.icon, device.connected) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setCancelable(true)
                         .setIcon(device.icon)
@@ -95,7 +97,7 @@ class CompanionDebugFragment : AbstractDebugFragment() {
         }
     }
 
-    private data class Device(val address: String, val name: String, val icon: Int)
+    private data class Device(val address: String, val name: String, val icon: Int, val connected: Boolean)
 
     // FIXME replace deprecated code
     @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")

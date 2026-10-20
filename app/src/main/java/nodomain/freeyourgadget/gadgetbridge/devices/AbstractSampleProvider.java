@@ -714,6 +714,14 @@ public abstract class AbstractSampleProvider<T extends AbstractActivitySample> i
                                 final List<T> samples,
                                 final int timestamp_from,
                                 final int timestamp_to) {
+        overlaySleep(sleepSessionProvider, samples, timestamp_from, timestamp_to, false);
+    }
+
+    protected void overlaySleep(final SleepSessionProvider sleepSessionProvider,
+                                final List<T> samples,
+                                final int timestamp_from,
+                                final int timestamp_to,
+                                final boolean keepIntensity) {
         // Look further back than this window so a session that started before it (e.g. sleep that
         // started the previous day) is still found and overlaid onto samples in this window.
         final List<SleepSession> sleepSessions = sleepSessionProvider.getSleepSessions(
@@ -730,7 +738,9 @@ public abstract class AbstractSampleProvider<T extends AbstractActivitySample> i
                 final ActivityKind sleepType = sleepKindAt(sleepSessions, sample.getTimestamp() * 1000L);
                 if (sleepType != null) {
                     sample.setRawKind(toRawActivityKind(sleepType));
-                    sample.setRawIntensity(ActivitySample.NOT_MEASURED);
+                    if (!keepIntensity) {
+                        sample.setRawIntensity(ActivitySample.NOT_MEASURED);
+                    }
                 }
             }
         } else {
