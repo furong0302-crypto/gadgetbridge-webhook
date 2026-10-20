@@ -316,7 +316,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
                 hasSleepSessions ? timeStringFormat(pieData.getTotalDeep()) : "-"));
         legendStats.add(buildSleepStageTile(R.color.chart_light_sleep_dark, R.string.sleep_colored_stats_light,
                 hasSleepSessions ? timeStringFormat(pieData.getTotalLight()) : "-"));
-        if (supportsRemSleep(getChartsHost().getDevice())) {
+        if (showRemSleep(pieData)) {
             legendStats.add(buildSleepStageTile(R.color.chart_rem_sleep_dark, R.string.sleep_colored_stats_rem,
                     hasSleepSessions ? timeStringFormat(pieData.getTotalRem()) : "-"));
         }
@@ -396,7 +396,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
         if (!spec.isEmpty()) {
             legend.add(ChartLegendView.squareItem(getString(R.string.sleep_colored_stats_light), akLightSleep.color));
             legend.add(ChartLegendView.squareItem(getString(R.string.sleep_colored_stats_deep), akDeepSleep.color));
-            if (supportsRemSleep(getChartsHost().getDevice())) {
+            if (showRemSleep(mcd.getPieData())) {
                 legend.add(ChartLegendView.squareItem(getString(R.string.sleep_colored_stats_rem), akRemSleep.color));
             }
             if (showAwakeSleep(mcd.getPieData())) {
@@ -410,6 +410,10 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
             }
         }
         binding.sleepchartLegend.setSeries(legend);
+    }
+
+    private boolean showRemSleep(final MySleepChartsData pieData) {
+        return supportsRemSleep(getChartsHost().getDevice()) || pieData.getTotalRem() > 0;
     }
 
     private boolean showAwakeSleep(final MySleepChartsData pieData) {

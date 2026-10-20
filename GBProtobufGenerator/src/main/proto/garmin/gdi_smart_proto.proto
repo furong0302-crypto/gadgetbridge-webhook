@@ -20,6 +20,8 @@ import "garmin/gdi_settings_service.proto";
 import "garmin/gdi_notifications_service.proto";
 import "garmin/gdi_ecg_service.proto";
 import "garmin/gdi_explore_sync.proto";
+import "garmin/gdi_event_sharing_service.proto";
+import "garmin/gdi_launch_monitor_service.proto";
 
 message Smart {
     optional CalendarService calendar_service = 1;
@@ -43,9 +45,10 @@ message Smart {
     optional ExploreSyncService explore_sync_service = 22;
     optional Service28 service28 = 28;
     optional Service29 service29 = 29;
-    optional Service30 service30 = 30;
+    optional EventSharingService event_sharing_service = 30;
     optional Service31 service31 = 31;
     optional Service32 service32 = 32;
+    optional LaunchMonitorService launch_monitor_service = 38;
     optional EcgService ecg_service = 39;
     optional SettingsService settings_service = 42;
     optional FileSyncService file_sync_service = 43;
@@ -291,17 +294,6 @@ message Service29 {
     optional Message41 unk41 = 41;
     optional Message43 unk43 = 43;
     optional Message45 unk45 = 45;
-}
-
-message Service30 {
-    message Message2 {
-    }
-    message Message5 {
-        repeated uint32 unk1 = 1;
-        repeated uint32 unk2 = 2;
-    }
-    optional Message2 unk2 = 2;
-    optional Message5 unk5 = 5;
 }
 
 message Service31 {

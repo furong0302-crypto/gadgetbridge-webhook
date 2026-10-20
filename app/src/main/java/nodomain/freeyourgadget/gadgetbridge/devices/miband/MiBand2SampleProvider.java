@@ -55,7 +55,7 @@ public class MiBand2SampleProvider extends AbstractMiBandSampleProvider {
                     sample.setRawKind(TYPE_UNSET);
                 }
             }
-            overlaySleep(new HuamiEstimatedSleepSessionProvider(getDevice(), getSession()), samples, timestamp_from, timestamp_to);
+            overlaySleep(new HuamiEstimatedSleepSessionProvider(getDevice(), getSession()), samples, timestamp_from, timestamp_to, true);
         }
         return samples;
     }

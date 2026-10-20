@@ -35,6 +35,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.location.LocationManager;
@@ -46,7 +47,10 @@ import android.os.Message;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,6 +60,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -167,6 +172,12 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
         bluetoothProgress.setProgress(0);
         bluetoothProgress.setIndeterminate(true);
         bluetoothProgress.setVisibility(View.GONE);
+
+        final SpannableStringBuilder hint = new SpannableStringBuilder();
+        hint.append(getString(R.string.discovery_note), new StyleSpan(Typeface.BOLD), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        hint.append(' ').append(getString(R.string.discovery_connected_devices_hint));
+        final TextView hintView = findViewById(R.id.discovery_hint);
+        hintView.setText(hint);
 
         deviceCandidateAdapter = new DeviceCandidateAdapter(this, deviceCandidates);
 

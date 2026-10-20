@@ -23,12 +23,14 @@ import android.content.IntentFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
@@ -186,10 +188,13 @@ public class BatteryInfoActivity extends AbstractGBActivity {
         DeviceCoordinator coordinator = gbDevice.getDeviceCoordinator();
 
         ImageView battery_status_device_icon = findViewById(R.id.battery_status_device_icon);
-        battery_status_device_icon.setImageResource(gbDevice.getDeviceCoordinator().getDefaultIconResource());
         if (gbDevice.isInitialized()) {
+            final Context iconContext = new ContextThemeWrapper(battery_status_device_icon.getContext(), R.style.ThemeOverlay_App_DeviceCardIcon_Connected);
+            battery_status_device_icon.setImageDrawable(AppCompatResources.getDrawable(iconContext, coordinator.getDefaultIconResource()));
+            battery_status_device_icon.setBackground(AppCompatResources.getDrawable(iconContext, R.drawable.device_card_icon_bg));
             battery_status_device_icon.setColorFilter(null);
         } else {
+            battery_status_device_icon.setImageResource(coordinator.getDefaultIconResource());
             final ColorMatrix colorMatrix = new ColorMatrix();
             colorMatrix.setSaturation(0);
 
