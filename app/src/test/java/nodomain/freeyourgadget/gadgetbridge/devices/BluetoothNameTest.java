@@ -44,6 +44,7 @@ public class BluetoothNameTest extends TestBase {
             put("CMF Buds 2a", DeviceType.NOTHING_CMF_BUDS_2A); // #6028
             put("HC96", DeviceType.HC96);
             put("FireBoltt 069", DeviceType.FIREBOLTT_069);
+            put("soundcore V20i", DeviceType.SOUNDCORE_V20I); // #4644
             put("Soundcore Q30", DeviceType.SOUNDCORE_Q30); // #4316
             put("soundcore Q30", DeviceType.SOUNDCORE_Q30); // #6371
             put("soundcore  Q30", DeviceType.SOUNDCORE_Q30); // #6371 - unsure
@@ -79,6 +80,7 @@ public class BluetoothNameTest extends TestBase {
             put("ZL02D", DeviceType.ZL02D);
             put("R11C_B200", DeviceType.YAWELL_R11);
             put("R11_B200", DeviceType.YAWELL_R11);
+            put("iP900BPB", DeviceType.INNOVO_IP900BP_B); // #7134
             put("WF-C710N", DeviceType.SONY_WF_C710N);
             put("John's WF-C710N", DeviceType.SONY_WF_C710N);
             put("LE_WF-C710N", null);

@@ -152,6 +152,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/activity_list_summary_date_from_card"
                 style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -194,6 +195,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/activity_list_summary_time_span_card"
                 style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -237,6 +239,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/activity_list_summary_date_to_card"
                 style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
