@@ -56,6 +56,11 @@ public class ActivityListingDetail extends MaterialDialogFragment {
     }
 
     @Override
+    protected int getThemeOverlay() {
+        return R.style.ThemeOverlay_App_MaterialAlertDialog_WindowBackground;
+    }
+
+    @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {

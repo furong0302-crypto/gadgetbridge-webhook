@@ -1875,6 +1875,8 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
      */
     private void installItem(final InstallSession session, final List<InstallItem> items, final int index) {
         if (index >= items.size()) {
+            // Refresh app list
+            onAppInfoReq(GdiInstalledAppsService.InstalledAppsService.AppType.WATCH_APP);
             if (getDevice().isBusy()) {
                 getDevice().unsetBusyTask();
                 getDevice().sendDeviceUpdateIntent(getContext());

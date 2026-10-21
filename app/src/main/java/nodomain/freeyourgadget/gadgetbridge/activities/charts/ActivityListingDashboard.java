@@ -49,6 +49,7 @@ import java.util.List;
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.database.DBAccess;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
@@ -91,6 +92,11 @@ public class ActivityListingDashboard extends MaterialDialogFragment {
     }
 
     @Override
+    protected int getThemeOverlay() {
+        return R.style.ThemeOverlay_App_MaterialAlertDialog_WindowBackground;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 
                              Bundle savedInstanceState) {
@@ -118,6 +124,9 @@ public class ActivityListingDashboard extends MaterialDialogFragment {
         }
         stepListAdapter = new ActivityListingAdapter(getContext());
 
+        StatTileGridUtilKt.applyStatTileStyle(getView().findViewById(R.id.activity_list_summary_date_from_card), null);
+        StatTileGridUtilKt.applyStatTileStyle(getView().findViewById(R.id.activity_list_summary_time_span_card), null);
+        StatTileGridUtilKt.applyStatTileStyle(getView().findViewById(R.id.activity_list_summary_date_to_card), null);
         final TextView battery_status_date_from_text = getView().findViewById(R.id.battery_status_date_from_text);
         final TextView battery_status_date_to_text = getView().findViewById(R.id.battery_status_date_to_text);
         LinearLayout battery_status_date_to_layout = getView().findViewById(R.id.battery_status_date_to_layout);

@@ -112,6 +112,7 @@ import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.password.PasswordCapabilityImpl;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
+import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardLayout;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService;
@@ -241,6 +242,9 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         LOG.debug("onCreatePreferences: {}", rootKey);
 
         final DeviceSettingsSpec modelSpec = device.getDeviceCoordinator().getDeviceSettings(device);
+        if (modelSpec != null) {
+            modelManagedKeys = modelSpec.collectAllKeys();
+        }
 
         if (rootKey != null) {
             // Check whether rootKey belongs to a model-defined ScreenSetting and, if so, render
@@ -283,6 +287,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
                         }
                     }
                     addDynamicSettings(rootKey);
+                    setChangeListener(rootKey);
                     reloadEnabledPreferences();
                     return;
                 }
@@ -292,7 +297,6 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         if (rootKey == null) {
             // we are the main preference screen
             if (modelSpec != null) {
-                modelManagedKeys = modelSpec.collectAllKeys();
                 setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
                 // Declares the (invisible) "searchPreference" preference that getSearchConfiguration()
                 // looks up, so that this device's settings can be searched - see indexModelSettings().
@@ -1679,20 +1683,32 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
             }
         }
 
-        final Preference deviceCardShowItems = findPreference(PREF_DEVICE_CARD_SHOW_ITEMS);
-        if (deviceCardShowItems != null) {
-            deviceCardShowItems.setOnPreferenceChangeListener((preference, newValue) -> {
-                LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST));
-                return true;
-            });
+        final String[] deviceCardPrefKeys = {
+            PREF_DEVICE_CARD_SHOW_ITEMS,
+            PREF_DEVICE_CARD_SHOW_QUICK_CONTROLS
+        };
+        for (final String deviceCardPrefKey : deviceCardPrefKeys) {
+            final Preference deviceCardPref = findPreference(deviceCardPrefKey);
+            if (deviceCardPref != null) {
+                deviceCardPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST));
+                    return true;
+                });
+            }
         }
 
         final Preference deviceCardItems = findPreference(PREF_DEVICE_CARD_ITEMS);
         if (deviceCardItems != null) {
             deviceCardItems.setOnPreferenceClickListener(preference -> {
-                final Intent intent = new Intent(getContext(), DeviceCardItemsActivity.class);
-                intent.putExtra(GBDevice.EXTRA_DEVICE, device);
-                startActivity(intent);
+                DeviceCardItemsActivity.start(requireContext(), device, DeviceCardLayout.ITEMS);
+                return true;
+            });
+        }
+
+        final Preference deviceCardQuickControls = findPreference(PREF_DEVICE_CARD_QUICK_CONTROLS);
+        if (deviceCardQuickControls != null) {
+            deviceCardQuickControls.setOnPreferenceClickListener(preference -> {
+                DeviceCardItemsActivity.start(requireContext(), device, DeviceCardLayout.QUICK_CONTROLS);
                 return true;
             });
         }
@@ -1854,6 +1870,9 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
 
             final List<Integer> deviceCardSubScreens = new ArrayList<>();
             deviceCardSubScreens.add(R.xml.devicesettings_device_card);
+            if (!coordinator.getQuickControls(device).isEmpty()) {
+                deviceCardSubScreens.add(R.xml.devicesettings_device_card_quick_controls);
+            }
             if (coordinator.supportsActivityTracking(device)) {
                 deviceCardSubScreens.add(R.xml.devicesettings_device_card_activity_card_preferences);
             }

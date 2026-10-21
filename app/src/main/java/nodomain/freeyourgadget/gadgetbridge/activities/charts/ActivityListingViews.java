@@ -9,10 +9,13 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.google.android.material.card.MaterialCardView;
+
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySession;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 
@@ -22,6 +25,7 @@ final class ActivityListingViews {
     }
 
     static void fillTile(final View tile, @DrawableRes final int icon, final String value, @StringRes final int label) {
+        StatTileGridUtilKt.applyStatTileStyle((MaterialCardView) tile, null);
         ((ImageView) tile.findViewById(R.id.stat_tile_icon)).setImageResource(icon);
         ((TextView) tile.findViewById(R.id.stat_tile_value)).setText(value);
         ((TextView) tile.findViewById(R.id.stat_tile_label)).setText(label);

@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.adapter.AbstractActivityListingAdapter;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySession;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
@@ -148,6 +149,7 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
             avgHrTile = itemView.findViewById(R.id.activity_list_tile_avg_hr);
             intensityTile = itemView.findViewById(R.id.activity_list_tile_intensity);
             noActivitiesView = itemView.findViewById(R.id.activity_list_no_activities);
+            StatTileGridUtilKt.applyStatTileStyle(itemView.findViewById(R.id.activity_list_goal_card), null);
         }
 
         @Override
