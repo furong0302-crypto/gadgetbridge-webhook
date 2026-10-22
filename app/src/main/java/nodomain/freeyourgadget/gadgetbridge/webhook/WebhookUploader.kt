@@ -149,6 +149,7 @@ object WebhookUploader {
         return maxDays
     }
 
+    @Synchronized
     fun uploadAll(maxRangeSeconds: Long = WebhookConfig.MAX_RANGE_SECONDS): Result {
         if (!WebhookConfig.isEnabled()) {
             return Result(true, "Webhook upload disabled")
@@ -271,6 +272,7 @@ object WebhookUploader {
             newestSampleTs = maxOf(newestSampleTs, sample.timestamp.toLong())
             val entry = JSONObject()
             entry.put("ts", sample.timestamp)
+            entry.put("id", "${sample.timestamp}")
             entry.put("kind", provider.normalizeType(sample.rawKind).name)
             if (sample.steps >= 0) entry.put("steps", sample.steps)
             if (sample.heartRate > 0) entry.put("hr", sample.heartRate)
@@ -291,6 +293,11 @@ object WebhookUploader {
         val extended = if (pendingOnly) JSONObject() else readExtended(db, gbDevice, from, to, enabledTypes)
         if (!pendingOnly) addStandardHealthMetrics(extended, gbDevice, db, from, to, enabledTypes)
         if (extended.length() > 0) body.put("extended", extended)
+        // Replay complete recent nights as well: firmware can revise yesterday's sleep after the cursor advanced.
+        if (!pendingOnly && to >= System.currentTimeMillis() / 1000 - 60 &&
+            WebhookConfig.TYPE_SLEEP_SESSIONS in enabledTypes) {
+            readHuaweiSleep(db, gbDevice)?.let { body.put("sleep_sessions", it) }
+        }
 
         val headers = mutableMapOf("Content-Type" to "application/json", "X-Lianhuan-Chunk" to "$from-$to")
         headers["Authorization"] = "Bearer $token"
@@ -541,6 +548,40 @@ object WebhookUploader {
             }
         }
         return result
+    }
+
+    private fun readHuaweiSleep(db: DBHandler, device: GBDevice): JSONArray? {
+        if (device.deviceCoordinator !is nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiCoordinator) return null
+        return try {
+            val now = System.currentTimeMillis()
+            val stats = nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiSleepStatsSampleProvider(device, db.daoSession)
+            val stages = nodomain.freeyourgadget.gadgetbridge.devices.HuaweiSleepStageSampleProvider(device, db.daoSession)
+            val output = JSONArray()
+            for (night in stats.getSleepSamples(now - TimeUnit.DAYS.toMillis(7), now)) {
+                val start = night.timestamp
+                val end = night.wakeupTime
+                if (end <= start || end > now || end - start > TimeUnit.HOURS.toMillis(36)) continue
+                val parts = JSONArray()
+                for (part in stages.getAllSamples(start, end - 1)) {
+                    val stage = when (part.stage) { 1, 5 -> "light"; 2 -> "rem"; 3 -> "deep"; 4 -> "awake"; else -> null }
+                    if (stage != null) parts.put(JSONObject().apply {
+                        put("stage", stage)
+                        put("start_time", part.timestamp / 1000.0)
+                        put("end_time", minOf(part.timestamp + 60000L, end) / 1000.0)
+                    })
+                }
+                output.put(JSONObject().apply {
+                    put("id", "huawei:${night.timestamp}")
+                    put("start_ts", start / 1000.0)
+                    put("end_ts", end / 1000.0)
+                    put("stages", parts)
+                })
+            }
+            output
+        } catch (e: Exception) {
+            LOG.warn("Could not read sleep sessions; preserving server history", e)
+            null
+        }
     }
 
     private fun cursorToJson(cursor: Cursor, table: ExtTable): JSONObject {

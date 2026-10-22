@@ -46,14 +46,15 @@ object WebhookDeviceSync {
      *
      * @return true when at least one device was asked to sync.
      */
-    fun syncIfStale(): Boolean {
+    @Synchronized
+    fun syncIfStale(force: Boolean = false): Boolean {
         if (!WebhookConfig.isPreSyncEnabled()) {
             return false
         }
 
         val now = System.currentTimeMillis()
         val sinceLast = now - WebhookConfig.getPreSyncLast()
-        if (sinceLast < WebhookConfig.PRE_SYNC_MIN_INTERVAL_MS) {
+        if (!force && sinceLast < WebhookConfig.PRE_SYNC_MIN_INTERVAL_MS) {
             LOG.debug(
                 "Skipping pre-upload sync, last one was {} minutes ago",
                 sinceLast / 60000,

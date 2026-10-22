@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.ConcurrentHashMap
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
+import nodomain.freeyourgadget.gadgetbridge.GBApplication
 
 /**
  * Lianhuan's primary device-fetch clock.
@@ -44,6 +47,19 @@ object WebhookAutoSyncScheduler {
 
     @Volatile
     private var task: ScheduledFuture<*>? = null
+    private val initialized = ConcurrentHashMap<String, Boolean>()
+
+    fun onDeviceStateChanged(device: GBDevice) {
+        val isInitialized = device.isInitialized
+        val wasInitialized = initialized.put(device.address, isInitialized)
+        if (!WebhookConfig.isEnabled()) return
+        executor.execute {
+            if (isInitialized && wasInitialized != true) {
+                WebhookDeviceSync.syncIfStale(force = true)
+            }
+            WebhookScheduler.scheduleImmediate(GBApplication.getContext())
+        }
+    }
 
     @Synchronized
     fun schedule(context: Context) {
@@ -55,19 +71,20 @@ object WebhookAutoSyncScheduler {
             return
         }
 
-        val interval = WebhookConfig.PRE_SYNC_MIN_INTERVAL_MINUTES.toLong()
+        val interval = TimeUnit.MINUTES.toSeconds(WebhookConfig.PRE_SYNC_MIN_INTERVAL_MINUTES.toLong())
         task = executor.scheduleWithFixedDelay(
             {
                 try {
                     val requested = WebhookDeviceSync.syncIfStale()
-                    LOG.debug("Lianhuan five-minute device-sync tick requested={}", requested)
+                    LOG.info("Lianhuan five-minute device-sync tick requested={}", requested)
+                    WebhookScheduler.scheduleImmediate(context.applicationContext)
                 } catch (e: Throwable) {
                     LOG.warn("Lianhuan five-minute device-sync tick failed", e)
                 }
             },
-            30L,
+            0L,
             interval,
-            TimeUnit.MINUTES,
+            TimeUnit.SECONDS,
         )
         LOG.info("Lianhuan direct health auto-sync scheduled every {} minutes", interval)
     }

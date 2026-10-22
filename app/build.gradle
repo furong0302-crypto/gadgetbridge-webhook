@@ -188,7 +188,7 @@ android {
             // Lianhuan build: keep the official package name as the base and use a
             // dedicated suffix so it can live beside the user's current Gadgetbridge.
             applicationIdSuffix ".lianhuan.usbtest"
-            versionNameSuffix "-usbtest-20261023"
+            versionNameSuffix "-usbtest-v2-20261023"
             //applicationIdSuffix ""
             //versionNameSuffix ""
         }

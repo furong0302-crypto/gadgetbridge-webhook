@@ -27,6 +27,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Schedules the periodic webhook upload and the sync-triggered immediate upload.
@@ -46,6 +47,8 @@ object WebhookScheduler {
     private val immediateExecutor = Executors.newSingleThreadExecutor { runnable ->
         Thread(runnable, "lianhuan-health-upload").apply { isDaemon = true }
     }
+    private val uploadRunning = AtomicBoolean(false)
+    private val uploadPending = AtomicBoolean(false)
 
     fun schedule(context: Context) {
         WebhookAutoSyncScheduler.schedule(context)
@@ -87,19 +90,16 @@ object WebhookScheduler {
         if (!WebhookConfig.isEnabled()) {
             return
         }
-        val now = System.currentTimeMillis()
-        val last = WebhookConfig.getLastImmediate()
-        if (now - last < WebhookConfig.MIN_IMMEDIATE_INTERVAL_MS) {
-            LOG.debug("Skipping immediate Lianhuan upload (rate limited)")
-            return
-        }
-        WebhookConfig.setLastImmediate(now)
+        uploadPending.set(true)
+        if (!uploadRunning.compareAndSet(false, true)) return
 
         // Do not hand the fresh-data path back to Android's scheduler. We are
         // already inside Gadgetbridge immediately after samples were committed,
         // so upload on our own IO thread. WorkManager remains the fallback below.
         val appContext = context.applicationContext
         immediateExecutor.execute {
+          try {
+           while (uploadPending.getAndSet(false)) {
             val result = try {
                 WebhookUploader.uploadAll()
             } catch (e: Throwable) {
@@ -120,6 +120,11 @@ object WebhookScheduler {
                     request,
                 )
             }
+           }
+          } finally {
+            uploadRunning.set(false)
+            if (uploadPending.get()) scheduleImmediate(appContext)
+          }
         }
     }
 

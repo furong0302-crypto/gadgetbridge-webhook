@@ -264,6 +264,9 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 updateReceiversState();
 
                 GBDevice.DeviceUpdateSubject subject = (GBDevice.DeviceUpdateSubject) intent.getSerializableExtra(GBDevice.EXTRA_UPDATE_SUBJECT);
+                if (subject == GBDevice.DeviceUpdateSubject.DEVICE_STATE) {
+                    nodomain.freeyourgadget.gadgetbridge.webhook.WebhookAutoSyncScheduler.INSTANCE.onDeviceStateChanged(device);
+                }
 
                 if (subject == GBDevice.DeviceUpdateSubject.DEVICE_STATE && device.isInitialized()) {
                     //Store the time the device was initialized for optional sorting in Control Center
