@@ -93,6 +93,6 @@ object WebhookAutoSyncScheduler {
             interval,
             TimeUnit.SECONDS,
         )
-        LOG.info("Lianhuan direct health auto-sync scheduled every {} minutes", interval)
+        LOG.info("Lianhuan direct health auto-sync scheduled every {} seconds", interval)
     }
 }

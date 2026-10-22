@@ -71,6 +71,9 @@ jobs:
       - name: Build ${{ inputs.variant }} APK (mainline)
         run: ./gradlew :app:assembleMainline${{ inputs.variant }} --stacktrace
 
+      - name: Health sync recovery regression tests
+        run: ./gradlew :app:testMainlineDebugUnitTest --tests '*HuaweiDictionarySyncRecoveryTest' --stacktrace
+
       - name: Rename APK with branch and commit info
         run: |
           mkdir -p apk-dist

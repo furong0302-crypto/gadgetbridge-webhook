@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import de.greenrobot.dao.query.QueryBuilder;
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.HuaweiSleepStageSampleProvider;
@@ -259,6 +260,10 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
             newSamples.add(end);
         }
         getSampleDao().insertOrReplaceInTx(newSamples);
+        if (!newSamples.isEmpty()) {
+            // Upload committed heart/activity data even while optional downloads are still pending.
+            nodomain.freeyourgadget.gadgetbridge.webhook.WebhookScheduler.INSTANCE.scheduleImmediate(GBApplication.getContext());
+        }
     }
 
     /**

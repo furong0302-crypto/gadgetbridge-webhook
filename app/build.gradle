@@ -143,7 +143,7 @@ android {
 
         // Note: always bump BOTH versionCode and versionName!
         versionName "0.94.0"
-        versionCode 253
+        versionCode 254
         vectorDrawables.useSupportLibrary = true
         buildConfigField "String", "GIT_HASH_SHORT", "\"${getGitHashShort()}\""
         buildConfigField "String", "GIT_DIRTY_STATUS", "\"${getGitDirtyFlag()}\""
@@ -188,7 +188,7 @@ android {
             // Lianhuan build: keep the official package name as the base and use a
             // dedicated suffix so it can live beside the user's current Gadgetbridge.
             applicationIdSuffix ".lianhuan.usbtest"
-            versionNameSuffix "-usbtest-v2-20261023"
+            versionNameSuffix "-usbtest-v3-20261023"
             //applicationIdSuffix ""
             //versionNameSuffix ""
         }

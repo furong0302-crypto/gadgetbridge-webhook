@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.p2p;
 
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,6 +65,21 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
     }
 
     private final Map<Integer, DictionarySyncCallback> currentRequests = new HashMap<>();
+    private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
+    private final Runnable syncTimeout = () -> {
+        LOG.warn("Dictionary sync response timed out; releasing activity sync for the next attempt");
+        abortPendingSync();
+    };
+
+    private synchronized void abortPendingSync() {
+        timeoutHandler.removeCallbacks(syncTimeout);
+        final HashSet<DictionarySyncCallback> callbacks = new HashSet<>(currentRequests.values());
+        currentRequests.clear();
+        classesToSync = null;
+        for (DictionarySyncCallback callback : callbacks) {
+            callback.onComplete(false);
+        }
+    }
 
     public HuaweiP2PDataDictionarySyncService(HuaweiP2PManager manager) {
         super(manager);
@@ -129,7 +147,7 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
         return ret;
     }
 
-    public void startSync(List<Integer> dictClasses, DictionarySyncCallback callback) {
+    public synchronized void startSync(List<Integer> dictClasses, DictionarySyncCallback callback) {
         LOG.info("P2PDataDictionarySyncService startSync {}", dictClasses);
         if (callback == null) {
             LOG.error("P2PDataDictionarySyncService  startSync callback is null");
@@ -143,7 +161,7 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
         sendSyncRequest(classesToSync.remove(0), 0, callback);
     }
 
-    private void sendSyncRequest(int dictClass, long startTime, DictionarySyncCallback callback) {
+    private synchronized void sendSyncRequest(int dictClass, long startTime, DictionarySyncCallback callback) {
 
         LOG.info("P2PDataDictionarySyncService class {}", dictClass);
         if (callback == null) {
@@ -196,6 +214,9 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
 
         LOG.info("P2PDataDictionarySyncService send command");
         currentRequests.put(dictClass, callback);
+        // A missing P2P reply must not leave all future activity pulls permanently busy.
+        timeoutHandler.removeCallbacks(syncTimeout);
+        timeoutHandler.postDelayed(syncTimeout, 60_000L);
 
         sendCommand(packet.array(), null);
     }
@@ -210,8 +231,9 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
     }
 
     @Override
-    public void unregister() {
+    public synchronized void unregister() {
         serviceAvailable.set(false);
+        abortPendingSync();
     }
 
     public static class DictData {
@@ -304,7 +326,11 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
     }
 
     @Override
-    public void handleData(byte[] data) {
+    public synchronized void handleData(byte[] data) {
+        if (data == null || data.length == 0) {
+            abortPendingSync();
+            return;
+        }
         LOG.info("P2PDataDictionarySyncService handleData: {}", data.length);
         if (data[0] == 1) {
             DictionarySyncCallback callback = null;
@@ -319,6 +345,7 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
                     return;
                 }
                 callback = currentRequests.remove(dictClass);
+                timeoutHandler.removeCallbacks(syncTimeout);
 
                 if (callback == null) {
                     return;
@@ -326,9 +353,9 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
 
                 if (operation != 1) {
                     LOG.info("P2PDataDictionarySyncService unknown operation: {}", operation);
+                    classesToSync = null;
+                    callback.onComplete(false);
                     return;
-                    //I never see value differ from 1. So I don't know how to interpret others. Just ignore for now
-                    //callback.onComplete(true);
                 }
 
                 //NOTE: all tags with high bit set should be parsed as container
@@ -376,12 +403,14 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
                 }
             } catch (HuaweiPacket.MissingTagException e) {
                 LOG.error("P2PDataDictionarySyncService parse error", e);
+                abortPendingSync();
                 if (callback != null) {
                     callback.onComplete(false);
                 }
             }
         } else {
             LOG.info("P2PDataDictionarySyncService unsupported data: {}", data[0]);
+            abortPendingSync();
         }
     }
 
