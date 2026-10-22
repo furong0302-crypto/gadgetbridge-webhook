@@ -156,6 +156,8 @@ android {
 
     signingConfigs {
         debug {
+            applicationIdSuffix ".usbtest"
+            versionNameSuffix "-usbtest-20261023"
             // Use the committed debug keystore for every environment (local and CI),
             // so all builds share the same signature and APKs can overwrite each other.
             storeFile rootProject.file("keystore/debug.keystore")

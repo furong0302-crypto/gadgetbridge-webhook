@@ -260,6 +260,7 @@ object WebhookUploader {
             put("address", address)
             put("name", gbDevice.name)
             put("type", gbDevice.type.name)
+            put("state", (liveDevice ?: gbDevice).state.name)
             put("binding_code", WebhookConfig.getOrCreateBindingCode())
             if (battery in 0..100 && WebhookConfig.TYPE_BATTERY in enabledTypes) put("battery", battery)
         }
@@ -639,6 +640,10 @@ object WebhookUploader {
             val client = if (WebhookConfig.allowInsecure()) insecureClient else defaultClient
             client.newCall(builder.build()).execute().use { response ->
                 val text = response.body?.string()
+                if (!response.isSuccessful) {
+                    WebhookConfig.setLastError("HTTP ${response.code}")
+                    return null
+                }
                 if (text.isNullOrBlank()) {
                     val error = "HTTP ${response.code} with empty body"
                     LOG.warn("Empty response from {}: {}", serverUrl, error)
