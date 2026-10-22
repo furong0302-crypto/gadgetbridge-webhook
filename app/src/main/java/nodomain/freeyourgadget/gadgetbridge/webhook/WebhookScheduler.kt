@@ -82,9 +82,8 @@ object WebhookScheduler {
     }
 
     /**
-     * Trigger an upload right after a device sync finished. Rate-limited to
-     * [WebhookConfig.MIN_IMMEDIATE_INTERVAL_MS] to avoid hammering the server
-     * when the device syncs frequently.
+     * Trigger an upload right after a device sync finished. Concurrent signals
+     * are coalesced; a signal during an upload always gets a following pass.
      */
     fun scheduleImmediate(context: Context) {
         if (!WebhookConfig.isEnabled()) {

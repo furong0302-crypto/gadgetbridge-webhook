@@ -56,6 +56,8 @@ object WebhookAutoSyncScheduler {
         executor.execute {
             if (isInitialized && wasInitialized != true) {
                 WebhookDeviceSync.syncIfStale(force = true)
+                // Restart the five-minute clock after reconnect, so the stale guard cannot skip the next tick.
+                schedule(GBApplication.getContext())
             }
             WebhookScheduler.scheduleImmediate(GBApplication.getContext())
         }
