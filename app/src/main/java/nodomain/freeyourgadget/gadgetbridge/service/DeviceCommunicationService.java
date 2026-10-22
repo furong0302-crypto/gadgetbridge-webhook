@@ -722,8 +722,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             } catch (DeviceNotFoundException e) {
                 LOG.error("Trying to disconnect unknown device: ", e);
             }
-            device.setState(GBDevice.State.NOT_CONNECTED);
-            device.sendDeviceUpdateIntent(this);
+            device.setUpdateState(GBDevice.State.NOT_CONNECTED, this);
             updateReceiversState();
             return;
         }
