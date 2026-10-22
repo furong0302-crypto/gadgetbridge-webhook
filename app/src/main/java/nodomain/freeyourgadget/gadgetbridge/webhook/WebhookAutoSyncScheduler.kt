@@ -49,6 +49,11 @@ object WebhookAutoSyncScheduler {
     private var task: ScheduledFuture<*>? = null
     private val initialized = ConcurrentHashMap<String, Boolean>()
 
+    fun onServiceStarted(context: Context) {
+        initialized.clear()
+        schedule(context.applicationContext)
+    }
+
     fun onDeviceStateChanged(device: GBDevice) {
         val isInitialized = device.isInitialized
         val wasInitialized = initialized.put(device.address, isInitialized)

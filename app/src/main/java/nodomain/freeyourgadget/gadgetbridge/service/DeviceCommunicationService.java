@@ -410,6 +410,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             Intent scanServiceIntent = new Intent(this, BLEScanService.class);
             startService(scanServiceIntent);
         }
+        nodomain.freeyourgadget.gadgetbridge.webhook.WebhookAutoSyncScheduler.INSTANCE.onServiceStarted(this);
     }
 
     /**
