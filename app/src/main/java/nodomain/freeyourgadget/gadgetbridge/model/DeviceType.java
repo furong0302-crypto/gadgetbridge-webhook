@@ -470,6 +470,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.mijia_lywsd.MijiaMhoC303Coor
 import nodomain.freeyourgadget.gadgetbridge.devices.mijia_lywsd.MijiaXmwsdj04Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miscale.MiCompositionScaleCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miscale.MiSmartScaleCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.KW19BCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.onebyone.OneByoneScaleCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moondrop.MoondropSpaceTravel2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moondrop.MoondropSpaceTravel2UltraCoordinator;
@@ -1236,6 +1237,7 @@ public enum DeviceType {
     C20PRO(C20ProCoordinator.class),
     L70(L70Coordinator.class),
     HC96(HC96Coordinator.class),
+    KW19_B(KW19BCoordinator.class),
     KT80(KT80Coordinator.class),
     ITECH_ACTIVE_3(ITechActive3Coordinator.class),
     KSIX_VENTURE(KsixVentureCoordinator.class),

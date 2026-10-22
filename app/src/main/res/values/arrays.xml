@@ -5045,4 +5045,16 @@
         <item>bmr</item>
         <item>impedance</item>
     </string-array>
+
+    <string-array name="pref_main_screens_items">
+        <item>@string/bottom_nav_dashboard</item>
+        <item>@string/bottom_nav_workouts</item>
+        <item>@string/bottom_nav_devices</item>
+    </string-array>
+    <string-array name="pref_main_screens_items_values">
+        <item>dashboard</item>
+        <item>workouts</item>
+        <item>devices</item>
+    </string-array>
+
 </resources>

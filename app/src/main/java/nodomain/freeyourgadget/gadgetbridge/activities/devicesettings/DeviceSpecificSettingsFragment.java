@@ -436,7 +436,24 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
     private void addDynamicSettings(final String rootKey) {
         if (rootKey.equals(DeviceSpecificSettingsScreen.BATTERY.getKey())) {
             addBatterySettings();
+        } else if (rootKey.equals(DeviceSpecificSettingsScreen.DEVELOPER.getKey())) {
+            addDeveloperSettingsWarning();
         }
+    }
+
+    private void addDeveloperSettingsWarning() {
+        final PreferenceScreen developerScreen = getPreferenceScreen();
+        if (developerScreen == null) {
+            return;
+        }
+        final Preference warning = new Preference(requireContext());
+        warning.setKey("pref_developer_warning");
+        warning.setIcon(R.drawable.ic_warning);
+        warning.setSummary(R.string.developer_settings_warning_message);
+        warning.setSelectable(false);
+        // DSL screens add their children before this, keep the warning at the top
+        warning.setOrder(-1);
+        developerScreen.addPreference(warning);
     }
 
     private void addBatterySettings() {
