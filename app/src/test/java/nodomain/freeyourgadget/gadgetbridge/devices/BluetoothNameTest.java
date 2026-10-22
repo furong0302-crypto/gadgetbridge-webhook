@@ -43,6 +43,7 @@ public class BluetoothNameTest extends TestBase {
             put("CMF Buds 2", DeviceType.NOTHING_CMF_BUDS_2); // #5579
             put("CMF Buds 2a", DeviceType.NOTHING_CMF_BUDS_2A); // #6028
             put("HC96", DeviceType.HC96);
+            put("KW19-B", DeviceType.KW19_B); // #7092
             put("FireBoltt 069", DeviceType.FIREBOLTT_069);
             put("soundcore V20i", DeviceType.SOUNDCORE_V20I); // #4644
             put("Soundcore Q30", DeviceType.SOUNDCORE_Q30); // #4316
