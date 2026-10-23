@@ -965,6 +965,8 @@
     <string name="spo2_perc_85">85%</string>
     <string name="spo2_perc_90">90%</string>
     <string name="spo2_off">Off</string>
+    <string name="spo2_mode_sleep">During sleep</string>
+    <string name="spo2_mode_all_day">All day</string>
     <string name="interval_one_hour">once an hour</string>
     <string name="interval_1_hour">every 1 hour</string>
     <string name="interval_2_hour">every 2 hours</string>
@@ -2490,6 +2492,21 @@
     <string name="devicetype_soundcore_life_tune_xr" translatable="false">Soundcore Life Tune XR</string>
     <string name="devicetype_soundcore_aerofit2" translatable="false">Soundcore AeroFit 2</string>
     <string name="devicetype_soundcore_sport_x20" translatable="false">Soundcore Sport X20</string>
+    <string name="devicetype_soundcore_p42i" translatable="false">Soundcore P42i</string>
+    <string name="devicetype_soundcore_p41i" translatable="false">Soundcore P41i</string>
+    <string name="devicetype_soundcore_p40i" translatable="false">Soundcore P40i</string>
+    <string name="devicetype_soundcore_p31i" translatable="false">Soundcore P31i</string>
+    <string name="devicetype_soundcore_p30i" translatable="false">Soundcore P30i</string>
+    <string name="devicetype_soundcore_p20i" translatable="false">Soundcore P20i</string>
+    <string name="devicetype_soundcore_p3" translatable="false">Soundcore P3</string>
+    <string name="devicetype_soundcore_a1" translatable="false">Soundcore A1</string>
+    <string name="devicetype_soundcore_p2" translatable="false">Soundcore P2</string>
+    <string name="devicetype_soundcore_p2i" translatable="false">Soundcore P2i</string>
+    <string name="devicetype_soundcore_p2_mini" translatable="false">Soundcore P2 Mini</string>
+    <string name="devicetype_soundcore_a2_nc" translatable="false">Soundcore A2 NC</string>
+    <string name="devicetype_soundcore_a3i" translatable="false">Soundcore A3i</string>
+    <string name="devicetype_soundcore_p3i" translatable="false">Soundcore P3i</string>
+    <string name="devicetype_soundcore_k20i" translatable="false">Soundcore K20i</string>
     <string name="devicetype_soundcore_v20i" translatable="false">Soundcore V20i</string>
     <string name="devicetype_haylou_s35_anc" translatable="false">Haylou S35 ANC</string>
     <string name="devicetype_sennheiser_momentum_in_ear_wireless" translatable="false">Sennheiser MOMENTUM In-Ear Wireless</string>
@@ -3509,6 +3526,8 @@
     <string name="sports_activity_quick_filter_select">Time period</string>
     <string name="sports_activity_confirm_delete_title">Delete %d activities</string>
     <string name="sports_activity_confirm_delete_description">Are you sure you want to delete %d activities?</string>
+    <string name="sports_activity_confirm_single_delete_title">Delete activity</string>
+    <string name="sports_activity_confirm_single_delete_description">Are you sure you want to delete this activity?</string>
     <string name="workout_export_title">Export workouts</string>
     <string name="workout_export_fit">FIT files</string>
     <string name="workout_export_gpx">GPX tracks (workouts with GPS)</string>
@@ -4826,6 +4845,8 @@
     <string name="pref_override_features_summary">Enable/disable specific device features. This can cause issues and/or make your device work incorrectly</string>
     <string name="pref_test_features_title">Features</string>
     <string name="pref_test_features_summary">Enabled features for this test device</string>
+    <string name="pref_override_features_default">Default features</string>
+    <string name="pref_override_features_unsupported">Unsupported features</string>
     <string name="pref_developer_add_test_activities_title">Add test activities</string>
     <string name="pref_developer_add_test_activities_summary">Populate the database with dummy test activities</string>
     <string name="device_state_waiting_scan">Waiting for device scan</string>
@@ -5449,6 +5470,12 @@
     <string name="devicetype_dji_osmo_action_4" translatable="false">DJI Osmo Action 4</string>
     <string name="devicetype_sinilink" translatable="false">Sinilink</string>
     <string name="devicetype_eightbitdo_micro" translatable="false">8BitDo Micro</string>
+    <string name="devicetype_teufel_mynd" translatable="false">Teufel Mynd</string>
+    <string name="teufel_mynd_eco_mode">Eco mode</string>
+    <string name="teufel_mynd_sound_icons">Sound icons</string>
+    <string name="teufel_mynd_battery_friendly_charging">Battery friendly charging</string>
+    <string name="teufel_mynd_led_brightness">LED brightness</string>
+    <string name="teufel_mynd_party_link" translatable="false">PartyLink</string>
     <string name="devicetype_onetouch" translatable="false">OneTouch Glucose Meter</string>
     <string name="devicetype_innovo_ip900bp_b" translatable="false">Innovo iP900BP-B</string>
     <string name="eightbitdo_keyboard_mapping">Key mapping</string>

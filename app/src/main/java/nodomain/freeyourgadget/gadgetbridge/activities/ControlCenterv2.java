@@ -78,6 +78,7 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.debug.DebugActivityV2;
 import nodomain.freeyourgadget.gadgetbridge.activities.discovery.DiscoveryActivityV2;
 import nodomain.freeyourgadget.gadgetbridge.activities.welcome.WelcomeActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.workouts.WorkoutListFragment;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
@@ -609,7 +610,7 @@ public class ControlCenterv2 extends AppCompatActivity
         public Fragment createFragment(int position) {
             return switch (visibleTabs.get(position)) {
                 case DASHBOARD -> new DashboardFragment();
-                case WORKOUTS -> new WorkoutsFragment();
+                case WORKOUTS -> new WorkoutListFragment();
                 default -> new DevicesFragment();
             };
         }
