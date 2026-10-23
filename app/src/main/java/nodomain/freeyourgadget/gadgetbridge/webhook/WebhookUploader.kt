@@ -170,43 +170,41 @@ object WebhookUploader {
         var lastMessage = ""
 
         try {
-            GBApplication.acquireDB().use { db ->
-                for (gbDevice in DeviceHelper.getInstance().availableDevices) {
-                    if (!gbDevice.type.isSupported) continue
+            for (gbDevice in DeviceHelper.getInstance().availableDevices) {
+                if (!gbDevice.type.isSupported) continue
 
-                    val address = gbDevice.address
-                    val storedCursor = WebhookConfig.getCursor(address)
-                    var scanFrom = if (storedCursor > 0) {
-                        maxOf(0L, storedCursor - WebhookConfig.REPLAY_OVERLAP_SECONDS)
-                    } else {
-                        nowSeconds - WebhookConfig.INITIAL_BACKFILL_SECONDS
-                    }
-                    val requestedEnd = if (maxRangeSeconds >= Long.MAX_VALUE / 4) {
-                        nowSeconds
-                    } else {
-                        minOf(nowSeconds, scanFrom + maxRangeSeconds)
-                    }
-                    var chunks = 0
+                val address = gbDevice.address
+                val storedCursor = WebhookConfig.getCursor(address)
+                var scanFrom = if (storedCursor > 0) {
+                    maxOf(0L, storedCursor - WebhookConfig.REPLAY_OVERLAP_SECONDS)
+                } else {
+                    nowSeconds - WebhookConfig.INITIAL_BACKFILL_SECONDS
+                }
+                val requestedEnd = if (maxRangeSeconds >= Long.MAX_VALUE / 4) {
+                    nowSeconds
+                } else {
+                    minOf(nowSeconds, scanFrom + maxRangeSeconds)
+                }
+                var chunks = 0
 
-                    while (scanFrom < requestedEnd && chunks < WebhookConfig.MAX_CHUNKS_PER_RUN) {
-                        val scanTo = minOf(requestedEnd, scanFrom + WebhookConfig.UPLOAD_CHUNK_SECONDS)
-                        val result = uploadDeviceRange(gbDevice, db, serverUrl, token, scanFrom, scanTo)
-                        totalSamples += result.uploadedSamples
-                        if (result.pendingBind) {
-                            anyPending = true
-                            break
-                        }
-                        if (!result.success) {
-                            anyFailure = true
-                            lastMessage = result.message
-                            break
-                        }
-                        scanFrom = scanTo
-                        chunks++
+                while (scanFrom < requestedEnd && chunks < WebhookConfig.MAX_CHUNKS_PER_RUN) {
+                    val scanTo = minOf(requestedEnd, scanFrom + WebhookConfig.UPLOAD_CHUNK_SECONDS)
+                    val result = uploadDeviceRange(gbDevice, serverUrl, token, scanFrom, scanTo)
+                    totalSamples += result.uploadedSamples
+                    if (result.pendingBind) {
+                        anyPending = true
+                        break
                     }
-                    if (chunks >= WebhookConfig.MAX_CHUNKS_PER_RUN && scanFrom < requestedEnd) {
-                        LOG.info("Chunk cap reached for {}; remaining history will continue next run", gbDevice.name)
+                    if (!result.success) {
+                        anyFailure = true
+                        lastMessage = result.message
+                        break
                     }
+                    scanFrom = scanTo
+                    chunks++
+                }
+                if (chunks >= WebhookConfig.MAX_CHUNKS_PER_RUN && scanFrom < requestedEnd) {
+                    LOG.info("Chunk cap reached for {}; remaining history will continue next run", gbDevice.name)
                 }
             }
         } catch (e: Exception) {
@@ -233,7 +231,6 @@ object WebhookUploader {
 
     private fun uploadDeviceRange(
         gbDevice: GBDevice,
-        db: DBHandler,
         serverUrl: String,
         token: String,
         from: Long,
@@ -241,63 +238,69 @@ object WebhookUploader {
     ): Result {
         val address = gbDevice.address
         val coordinator = gbDevice.deviceCoordinator
-        val provider = coordinator.getSampleProvider(gbDevice, db.daoSession)
-            ?: return Result(true, "No sample provider for " + gbDevice.name)
-        if (from >= to) return Result(true, "Nothing new for " + gbDevice.name)
+        // Never hold Gadgetbridge's shared DB lock during a network request.
+        val payload = GBApplication.acquireDB().use { db ->
+            val provider = coordinator.getSampleProvider(gbDevice, db.daoSession)
+                ?: return Result(true, "No sample provider for " + gbDevice.name)
+            if (from >= to) return Result(true, "Nothing new for " + gbDevice.name)
 
-        val enabledTypes = WebhookConfig.getEnabledDataTypes()
-        val pendingOnly = WebhookConfig.isPendingBind(address)
-        val samples = if (pendingOnly) emptyList() else provider.getAllActivitySamples(from.toInt(), to.toInt())
+            val enabledTypes = WebhookConfig.getEnabledDataTypes()
+            val pendingOnly = WebhookConfig.isPendingBind(address)
+            val samples = if (pendingOnly) emptyList() else provider.getAllActivitySamples(from.toInt(), to.toInt())
 
-        val liveDevice = GBApplication.app().deviceManager.getDeviceByAddress(address)
-        val battery = (liveDevice ?: gbDevice).getBatteryLevel(0)
+            val liveDevice = GBApplication.app().deviceManager.getDeviceByAddress(address)
+            val battery = (liveDevice ?: gbDevice).getBatteryLevel(0)
 
-        LOG.info(
-            "Webhook chunk: {} provider={} range=[{}..{}] samples={}",
-            address, provider.javaClass.simpleName, from, to, samples.size,
-        )
+            LOG.info(
+                "Webhook chunk: {} provider={} range=[{}..{}] samples={}",
+                address, provider.javaClass.simpleName, from, to, samples.size,
+            )
 
-        val deviceJson = JSONObject().apply {
-            put("address", address)
-            put("name", gbDevice.name)
-            put("type", gbDevice.type.name)
-            put("state", (liveDevice ?: gbDevice).state.name)
-            put("binding_code", WebhookConfig.getOrCreateBindingCode())
-            if (battery in 0..100 && WebhookConfig.TYPE_BATTERY in enabledTypes) put("battery", battery)
-        }
-
-        val samplesJson = JSONArray()
-        var newestSampleTs = 0L
-        for (sample in samples) {
-            newestSampleTs = maxOf(newestSampleTs, sample.timestamp.toLong())
-            val entry = JSONObject()
-            entry.put("ts", sample.timestamp)
-            entry.put("id", "${sample.timestamp}")
-            entry.put("kind", provider.normalizeType(sample.rawKind).name)
-            if (sample.steps >= 0) entry.put("steps", sample.steps)
-            if (sample.heartRate > 0) entry.put("hr", sample.heartRate)
-            val intensity = provider.normalizeIntensity(sample.rawIntensity)
-            if (intensity >= 0) entry.put("intensity", intensity)
-            if (WebhookConfig.TYPE_DISTANCE in enabledTypes) {
-                if (sample.distanceCm >= 0) entry.put("distance_cm", sample.distanceCm)
-                if (sample.activeCalories >= 0) entry.put("calories", sample.activeCalories)
+            val deviceJson = JSONObject().apply {
+                put("address", address)
+                put("name", gbDevice.name)
+                put("type", gbDevice.type.name)
+                put("state", (liveDevice ?: gbDevice).state.name)
+                put("binding_code", WebhookConfig.getOrCreateBindingCode())
+                if (battery in 0..100 && WebhookConfig.TYPE_BATTERY in enabledTypes) put("battery", battery)
             }
-            samplesJson.put(entry)
-        }
 
-        val body = JSONObject().apply {
-            put("device", deviceJson)
-            put("since", from)
-            put("samples", samplesJson)
+            val samplesJson = JSONArray()
+            var newestSampleTs = 0L
+            for (sample in samples) {
+                newestSampleTs = maxOf(newestSampleTs, sample.timestamp.toLong())
+                val entry = JSONObject()
+                entry.put("ts", sample.timestamp)
+                entry.put("id", "${sample.timestamp}")
+                entry.put("kind", provider.normalizeType(sample.rawKind).name)
+                if (sample.steps >= 0) entry.put("steps", sample.steps)
+                if (sample.heartRate > 0) entry.put("hr", sample.heartRate)
+                val intensity = provider.normalizeIntensity(sample.rawIntensity)
+                if (intensity >= 0) entry.put("intensity", intensity)
+                if (WebhookConfig.TYPE_DISTANCE in enabledTypes) {
+                    if (sample.distanceCm >= 0) entry.put("distance_cm", sample.distanceCm)
+                    if (sample.activeCalories >= 0) entry.put("calories", sample.activeCalories)
+                }
+                samplesJson.put(entry)
+            }
+
+            val body = JSONObject().apply {
+                put("device", deviceJson)
+                put("since", from)
+                put("samples", samplesJson)
+            }
+            val extended = if (pendingOnly) JSONObject() else readExtended(db, gbDevice, from, to, enabledTypes)
+            if (!pendingOnly) addStandardHealthMetrics(extended, gbDevice, db, from, to, enabledTypes)
+            if (extended.length() > 0) body.put("extended", extended)
+            // Replay complete recent nights as well: firmware can revise yesterday's sleep after the cursor advanced.
+            if (!pendingOnly && to >= System.currentTimeMillis() / 1000 - 60 &&
+                WebhookConfig.TYPE_SLEEP_SESSIONS in enabledTypes) {
+                readHuaweiSleep(db, gbDevice)?.let { body.put("sleep_sessions", it) }
+            }
+
+            Triple(body, samplesJson.length(), newestSampleTs)
         }
-        val extended = if (pendingOnly) JSONObject() else readExtended(db, gbDevice, from, to, enabledTypes)
-        if (!pendingOnly) addStandardHealthMetrics(extended, gbDevice, db, from, to, enabledTypes)
-        if (extended.length() > 0) body.put("extended", extended)
-        // Replay complete recent nights as well: firmware can revise yesterday's sleep after the cursor advanced.
-        if (!pendingOnly && to >= System.currentTimeMillis() / 1000 - 60 &&
-            WebhookConfig.TYPE_SLEEP_SESSIONS in enabledTypes) {
-            readHuaweiSleep(db, gbDevice)?.let { body.put("sleep_sessions", it) }
-        }
+        val (body, sampleCount, newestSampleTs) = payload
 
         val headers = mutableMapOf("Content-Type" to "application/json", "X-Lianhuan-Chunk" to "$from-$to")
         headers["Authorization"] = "Bearer $token"
@@ -313,9 +316,9 @@ object WebhookUploader {
             WebhookConfig.setPendingBind(address, false)
             LOG.info(
                 "Uploaded chunk {}..{}: {} samples + {} extended categories for {}",
-                from, to, samplesJson.length(), extended.length(), gbDevice.name,
+                from, to, sampleCount, body.optJSONObject("extended")?.length() ?: 0, gbDevice.name,
             )
-            return Result(true, "OK", samplesJson.length())
+            return Result(true, "OK", sampleCount)
         }
 
         if (response != null && response.optString("status") == "pending_bind") {
