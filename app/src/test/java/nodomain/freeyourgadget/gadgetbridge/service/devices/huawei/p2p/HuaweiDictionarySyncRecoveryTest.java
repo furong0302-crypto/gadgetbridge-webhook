@@ -50,7 +50,7 @@ public class HuaweiDictionarySyncRecoveryTest extends TestBase {
 
     private byte[] response(int operation) {
         byte[] tlv = new HuaweiTLV().put(1, operation)
-                .put(2, HuaweiP2PDataDictionarySyncService.dictToBytes(DICT_CLASS)).serialize();
+                .put(2, DICT_CLASS).serialize();
         byte[] data = new byte[tlv.length + 1];
         data[0] = 1;
         System.arraycopy(tlv, 0, data, 1, tlv.length);
@@ -72,6 +72,16 @@ public class HuaweiDictionarySyncRecoveryTest extends TestBase {
         assertFalse(result.success);
         shadowOf(Looper.getMainLooper()).idleFor(61, TimeUnit.SECONDS);
         assertEquals(1, result.completions);
+    }
+
+    @Test public void truncatedIntegerReleasesSync() {
+        byte[] tlv = new HuaweiTLV().put(1, (byte) 1).serialize();
+        byte[] data = new byte[tlv.length + 1];
+        data[0] = 1;
+        System.arraycopy(tlv, 0, data, 1, tlv.length);
+        service.handleData(data);
+        assertEquals(1, result.completions);
+        assertFalse(result.success);
     }
 
     @Test public void unsupportedOperationReleasesSync() {
