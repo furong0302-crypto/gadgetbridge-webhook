@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +66,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.BarShade
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils
 import nodomain.freeyourgadget.gadgetbridge.util.GB
+import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectWorkoutDeletion
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
@@ -424,6 +426,38 @@ class WorkoutDetailsFragment : Fragment(), MenuProvider {
                             scheduleUploadSync()
                         }
                     })
+                }
+                true
+            }
+
+            R.id.activity_action_delete -> {
+                currentWorkout?.let {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.sports_activity_confirm_single_delete_title))
+                        .setMessage(getString(R.string.sports_activity_confirm_single_delete_description))
+                        .setIcon(R.drawable.ic_delete_forever)
+                        .setPositiveButton(R.string.yes) { _, _ ->
+                            val healthConnectSnapshot = HealthConnectWorkoutDeletion.snapshot(it.summary)
+                            try {
+                                it.summary.delete()
+                                healthConnectSnapshot?.let { snapshot ->
+                                    HealthConnectWorkoutDeletion.deleteWorkoutsFromHealthConnect(
+                                        requireContext(),
+                                        listOf(snapshot)
+                                    )
+                                }
+                            } catch (_: Exception) {
+                                // pass delete error
+                            }
+                            // Signal WorkoutListFragment that it needs to refresh
+                            val intent = Intent(GBApplication.ACTION_NEW_DATA)
+                            intent.putExtra(GBDevice.EXTRA_DEVICE, gbDevice)
+                            LocalBroadcastManager.getInstance(GBApplication.getContext())
+                                .sendBroadcast(intent)
+                            requireActivity().finish()
+                        }
+                        .setNegativeButton(R.string.no, null)
+                        .show()
                 }
                 true
             }

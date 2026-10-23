@@ -45,6 +45,21 @@ public class BluetoothNameTest extends TestBase {
             put("HC96", DeviceType.HC96);
             put("KW19-B", DeviceType.KW19_B); // #7092
             put("FireBoltt 069", DeviceType.FIREBOLTT_069);
+            put("soundcore A1", DeviceType.SOUNDCORE_A1); // #7006
+            put("soundcore A2 NC", DeviceType.SOUNDCORE_A2_NC); // #7006
+            put("soundcore A3i", DeviceType.SOUNDCORE_A3I); // #7006
+            put("soundcore K20i", DeviceType.SOUNDCORE_K20I); // #7006
+            put("soundcore P42i", DeviceType.SOUNDCORE_P42I); // #7006
+            put("soundcore P41i", DeviceType.SOUNDCORE_P41I); // #7006
+            put("soundcore P40i", DeviceType.SOUNDCORE_P40I); // #7006
+            put("soundcore P31i", DeviceType.SOUNDCORE_P31I); // #7006
+            put("soundcore P3i", DeviceType.SOUNDCORE_P3I); // #7006
+            put("soundcore P30i", DeviceType.SOUNDCORE_P30I); // #7006
+            put("soundcore P20i", DeviceType.SOUNDCORE_P20I); // #7006
+            put("soundcore P3", DeviceType.SOUNDCORE_P3); // #7006
+            put("soundcore P2", DeviceType.SOUNDCORE_P2); // #7006
+            put("soundcore P2i", DeviceType.SOUNDCORE_P2I); // #7006
+            put("soundcore P2 Mini", DeviceType.SOUNDCORE_P2_MINI); // #7006
             put("soundcore V20i", DeviceType.SOUNDCORE_V20I); // #4644
             put("Soundcore Q30", DeviceType.SOUNDCORE_Q30); // #4316
             put("soundcore Q30", DeviceType.SOUNDCORE_Q30); // #6371
@@ -70,6 +85,7 @@ public class BluetoothNameTest extends TestBase {
             put("IMIKI FRAME 2", DeviceType.IMIKI_FRAME_2);
             put("Watch Kr Pro-4DBC", DeviceType.KIESLECT_CALLING_SMARTWATCH_KR_PRO);
             put("HAYLOU Watch 2 Pro", DeviceType.HAYLOU_WATCH_2_PRO);
+            put("MYND", DeviceType.TEUFEL_MYND); // #5743 docs
             put("Y6(ID-28A8)", DeviceType.Y6); // #3949
             put("Y66(ID-AB01)", DeviceType.Y66);
             put("T70(ID-AB01)", DeviceType.T70); // #7070
