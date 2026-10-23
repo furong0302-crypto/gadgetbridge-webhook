@@ -129,6 +129,9 @@ public class ResponseManager {
 
                 // Clean up so the next message may be parsed correctly
                 receivedPackets.remove(channel);
+                if (e instanceof HuaweiPacket.CryptoException) {
+                    nodomain.freeyourgadget.gadgetbridge.webhook.WebhookDeviceSync.INSTANCE.recoverHuaweiSession(support.getDevice());
+                }
                 return;
             }
 

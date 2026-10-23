@@ -49,7 +49,7 @@ public class HuaweiDictionarySyncRecoveryTest extends TestBase {
     }
 
     private byte[] response(int operation) {
-        byte[] tlv = new HuaweiTLV().put(1, (byte) operation)
+        byte[] tlv = new HuaweiTLV().put(1, operation)
                 .put(2, HuaweiP2PDataDictionarySyncService.dictToBytes(DICT_CLASS)).serialize();
         byte[] data = new byte[tlv.length + 1];
         data[0] = 1;

@@ -15,6 +15,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.MiBandActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.test.TestBase;
 
 import static org.junit.Assert.assertEquals;
@@ -242,5 +243,36 @@ public class SampleProviderTest extends TestBase {
 
         samples = sampleProvider.getAllActivitySamplesHighRes(100, 200);
         assertEquals(4, samples.size()); // No combining takes place for the high-res
+    }
+
+    @Test
+    public void testHuaweiLastHeartSampleKeepsItsActualMinute() {
+        HuaweiSampleProvider provider = new HuaweiSampleProvider(dummyGBDevice, daoSession);
+        User user = DBHelper.getUser(daoSession);
+        Device device = DBHelper.getDevice(dummyGBDevice, daoSession);
+        HuaweiActivitySample raw = createSample(provider, ActivitySample.NOT_MEASURED, 120, 1, 77, 5, user, device);
+        raw.setOtherTimestamp(180);
+        provider.addGBActivitySamples(List.of(raw));
+
+        List<HuaweiActivitySample> samples = provider.getAllActivitySamples(60, 240);
+        assertEquals(77, samples.get(1).getHeartRate());
+        assertEquals(120, samples.get(1).getTimestamp());
+        assertEquals(5, samples.get(1).getSteps());
+        assertEquals(ActivitySample.NOT_MEASURED, samples.get(2).getHeartRate());
+        assertEquals(ActivitySample.NOT_MEASURED, samples.get(2).getSteps());
+    }
+
+    @Test
+    public void testHuaweiHeartAtRangeEndIsNotDropped() {
+        HuaweiSampleProvider provider = new HuaweiSampleProvider(dummyGBDevice, daoSession);
+        User user = DBHelper.getUser(daoSession);
+        Device device = DBHelper.getDevice(dummyGBDevice, daoSession);
+        HuaweiActivitySample raw = createSample(provider, ActivitySample.NOT_MEASURED, 120, 1, 71, 0, user, device);
+        raw.setOtherTimestamp(180);
+        provider.addGBActivitySamples(List.of(raw));
+
+        List<HuaweiActivitySample> samples = provider.getAllActivitySamples(60, 120);
+        assertEquals(71, samples.get(1).getHeartRate());
+        assertEquals(120, samples.get(1).getTimestamp());
     }
 }

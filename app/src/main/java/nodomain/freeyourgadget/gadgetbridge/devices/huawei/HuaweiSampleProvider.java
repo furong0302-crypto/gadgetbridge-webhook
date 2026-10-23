@@ -484,8 +484,7 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
             }
         }
 
-        // If there is still data, it has to be part of the next index of processed samples
-        currentIndex += 1;
+        // Flush the final measurement into its source minute, not the following minute.
         if (currentIndex >= processedSamples.size())
             return;
         if (hasData || stateModifier != ActivitySample.NOT_MEASURED)

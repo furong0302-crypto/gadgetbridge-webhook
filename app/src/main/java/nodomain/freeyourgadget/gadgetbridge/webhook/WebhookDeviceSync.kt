@@ -16,7 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.webhook
 
+import android.os.SystemClock
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -39,6 +41,22 @@ import org.slf4j.LoggerFactory
 object WebhookDeviceSync {
 
     private val LOG: Logger = LoggerFactory.getLogger(WebhookDeviceSync::class.java)
+    private val lastSessionRecovery = mutableMapOf<String, Long>()
+
+    /** Reauthenticate an established Huawei session whose encrypted replies no longer validate. */
+    @Synchronized
+    fun recoverHuaweiSession(device: GBDevice?): Boolean {
+        if (device?.isInitialized != true || !WebhookConfig.isEnabled() || !WebhookConfig.isPreSyncEnabled()) return false
+        val now = SystemClock.elapsedRealtime()
+        val previous = lastSessionRecovery[device.address]
+        if (previous != null && now - previous < WebhookConfig.PRE_SYNC_MIN_INTERVAL_MS) return false
+        lastSessionRecovery[device.address] = now
+        LOG.warn("Reconnecting Huawei health session after encrypted response failure")
+        val service = GBApplication.deviceService(device)
+        service.disconnect()
+        service.connect(false)
+        return true
+    }
 
     /**
      * Requests a sync from every connected device, at most once per

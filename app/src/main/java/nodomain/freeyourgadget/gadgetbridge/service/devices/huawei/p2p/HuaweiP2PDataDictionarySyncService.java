@@ -401,7 +401,7 @@ public class HuaweiP2PDataDictionarySyncService extends HuaweiBaseP2PService {
                         sendSyncRequest(classesToSync.remove(0), 0, callback);
                     }
                 }
-            } catch (HuaweiPacket.MissingTagException e) {
+            } catch (HuaweiPacket.MissingTagException | java.nio.BufferUnderflowException e) {
                 LOG.error("P2PDataDictionarySyncService parse error", e);
                 abortPendingSync();
                 if (callback != null) {

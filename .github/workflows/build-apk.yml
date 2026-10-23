@@ -72,7 +72,7 @@ jobs:
         run: ./gradlew :app:assembleMainline${{ inputs.variant }} --stacktrace
 
       - name: Health sync recovery regression tests
-        run: ./gradlew :app:testMainlineDebugUnitTest --tests '*HuaweiDictionarySyncRecoveryTest' --stacktrace
+        run: ./gradlew :app:testMainlineDebugUnitTest --tests '*HuaweiDictionarySyncRecoveryTest' --tests '*WebhookSessionRecoveryTest' --tests 'nodomain.freeyourgadget.gadgetbridge.database.SampleProviderTest' --stacktrace
 
       - name: Rename APK with branch and commit info
         run: |
