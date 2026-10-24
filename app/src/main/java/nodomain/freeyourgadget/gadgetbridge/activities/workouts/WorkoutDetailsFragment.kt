@@ -66,6 +66,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.BarShade
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils
 import nodomain.freeyourgadget.gadgetbridge.util.GB
+import nodomain.freeyourgadget.gadgetbridge.util.elevation.ElevationTiles
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectWorkoutDeletion
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -194,6 +195,10 @@ class WorkoutDetailsFragment : Fragment(), MenuProvider {
                                 ?.getActivityTrack(parsedWorkout.summary)
                             val activityPoints = activityTrack?.allPoints
                             if (activityTrack != null && !activityPoints.isNullOrEmpty()) {
+                                // Altitude from imported elevation tiles replaces what the device recorded
+                                if (ElevationTiles.correct(requireContext(), gbDevice, ActivityKind.fromCode(parsedWorkout.summary.activityKind), activityPoints)) {
+                                    ElevationTiles.applyToSummary(parsedWorkout.data, activityPoints)
+                                }
                                 val intervals = IntervalChartUtils.deriveIntervals(
                                     activityTrack.segments, activityTrack.segmentInfos
                                 )
@@ -699,7 +704,7 @@ class WorkoutDetailsFragment : Fragment(), MenuProvider {
     private fun viewGpxTrack() {
         val workout = currentWorkout ?: return
         val activityTrackProvider = gbDevice.deviceCoordinator.getActivityTrackProvider(gbDevice, requireContext())
-        val gpxFile = ActivitySummaryUtils.getShareableGpxFile(activityTrackProvider, workout.summary)
+        val gpxFile = ActivitySummaryUtils.getShareableGpxFile(activityTrackProvider, gbDevice, workout.summary)
 
         if (gpxFile == null) {
             GB.toast(requireContext(),
@@ -723,7 +728,7 @@ class WorkoutDetailsFragment : Fragment(), MenuProvider {
     private fun shareGpxTrack() {
         val workout = currentWorkout ?: return
         val activityTrackProvider = gbDevice.deviceCoordinator.getActivityTrackProvider(gbDevice, requireContext())
-        val gpxFile = ActivitySummaryUtils.getShareableGpxFile(activityTrackProvider, workout.summary)
+        val gpxFile = ActivitySummaryUtils.getShareableGpxFile(activityTrackProvider, gbDevice, workout.summary)
 
         if (gpxFile == null) {
             GB.toast(requireContext(), getString(R.string.no_gpx_track_in_activity_toast), Toast.LENGTH_LONG, GB.INFO)

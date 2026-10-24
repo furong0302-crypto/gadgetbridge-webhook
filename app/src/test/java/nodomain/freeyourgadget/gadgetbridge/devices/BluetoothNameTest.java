@@ -22,6 +22,7 @@ public class BluetoothNameTest extends TestBase {
             put("AndroidAuto-AAW12345abc", DeviceType.AAWIRELESS);
             put("1MORE SonoFlow", DeviceType.ONEMORE_SONOFLOW); // #6803
             put("1MORE SonoFlow SE", DeviceType.ONEMORE_SONOFLOW_SE); // #6803
+            put("BSC 100Max", DeviceType.IGPSPORT_BSC100MAX); // #7168
             put("UGREEN HiTune Max5c", DeviceType.UGREEN_HITUNE_MAX_5C);
             put("UGREEN HiTune Max 5c", DeviceType.UGREEN_HITUNE_MAX_5C);
             put("Active 2 NFC (Round)", DeviceType.AMAZFITACTIVE2NFC);

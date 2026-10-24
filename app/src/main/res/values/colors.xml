@@ -8,6 +8,10 @@
 
     <color name="accent" type="color">#0091ea</color>
 
+    <color name="last_activity_running" type="color">#FB923C</color>
+    <color name="last_activity_cycling" type="color">#38BDF8</color>
+    <color name="last_activity_cardio" type="color">#E879F9</color>
+
     <color name="primarytext_light" type="color">#000000</color>
     <color name="primarytext_dark" type="color">#ffffff</color>
 
@@ -94,6 +98,7 @@
     <color name="hrv_status_char_line_color" type="color">#d12a2a</color>
     <color name="hrv_status_range_color" type="color">#99d12a2a</color>
     <color name="hrv_status_last_night_color" type="color">#3f7dff</color>
+    <color name="hrv_status_weekly_avg_color" type="color">#00a3a3</color>
     <color name="hrv_status_baseline_color" type="color">#0c8a03</color>
     <color name="hrv_status_baseline_fill_color" type="color">#660c8a03</color>
     <color name="training_load_dark" type="color">#FFF</color>

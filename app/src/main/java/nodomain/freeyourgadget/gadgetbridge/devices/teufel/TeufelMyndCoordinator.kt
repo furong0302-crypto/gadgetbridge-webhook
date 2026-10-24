@@ -19,11 +19,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.teufel.TeufelMyndSup
 import java.util.regex.Pattern
 
 class TeufelMyndCoordinator : AbstractBLClassicDeviceCoordinator() {
-    override fun isExperimental(): Boolean {
-        // Not tested
-        return true
-    }
-
     override fun getManufacturer(): String {
         return "Teufel"
     }
