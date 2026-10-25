@@ -4,9 +4,14 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator.ConnectionType
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator.DeviceKind
@@ -44,11 +49,23 @@ class DeviceTypePickerViewModel : ViewModel() {
     private val _state = MutableStateFlow<State?>(null)
     val state: StateFlow<State?> = _state.asStateFlow()
 
+    private var loadJob: Job? = null
+    private var loaded = false
+
     fun load(context: Context, connectionTypes: Set<ConnectionType>, preselected: DeviceType?) {
-        if (allEntries.isNotEmpty()) return
+        if (loadJob != null) return
 
         checked = preselected
 
+        val appContext = context.applicationContext
+        loadJob = viewModelScope.launch {
+            withContext(Dispatchers.Default) { buildEntries(appContext, connectionTypes) }
+            loaded = true
+            refresh()
+        }
+    }
+
+    private fun buildEntries(context: Context, connectionTypes: Set<ConnectionType>) {
         val i18nUnknown = context.getString(R.string.unknown)
         val i18nGeneric = context.getString(R.string.pref_header_generic)
 
@@ -85,8 +102,6 @@ class DeviceTypePickerViewModel : ViewModel() {
             compareBy<DeviceKind> { it == DeviceKind.UNKNOWN }
                 .thenBy(String.CASE_INSENSITIVE_ORDER) { context.getString(it.labelRes()) }
         )
-
-        refresh()
     }
 
     fun setManufacturer(newManufacturer: String?) {
@@ -110,6 +125,8 @@ class DeviceTypePickerViewModel : ViewModel() {
     }
 
     private fun refresh() {
+        if (!loaded) return
+
         val trimmed = query.trim()
         _state.value = State(
             manufacturers = sortedManufacturers.filter { b ->

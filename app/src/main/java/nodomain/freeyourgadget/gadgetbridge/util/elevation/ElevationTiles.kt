@@ -129,7 +129,7 @@ object ElevationTiles {
         val ascentKeys = listOf(ActivitySummaryEntries.TOTAL_ASCENT, ActivitySummaryEntries.ASCENT_METERS, ActivitySummaryEntries.ELEVATION_GAIN)
             .filter { data.has(it) }
             .ifEmpty { listOf(ActivitySummaryEntries.TOTAL_ASCENT) }
-        val descentKeys = listOf(ActivitySummaryEntries.TOTAL_DESCENT, ActivitySummaryEntries.DESCENT_METERS)
+        val descentKeys = listOf(ActivitySummaryEntries.TOTAL_DESCENT, ActivitySummaryEntries.DESCENT_METERS, ActivitySummaryEntries.ELEVATION_LOSS)
             .filter { data.has(it) }
             .ifEmpty { listOf(ActivitySummaryEntries.TOTAL_DESCENT) }
         for (key in ascentKeys) {

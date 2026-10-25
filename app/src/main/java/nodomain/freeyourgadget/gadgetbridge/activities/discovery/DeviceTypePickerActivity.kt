@@ -94,7 +94,10 @@ class DeviceTypePickerActivity : AbstractGBActivity() {
         }
 
         lifecycleScope.launch {
-            viewModel.state.collect { state -> state?.let { showState(it) } }
+            viewModel.state.collect { state ->
+                binding.deviceTypePickerProgress.isVisible = state == null
+                state?.let { showState(it) }
+            }
         }
 
         viewModel.load(this, connectionTypes, preselected)

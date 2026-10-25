@@ -99,6 +99,13 @@
         android:paddingBottom="88dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/device_type_picker_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/device_type_picker_confirm"
         android:layout_width="wrap_content"

@@ -58,7 +58,7 @@
     <color name="outline_variant_dark" type="color">#303030</color>
 
     <color name="chart_heartrate" type="color">#ffab40</color>
-    <color name="chart_heartrate_alternative" type="color">#8B0000</color>
+    <color name="chart_heartrate_alternative" type="color">#EF4444</color>
     <color name="chart_heartrate_fill" type="color">#fadab1</color>
     <color name="chart_heartrate_minimum" type="color">#3F84E5</color>
     <color name="chart_heartrate_resting" type="color">#01796F</color>
@@ -160,7 +160,7 @@
     <color name="chart_cadence_circle" type="color">#FF7043</color>
     <color name="chart_line_speed" type="color">#80D8FF</color>
     <color name="chart_line_elevation" type="color">#66BB6A</color>
-    <color name="chart_line_heart_rate" type="color">#F44336</color>
+    <color name="chart_line_heart_rate" type="color">#EF4444</color>
     <color name="chart_line_power" type="color">#6A0DAD</color>
     <color name="chart_line_swolf" type="color">#F9DB22</color>
     <color name="chart_line_stroke_rate" type="color">#6495ED</color>

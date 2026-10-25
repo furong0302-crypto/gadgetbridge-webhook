@@ -966,6 +966,10 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".activities.ContactPickerActivity"
+            android:label="@string/contact_select_from_contacts"
+            android:parentActivityName=".activities.ConfigureContacts" />
+        <activity
             android:name=".activities.ContactDetails"
             android:label="@string/title_activity_contact_details"
             android:parentActivityName=".activities.ConfigureReminders"
