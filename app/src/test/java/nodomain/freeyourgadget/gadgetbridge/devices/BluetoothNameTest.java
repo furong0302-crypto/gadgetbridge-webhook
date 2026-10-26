@@ -46,6 +46,7 @@ public class BluetoothNameTest extends TestBase {
             put("HC96", DeviceType.HC96);
             put("KW19-B", DeviceType.KW19_B); // #7092
             put("FireBoltt 069", DeviceType.FIREBOLTT_069);
+            put("FB BGS001", DeviceType.FIREBOLTT_NINJA_PHANTOM);
             put("soundcore A1", DeviceType.SOUNDCORE_A1); // #7006
             put("soundcore A2 NC", DeviceType.SOUNDCORE_A2_NC); // #7006
             put("soundcore A3i", DeviceType.SOUNDCORE_A3I); // #7006
@@ -65,6 +66,7 @@ public class BluetoothNameTest extends TestBase {
             put("Soundcore Q30", DeviceType.SOUNDCORE_Q30); // #4316
             put("soundcore Q30", DeviceType.SOUNDCORE_Q30); // #6371
             put("soundcore  Q30", DeviceType.SOUNDCORE_Q30); // #6371 - unsure
+            put("soundcore Space One", DeviceType.SOUNDCORE_SPACE_ONE); // #7176
             put("Alt Vibe", DeviceType.ALT_VIBE); // #6575
             put("P8", DeviceType.WASPOS); // from wasp-os source
             put("P8DFU", DeviceType.WASPOS); // from wasp-os source
@@ -92,6 +94,10 @@ public class BluetoothNameTest extends TestBase {
             put("T70(ID-AB01)", DeviceType.T70); // #7070
             put("T70 (ID-AB01)", DeviceType.T70); // #7070
             put("D3(ID-417F)", DeviceType.D3);
+            put("Zone 2 (ID-1361)", DeviceType.HIFUTURE_ZONE2); // #7182
+            put("ZONE 2 (ID-1361)", DeviceType.HIFUTURE_ZONE2); // #7182
+            put("Zone 2(ID-1361)", DeviceType.HIFUTURE_ZONE2); // #7182
+            put("ZONE 2(ID-1361)", DeviceType.HIFUTURE_ZONE2); // #7182
             put("R3Max(ID-FC45)", DeviceType.BLACKVIEW_R3MAX); // matrix
             put("S10", DeviceType.QECNATO_S10);
             put("S52", DeviceType.S52);

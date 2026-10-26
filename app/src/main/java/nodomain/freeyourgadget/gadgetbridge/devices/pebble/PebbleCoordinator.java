@@ -29,13 +29,9 @@ import androidx.annotation.StringRes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.ExternalPebbleJSActivity;
@@ -49,10 +45,6 @@ import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.PebbleHealthActivityOverlayDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.PebbleHealthActivitySampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.PebbleMisfitSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.PebbleMorpheuzSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleSupport;
@@ -75,16 +67,6 @@ public class PebbleCoordinator extends AbstractBLClassicDeviceCoordinator {
     @Override
     public Class<? extends Activity> getPairingActivity() {
         return PebblePairingActivity.class;
-    }
-
-    @Override
-    public Map<AbstractDao<?, ?>, Property> getAllDeviceDao(@NonNull final DaoSession session) {
-        Map<AbstractDao<?, ?>, Property> map = new HashMap<>(4);
-        map.put(session.getPebbleHealthActivitySampleDao(), PebbleHealthActivitySampleDao.Properties.DeviceId);
-        map.put(session.getPebbleHealthActivityOverlayDao(), PebbleHealthActivityOverlayDao.Properties.DeviceId);
-        map.put(session.getPebbleMisfitSampleDao(), PebbleMisfitSampleDao.Properties.DeviceId);
-        map.put(session.getPebbleMorpheuzSampleDao(), PebbleMorpheuzSampleDao.Properties.DeviceId);
-        return map;
     }
 
     @Override

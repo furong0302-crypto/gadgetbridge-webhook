@@ -36,7 +36,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,7 +43,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
-import android.provider.Settings;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -186,8 +184,6 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
 
         registerBroadcastReceivers();
 
-        checkAndRequestLocationPermission();
-
         authKeyLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -218,6 +214,12 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
             }
             LOG.warn("No device candidate for {}", selection.getAddress());
         });
+
+        if (DiscoveryRequirements.firstUnmet(this) != null) {
+            startActivity(new Intent(this, DiscoveryRequirementsActivity.class));
+            finish();
+            return;
+        }
 
         if (!startDiscovery()) {
             /* if we couldn't start scanning, go back to the main page.
@@ -509,8 +511,6 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
 
         if (!adapter.isEnabled()) {
             LOG.warn("Bluetooth not enabled");
-            final Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(enableBtIntent);
             this.adapter = null;
             return false;
         }
@@ -602,84 +602,6 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
         final Message message = Message.obtain(handler, runnable);
         message.obj = runnable;
         return message;
-    }
-
-    private void checkAndRequestLocationPermission() {
-        /* This is more or less a copy of what's in ControlCenterv2, but
-        we do this in case the permissions weren't requested since there
-        is no way we can scan without this stuff */
-        List<String> wantedPermissions = new ArrayList<>();
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            LOG.error("No permission to access coarse location!");
-            wantedPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            LOG.error("No permission to access fine location!");
-            wantedPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        // if we need location permissions, request both together to avoid a bunch of dialogs
-        if (!wantedPermissions.isEmpty()) {
-            toast(DiscoveryActivityV2.this, getString(R.string.error_no_location_access), Toast.LENGTH_SHORT, GB.ERROR);
-            ActivityCompat.requestPermissions(this, wantedPermissions.toArray(new String[0]), 0);
-            wantedPermissions.clear();
-        }
-        // Now we have to request background location separately!
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                LOG.error("No permission to access background location!");
-                toast(DiscoveryActivityV2.this, getString(R.string.error_no_location_access), Toast.LENGTH_SHORT, GB.ERROR);
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 0);
-            }
-        }
-        // Now, we can request Bluetooth permissions....
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                LOG.error("No permission to access Bluetooth scanning!");
-                toast(DiscoveryActivityV2.this, getString(R.string.error_no_bluetooth_scan), Toast.LENGTH_SHORT, GB.ERROR);
-                wantedPermissions.add(Manifest.permission.BLUETOOTH_SCAN);
-            }
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                LOG.error("No permission to access Bluetooth connection!");
-                toast(DiscoveryActivityV2.this, getString(R.string.error_no_bluetooth_connect), Toast.LENGTH_SHORT, GB.ERROR);
-                wantedPermissions.add(Manifest.permission.BLUETOOTH_CONNECT);
-            }
-        }
-        if (!wantedPermissions.isEmpty()) {
-            GB.toast(this, getString(R.string.permission_granting_mandatory), Toast.LENGTH_LONG, GB.ERROR);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                ActivityCompat.requestPermissions(this, wantedPermissions.toArray(new String[0]), 0);
-            } else {
-                ActivityResultLauncher<String[]> requestMultiplePermissionsLauncher =
-                        registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranted -> {
-                            //noinspection StatementWithEmptyBody
-                            if (!isGranted.containsValue(false)) {
-                                // Permission is granted. Continue the action or workflow in your app.
-                                // should we do startDiscovery here??
-                            } else {
-                                // Explain to the user that the feature is unavailable because the feature requires a permission that the user has denied.
-                                GB.toast(this, getString(R.string.permission_granting_mandatory), Toast.LENGTH_LONG, GB.ERROR);
-                            }
-                        });
-                requestMultiplePermissionsLauncher.launch(wantedPermissions.toArray(new String[0]));
-            }
-        }
-
-        LocationManager locationManager = (LocationManager) DiscoveryActivityV2.this.getSystemService(Context.LOCATION_SERVICE);
-        try {
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                // Do nothing
-                LOG.debug("Some location provider is enabled, assuming location is enabled");
-            } else {
-                toast(DiscoveryActivityV2.this, getString(R.string.require_location_provider), Toast.LENGTH_LONG, GB.ERROR);
-                DiscoveryActivityV2.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                // We can't be sure location was enabled, cancel scan start and wait for new user action
-                toast(DiscoveryActivityV2.this, getString(R.string.error_location_enabled_mandatory), Toast.LENGTH_SHORT, GB.ERROR);
-                return;
-            }
-        } catch (final Exception ex) {
-            LOG.error("Exception when checking location status", ex);
-        }
-        LOG.info("Permissions seems to be fine for scanning");
     }
 
     @Override

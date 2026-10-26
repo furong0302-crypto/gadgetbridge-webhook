@@ -476,7 +476,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
             return;
         }
 
-        LOG.debug("INCOMING message: {}/{}: {}", parsedMessage, parsedMessage.getGarminMessage(), GB.lazyHexdump(message));
+        LOG.debug("INCOMING message {}/{}: {}", parsedMessage.getClass().getSimpleName(), parsedMessage.getGarminMessage(), GB.lazyHexdump(message));
         /*
         the handler elaborates the followup message but might change the status message since it does
         check the integrity of the incoming message payload. Hence we let the handlers elaborate the
@@ -882,8 +882,9 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
         if (message == null)
             return;
         byte[] out = message.getOutgoingMessage();
-        if (out != null && LOG.isDebugEnabled())
-            LOG.debug("OUTGOING message {}: {}", message, GB.lazyHexdump(out));
+        if (out != null && LOG.isDebugEnabled()) {
+            LOG.debug("OUTGOING message {}: {}", message.getClass().getSimpleName(), GB.lazyHexdump(out));
+        }
         if (isRfcommThread()) {
             rfcommListener.sendMessage(out);
             return;
@@ -899,8 +900,9 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
         if (message == null)
             return;
         byte[] ack = message.getAckBytestream();
-        if (ack != null && LOG.isDebugEnabled())
-            LOG.debug("OUTGOING ACK {}: {}", message, GB.lazyHexdump(ack));
+        if (ack != null && LOG.isDebugEnabled()) {
+            LOG.debug("OUTGOING ACK {}: {}", message.getClass().getSimpleName(), GB.lazyHexdump(ack));
+        }
         if (isRfcommThread()) {
             rfcommListener.sendMessage(ack);
             return;

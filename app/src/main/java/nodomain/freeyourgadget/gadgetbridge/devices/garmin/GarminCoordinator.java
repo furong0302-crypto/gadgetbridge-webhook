@@ -31,14 +31,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
@@ -68,32 +64,9 @@ import nodomain.freeyourgadget.gadgetbridge.devices.SleepSessionProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.WorkoutLoadSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardItem;
-import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummaryDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminActivitySampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminBodyEnergySampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminEstimatedSleepStageSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminEventSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminFitFileDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminHeartRateRestingSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminHrvSummarySampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminHrvValueSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminIntensityMinutesSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminNapSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminRespiratoryRateSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminRestingMetabolicRateSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminRawSleepSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminSleepStageSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminSleepStatsSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminSpo2SampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GarminStressSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GenericHydrationSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.GenericMetricSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadAcuteSample;
-import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadAcuteSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadChronicSample;
-import nodomain.freeyourgadget.gadgetbridge.entities.GenericTrainingLoadChronicSampleDao;
-import nodomain.freeyourgadget.gadgetbridge.entities.PendingFileDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.install.InstallHandlerV2;
@@ -166,35 +139,6 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
 
     public boolean defaultExploreSync() {
         return true;
-    }
-
-    @Override
-    public Map<AbstractDao<?, ?>, Property> getAllDeviceDao( @NonNull final DaoSession session) {
-        return new HashMap<>() {{
-            put(session.getGarminActivitySampleDao(), GarminActivitySampleDao.Properties.DeviceId);
-            put(session.getGarminStressSampleDao(), GarminStressSampleDao.Properties.DeviceId);
-            put(session.getGarminBodyEnergySampleDao(), GarminBodyEnergySampleDao.Properties.DeviceId);
-            put(session.getGarminSpo2SampleDao(), GarminSpo2SampleDao.Properties.DeviceId);
-            put(session.getGarminSleepStageSampleDao(), GarminSleepStageSampleDao.Properties.DeviceId);
-            put(session.getGarminRawSleepSampleDao(), GarminRawSleepSampleDao.Properties.DeviceId);
-            put(session.getGarminEstimatedSleepStageSampleDao(), GarminEstimatedSleepStageSampleDao.Properties.DeviceId);
-            put(session.getGarminEventSampleDao(), GarminEventSampleDao.Properties.DeviceId);
-            put(session.getGarminFitFileDao(), GarminFitFileDao.Properties.DeviceId);
-            put(session.getGarminHeartRateRestingSampleDao(), GarminHeartRateRestingSampleDao.Properties.DeviceId);
-            put(session.getGarminHrvSummarySampleDao(), GarminHrvSummarySampleDao.Properties.DeviceId);
-            put(session.getGarminHrvValueSampleDao(), GarminHrvValueSampleDao.Properties.DeviceId);
-            put(session.getGarminIntensityMinutesSampleDao(), GarminIntensityMinutesSampleDao.Properties.DeviceId);
-            put(session.getGarminNapSampleDao(), GarminNapSampleDao.Properties.DeviceId);
-            put(session.getGarminRespiratoryRateSampleDao(), GarminRespiratoryRateSampleDao.Properties.DeviceId);
-            put(session.getGarminRestingMetabolicRateSampleDao(), GarminRestingMetabolicRateSampleDao.Properties.DeviceId);
-            put(session.getGarminSleepStatsSampleDao(), GarminSleepStatsSampleDao.Properties.DeviceId);
-            put(session.getBaseActivitySummaryDao(), BaseActivitySummaryDao.Properties.DeviceId);
-            put(session.getPendingFileDao(), PendingFileDao.Properties.DeviceId);
-            put(session.getGenericTrainingLoadAcuteSampleDao(), GenericTrainingLoadAcuteSampleDao.Properties.DeviceId);
-            put(session.getGenericTrainingLoadChronicSampleDao(), GenericTrainingLoadChronicSampleDao.Properties.DeviceId);
-            put(session.getGenericMetricSampleDao(), GenericMetricSampleDao.Properties.DeviceId);
-            put(session.getGenericHydrationSampleDao(), GenericHydrationSampleDao.Properties.DeviceId);
-        }};
     }
 
     @Override

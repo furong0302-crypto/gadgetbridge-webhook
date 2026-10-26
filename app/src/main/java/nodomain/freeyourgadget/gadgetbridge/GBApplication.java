@@ -66,10 +66,8 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import nodomain.freeyourgadget.gadgetbridge.activities.ControlCenterv2;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -77,6 +75,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.database.PeriodicDbExporter;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.BluetoothStateChangeReceiver;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.apps.NotificationAppRepository;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.opentracks.OpenTracksContentObserver;
 import nodomain.freeyourgadget.gadgetbridge.externalservices.ExternalServiceRegistry;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -93,7 +92,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.InternetHelperSingleton;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.PermissionsUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.backup.PeriodicZipExporter;
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectPermissionManager;
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs;
@@ -274,12 +272,11 @@ public class GBApplication extends Application {
         setLanguage(language);
 
         deviceService = createDeviceService();
-        loadAppsNotifBlackList();
-        loadAppsPebbleBlackList();
 
         if (!GBEnvironment.env().isTest()) {
             PeriodicDbExporter.INSTANCE.scheduleNextExecution(context);
             PeriodicZipExporter.INSTANCE.scheduleNextExecution(context);
+            NotificationAppRepository.INSTANCE.loadInBackground();
         }
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -491,133 +488,6 @@ public class GBApplication extends Application {
             return notificationManager.getCurrentInterruptionFilter();
         }
         return NotificationManager.INTERRUPTION_FILTER_ALL;
-    }
-
-    private static HashSet<String> apps_notification_blacklist = null;
-
-    public static boolean appIsNotifBlacklisted(String packageName) {
-        if (apps_notification_blacklist == null) {
-            LOG.info("appIsNotifBlacklisted: apps_notification_blacklist is null!");
-        }
-        return apps_notification_blacklist != null && apps_notification_blacklist.contains(packageName);
-    }
-
-    public static void setAppsNotifBlackList(Set<String> packageNames) {
-        setAppsNotifBlackList(packageNames, sharedPrefs.edit());
-    }
-
-    public static void setAppsNotifBlackList(Set<String> packageNames, SharedPreferences.Editor editor) {
-        if (packageNames == null) {
-            LOG.info("Set null apps_notification_blacklist");
-            apps_notification_blacklist = new HashSet<>();
-        } else {
-            apps_notification_blacklist = new HashSet<>(packageNames);
-        }
-        LOG.info("New apps_notification_blacklist has {} entries", apps_notification_blacklist.size());
-        saveAppsNotifBlackList(editor);
-    }
-
-    private static void loadAppsNotifBlackList() {
-        LOG.info("Loading apps_notification_blacklist");
-        apps_notification_blacklist = (HashSet<String>) sharedPrefs.getStringSet(GBPrefs.PACKAGE_BLACKLIST, null); // lgtm [java/abstract-to-concrete-cast]
-        if (apps_notification_blacklist == null) {
-            apps_notification_blacklist = new HashSet<>();
-        }
-        LOG.info("Loaded apps_notification_blacklist has {} entries", apps_notification_blacklist.size());
-    }
-
-    private static void saveAppsNotifBlackList() {
-        saveAppsNotifBlackList(sharedPrefs.edit());
-    }
-
-    private static void saveAppsNotifBlackList(SharedPreferences.Editor editor) {
-        LOG.info("Saving apps_notification_blacklist with {} entries", apps_notification_blacklist.size());
-        if (apps_notification_blacklist.isEmpty()) {
-            editor.putStringSet(GBPrefs.PACKAGE_BLACKLIST, null);
-        } else {
-            Prefs.putStringSet(editor, GBPrefs.PACKAGE_BLACKLIST, apps_notification_blacklist);
-        }
-        editor.apply();
-    }
-
-    public static void addAppToNotifBlacklist(String packageName) {
-        if (apps_notification_blacklist.add(packageName)) {
-            saveAppsNotifBlackList();
-        }
-    }
-
-    public static synchronized void removeFromAppsNotifBlacklist(String packageName) {
-        LOG.info("Removing from apps_notification_blacklist: {}", packageName);
-        apps_notification_blacklist.remove(packageName);
-        saveAppsNotifBlackList();
-    }
-
-    private static HashSet<String> apps_pebblemsg_blacklist = null;
-
-    public static boolean appIsPebbleBlacklisted(String sender) {
-        if (apps_pebblemsg_blacklist == null) {
-            LOG.info("appIsPebbleBlacklisted: apps_pebblemsg_blacklist is null!");
-        }
-        return apps_pebblemsg_blacklist != null && apps_pebblemsg_blacklist.contains(sender);
-    }
-
-    public static void setAppsPebbleBlackList(Set<String> packageNames) {
-        setAppsPebbleBlackList(packageNames, sharedPrefs.edit());
-    }
-
-    public static void setAppsPebbleBlackList(Set<String> packageNames, SharedPreferences.Editor editor) {
-        if (packageNames == null) {
-            LOG.info("Set null apps_pebblemsg_blacklist");
-            apps_pebblemsg_blacklist = new HashSet<>();
-        } else {
-            apps_pebblemsg_blacklist = new HashSet<>(packageNames);
-        }
-        LOG.info("New apps_pebblemsg_blacklist has {} entries", apps_pebblemsg_blacklist.size());
-        saveAppsPebbleBlackList(editor);
-    }
-
-    private static void loadAppsPebbleBlackList() {
-        LOG.info("Loading apps_pebblemsg_blacklist");
-        apps_pebblemsg_blacklist = (HashSet<String>) sharedPrefs.getStringSet(GBPrefs.PACKAGE_PEBBLEMSG_BLACKLIST, null); // lgtm [java/abstract-to-concrete-cast]
-        if (apps_pebblemsg_blacklist == null) {
-            apps_pebblemsg_blacklist = new HashSet<>();
-        }
-        LOG.info("Loaded apps_pebblemsg_blacklist has {} entries", apps_pebblemsg_blacklist.size());
-    }
-
-    private static void saveAppsPebbleBlackList() {
-        saveAppsPebbleBlackList(sharedPrefs.edit());
-    }
-
-    private static void saveAppsPebbleBlackList(SharedPreferences.Editor editor) {
-        LOG.info("Saving apps_pebblemsg_blacklist with {} entries", apps_pebblemsg_blacklist.size());
-        if (apps_pebblemsg_blacklist.isEmpty()) {
-            editor.putStringSet(GBPrefs.PACKAGE_PEBBLEMSG_BLACKLIST, null);
-        } else {
-            Prefs.putStringSet(editor, GBPrefs.PACKAGE_PEBBLEMSG_BLACKLIST, apps_pebblemsg_blacklist);
-        }
-        editor.apply();
-    }
-
-    public static void addAppToPebbleBlacklist(String packageName) {
-        if (apps_pebblemsg_blacklist.add(packageNameToPebbleMsgSender(packageName))) {
-            saveAppsPebbleBlackList();
-        }
-    }
-
-    public static synchronized void removeFromAppsPebbleBlacklist(String packageName) {
-        LOG.info("Removing from apps_pebblemsg_blacklist: {}", packageName);
-        apps_pebblemsg_blacklist.remove(packageNameToPebbleMsgSender(packageName));
-        saveAppsPebbleBlackList();
-    }
-
-    public static String packageNameToPebbleMsgSender(String packageName) {
-        if ("eu.siacs.conversations".equals(packageName)) {
-            return ("Conversations");
-        } else if ("net.osmand.plus".equals(packageName)) {
-            return ("OsmAnd");
-        }
-        return packageName;
     }
 
     @VisibleForTesting

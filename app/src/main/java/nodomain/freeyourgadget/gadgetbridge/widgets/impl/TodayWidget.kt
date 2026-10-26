@@ -31,6 +31,9 @@ import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetConfig
 import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetDataScope
 import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetVariant
 import org.slf4j.LoggerFactory
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
 
 /**
  * The selected day as a clock of not-worn, worn, activity, exercise and sleep-stage stretches. Only the rings, the
@@ -129,7 +132,7 @@ object TodayWidget : GBWidget<TodayWidget.Data> {
     override suspend fun loadData(scope: WidgetDataScope, config: WidgetConfig): Data {
         val hrIntervalSecs = (config.prefs.getString("hr_interval", "1").toIntOrNull() ?: 1) * 60
         val (segments, kinds) = loadDay(scope, hrIntervalSecs)
-        val now = if (scope.isToday) ((System.currentTimeMillis() / 1000L) - scope.dayStart).toInt() else null
+        val now = if (scope.isToday) secondOfDay(System.currentTimeMillis() / 1000L, scope) else null
 
         var yesterday = emptyList<DayClockView.Segment>()
         var yesterdayKinds = emptySet<ActivityKind>()
@@ -267,13 +270,12 @@ object TodayWidget : GBWidget<TodayWidget.Data> {
         }
 
         // Merge per-second activities into stretches of one kind
-        val dayStart = scope.dayStart
         val segments = mutableListOf<DayClockView.Segment>()
         var current: DayClockView.Segment? = null
         var lastTimestamp = Long.MIN_VALUE
         for (entry in activityTimestamps.entries.sortedBy { it.key }) {
             val kind = kindOf(entry.value)
-            val second = (entry.key - dayStart).coerceIn(0, DayClockView.DAY.toLong()).toInt()
+            val second = entry.key.toInt()
             val open = current
             current = if (open != null && open.kind == kind && entry.key - lastTimestamp <= 60) {
                 open.copy(end = second)
@@ -285,8 +287,20 @@ object TodayWidget : GBWidget<TodayWidget.Data> {
         }
         current?.let { segments += it }
 
-        return segments.filter { it.end > it.start } to activityTimestamps.values.toSet()
+        return segments
+            .map { it.copy(start = secondOfDay(it.start.toLong(), scope), end = secondOfDay(it.end.toLong(), scope)) }
+            .filter { it.end > it.start } to activityTimestamps.values.toSet()
     }
+
+    /**
+     * The local seconds since midnight of the epoch second [timestamp]. Coerced to a value
+     * between 0 (before the day of [scope]) and [DayClockView.DAY] (after the day of [scope]).
+     */
+    private fun secondOfDay(timestamp: Long, scope: WidgetDataScope): Int =
+        Duration.between(
+            scope.day.atStartOfDay(),
+            LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), scope.zone)
+        ).seconds.coerceIn(0, DayClockView.DAY.toLong()).toInt()
 
     override fun previewData(): Data {
         fun at(hour: Int, minute: Int) = hour * DayClockView.HOUR + minute * 60

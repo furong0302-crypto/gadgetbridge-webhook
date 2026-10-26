@@ -237,7 +237,9 @@ public interface DeviceCoordinator {
      * given device.
      * @throws GBException
      */
-    void deleteDevice(@NonNull final GBDevice device, boolean deleteFiles) throws GBException;
+    void deleteDevice(@NonNull final GBDevice device,
+                      boolean deleteFiles,
+                      @Nullable final DeviceDeletionProgress progress) throws GBException;
 
     /**
      * Returns the Activity class to be started in order to perform a pairing of a

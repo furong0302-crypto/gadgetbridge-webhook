@@ -3289,17 +3289,6 @@
         <item>@string/reminder_every_year</item>
     </string-array>
 
-    <string-array name="notification_filter_modes_entries">
-        <item>@string/filter_mode_none</item>
-        <item>@string/filter_mode_whitelist</item>
-        <item>@string/filter_mode_blacklist</item>
-    </string-array>
-
-    <string-array name="notification_filter_submodes_entries">
-        <item>@string/filter_submode_at_least_one</item>
-        <item>@string/filter_submode_all</item>
-    </string-array>
-
     <!-- Note: ZeTime preferences -->
     <string-array name="zetime_analog_mode">
         <item name="0">@string/zetime_analog_mode_hands</item>
@@ -3578,16 +3567,6 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
-    </string-array>
-
-    <string-array name="notification_list_is_blacklist_names">
-        <item>@string/pref_title_notification_use_as_deny</item>
-        <item>@string/pref_title_notification_use_as_allow</item>
-    </string-array>
-
-    <string-array name="notification_list_is_blacklist_values">
-        <item>true</item>
-        <item>false</item>
     </string-array>
 
     <string-array name="galaxy_eqalizer_modes">

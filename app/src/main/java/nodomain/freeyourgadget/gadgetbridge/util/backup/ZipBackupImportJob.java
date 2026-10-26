@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,10 +56,24 @@ public class ZipBackupImportJob extends AbstractZipBackupJob {
 
     private final Uri mUri;
     private final byte[] copyBuffer = new byte[8192];
+    private final CountDownLatch confirmationLatch = new CountDownLatch(1);
 
     public ZipBackupImportJob(final Context context, final ZipBackupCallback callback, final Uri uri) {
         super(context, callback);
         this.mUri = uri;
+    }
+
+    /**
+     * Continues the import after {@link ZipBackupCallback#onConfirmationRequired(String)}.
+     */
+    public void confirm() {
+        confirmationLatch.countDown();
+    }
+
+    @Override
+    public void abort() {
+        super.abort();
+        confirmationLatch.countDown();
     }
 
     @Override
@@ -72,9 +89,21 @@ public class ZipBackupImportJob extends AbstractZipBackupJob {
 
             // Validate file
             updateProgress(10, R.string.backup_restore_importing_validating);
-            validateBackupFile(zipFile);
+            final ZipBackupMetadata metadata = validateBackupFile(zipFile);
 
-            LOG.debug("Valid zip file: {}", mUri);
+            LOG.debug(
+                "Valid zip file from {}: {}",
+                mUri,
+                metadata
+            );
+
+            if (isAborted()) return;
+
+            if (!isKnownAppId(metadata.getAppId())) {
+                LOG.warn("Backup is from unknown app id {}, requesting confirmation", metadata.getAppId());
+                onConfirmationRequired(getContext().getString(R.string.backup_restore_unknown_app_id, metadata.getAppId()));
+                confirmationLatch.await();
+            }
 
             if (isAborted()) return;
 
@@ -265,7 +294,11 @@ public class ZipBackupImportJob extends AbstractZipBackupJob {
         return new ZipFile(tmpFile);
     }
 
-    private static void validateBackupFile(final ZipFile zipFile) throws IOException {
+    private static boolean isKnownAppId(@Nullable final String appId) {
+        return FileUtils.KNOWN_PACKAGES.contains(appId);
+    }
+
+    private static ZipBackupMetadata validateBackupFile(final ZipFile zipFile) throws IOException {
         final ZipEntry metadataEntry = zipFile.getEntry(METADATA_FILENAME);
         if (metadataEntry == null) {
             throw new IOException("Zip file has no metadata");
@@ -284,5 +317,7 @@ public class ZipBackupImportJob extends AbstractZipBackupJob {
         if (databaseEntry == null) {
             throw new IOException("Zip file has no database");
         }
+
+        return zipBackupMetadata;
     }
 }

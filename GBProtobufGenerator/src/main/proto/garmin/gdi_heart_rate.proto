@@ -11,6 +11,9 @@ message MeasurementNotification {
     optional GDI.Proto.HeartRate.SwimInterval swim_interval_data = 4;
 }
 
+message Service {
+}
+
 message SwimInterval {
     optional uint32 interval_average_heart_rate_bpm = 1;
     optional uint32 interval_maximum_heart_rate_bpm = 2;

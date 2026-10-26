@@ -347,7 +347,7 @@
         {"num":24,"name":"extended_power_save_timeout","base":"ENUM","type":"Bool"},
         {"num":25,"name":"auto_sleep","base":"ENUM","type":"Bool"},
         {"num":27,"name":"satellites","base":"ENUM"},
-        {"num":29,"name":"pool_length_unit","base":"ENUM"},
+        {"num":29,"name":"pool_length_unit","base":"ENUM","type":"DisplayMeasure"},
         {"num":30,"name":"target_mode","base":"ENUM"},
         {"num":31,"name":"target_distance","base":"UINT32","scale":100,"UOM":"METER"},
         {"num":32,"name":"target_speed","base":"UINT16","scale":1000,"UOM":"METER_PER_SECOND"},
@@ -514,7 +514,7 @@
         {"num":43,"name":"swim_stroke","base":"ENUM"},
         {"num":44,"name":"pool_length","base":"UINT16","scale":100,"UOM":"METER"},
         {"num":45,"name":"threshold_power","base":"UINT16","UOM":"WATT"},
-        {"num":46,"name":"pool_length_unit","base":"ENUM"},
+        {"num":46,"name":"pool_length_unit","base":"ENUM","type":"DisplayMeasure"},
         {"num":47,"name":"num_active_lengths","base":"UINT16","UOM":"LENGTHS"},
         {"num":48,"name":"total_work","base":"UINT32","UOM":"JOULE"},
         {"num":49,"name":"avg_altitude","base":"UINT16","scale":5,"offset":500,"UOM":"METER"},
@@ -1003,13 +1003,13 @@
         {"num":5,"name":"capabilities","base":"UINT32Z"},
         {"num":6,"name":"num_valid_steps","base":"UINT16"},
         {"num":8,"name":"wkt_name","base":"STRING"},
-        {"num":9,"name":"duration_type","base":"ENUM"},
+        {"num":9,"name":"duration_type","base":"ENUM","type":"WktStepDuration"},
         {"num":10,"name":"duration_value","base":"UINT32"},
         {"num":11,"name":"sub_sport","base":"ENUM"},
         {"num":12,"name":"num_sessions","base":"UINT16"},
         {"num":13,"name":"transitions","base":"ENUM","type":"Bool"},
         {"num":14,"name":"pool_length","base":"UINT16","scale":100,"UOM":"METER"},
-        {"num":15,"name":"pool_length_unit","base":"ENUM"},
+        {"num":15,"name":"pool_length_unit","base":"ENUM","type":"DisplayMeasure"},
         {"num":17,"name":"wkt_description","base":"STRING"},
         {"num":20,"name":"workout_index","base":"UINT16"},
         {"num":21,"name":"time","base":"UINT32","scale":1000,"UOM":"SECONDS"},
@@ -1046,7 +1046,7 @@
         {"num":27,"name":"exercise_weight_type","base":"UINT16"},
         {"num":30,"name":"swim_drill_type","base":"ENUM","type":"WktSwimDrill"},
         {"num":31,"name":"workout_index","base":"UINT16"},
-        {"num":35,"name":"exercise_load_category","base":"UINT8"},
+        {"num":35,"name":"exercise_load_category","base":"UINT8","type":"ExerciseLoadCategory"},
         {"num":254,"name":"message_index","base":"UINT16"}
       ]
     },
@@ -1923,7 +1923,7 @@
         {"num":2,"name":"num_valid_steps","base":"UINT16"},
         {"num":3,"name":"first_step_index","base":"UINT16"},
         {"num":4,"name":"pool_length","base":"UINT16","scale":100,"UOM":"METER"},
-        {"num":5,"name":"pool_length_unit","base":"ENUM"},
+        {"num":5,"name":"pool_length_unit","base":"ENUM","type":"DisplayMeasure"},
         {"num":254,"name":"message_index","base":"UINT16"}
       ]
     },
@@ -2602,15 +2602,15 @@
         {"num":37,"name":"no_fly_time_mode","base":"ENUM"},
         {"num":38,"name":"subwave_location","base":"ENUM","type":"Bool"},
         {"num":39,"name":"subwave_messaging","base":"ENUM","type":"Bool"},
-        {"num":41,"name":"hot_key_1","base":"ENUM"},
-        {"num":42,"name":"hot_key_2","base":"ENUM"},
-        {"num":43,"name":"hot_key_3","base":"ENUM"},
-        {"num":44,"name":"hot_key_4","base":"ENUM"},
-        {"num":45,"name":"hot_key_5","base":"ENUM"},
-        {"num":46,"name":"hot_key_6","base":"ENUM"},
-        {"num":47,"name":"hot_key_7","base":"ENUM"},
-        {"num":48,"name":"hot_key_8","base":"ENUM"},
-        {"num":49,"name":"hot_key_9","base":"ENUM"},
+        {"num":41,"name":"hot_key_1","base":"ENUM","type":"HotKey"},
+        {"num":42,"name":"hot_key_2","base":"ENUM","type":"HotKey"},
+        {"num":43,"name":"hot_key_3","base":"ENUM","type":"HotKey"},
+        {"num":44,"name":"hot_key_4","base":"ENUM","type":"HotKey"},
+        {"num":45,"name":"hot_key_5","base":"ENUM","type":"HotKey"},
+        {"num":46,"name":"hot_key_6","base":"ENUM","type":"HotKey"},
+        {"num":47,"name":"hot_key_7","base":"ENUM","type":"HotKey"},
+        {"num":48,"name":"hot_key_8","base":"ENUM","type":"HotKey"},
+        {"num":49,"name":"hot_key_9","base":"ENUM","type":"HotKey"},
         {"num":50,"name":"screen_brightness","base":"ENUM"},
         {"num":53,"name":"always_on_display_brightness","base":"ENUM"},
         {"num":55,"name":"pool_length","base":"UINT16"},
@@ -3267,16 +3267,16 @@
       "name": "ECG_SUMMARY",
       "fields": [
         {"num":0,"name":"unknown_0","base":"UINT16"},
-        {"num":1,"name":"categorization","base":"ENUM"},
+        {"num":1,"name":"categorization","base":"ENUM","type":"EcgRhythmClassification"},
         {"num":2,"name":"raw_sample_rate","base":"FLOAT32"},
         {"num":3,"name":"smooth_sample_rate","base":"FLOAT32"},
         {"num":4,"name":"ecg_timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":5,"name":"local_timestamp","base":"UINT32","UOM":"SECONDS"},
-        {"num":6,"name":"unknown_6","base":"ENUM"},
+        {"num":6,"name":"mounting_side","base":"ENUM","type":"Side"},
         {"num":7,"name":"average_heart_rate","base":"FLOAT32","UOM":"BEATS_PER_MINUTE"},
         {"num":10,"name":"unknown_10","base":"STRING"},
         {"num":11,"name":"sample_time","base":"UINT16","UOM":"SECONDS"},
-        {"num":12,"name":"sdrr_hrv","base":"UINT8","UOM":"MILLISECONDS"}
+        {"num":12,"name":"rmssd_hrv","base":"UINT8","UOM":"MILLISECONDS"}
       ]
     },
     {
@@ -3363,14 +3363,14 @@
       "num": 354,
       "name": "HOT_KEYS",
       "fields": [
-        {"num":0,"name":"hot_key_1","base":"ENUM"},
-        {"num":1,"name":"hot_key_2","base":"ENUM"},
-        {"num":2,"name":"hot_key_3","base":"ENUM"},
-        {"num":3,"name":"hot_key_4","base":"ENUM"},
-        {"num":4,"name":"hot_key_5","base":"ENUM"},
-        {"num":5,"name":"hot_key_6","base":"ENUM"},
-        {"num":6,"name":"hot_key_7","base":"ENUM"},
-        {"num":7,"name":"hot_key_8","base":"ENUM"}
+        {"num":0,"name":"hot_key_1","base":"ENUM","type":"HotKey"},
+        {"num":1,"name":"hot_key_2","base":"ENUM","type":"HotKey"},
+        {"num":2,"name":"hot_key_3","base":"ENUM","type":"HotKey"},
+        {"num":3,"name":"hot_key_4","base":"ENUM","type":"HotKey"},
+        {"num":4,"name":"hot_key_5","base":"ENUM","type":"HotKey"},
+        {"num":5,"name":"hot_key_6","base":"ENUM","type":"HotKey"},
+        {"num":6,"name":"hot_key_7","base":"ENUM","type":"HotKey"},
+        {"num":7,"name":"hot_key_8","base":"ENUM","type":"HotKey"}
       ]
     },
     {
@@ -3948,7 +3948,7 @@
       "fields": [
         {"num":0,"name":"recording_timestamp","base":"UINT32","type":"DateTime","UOM":"SECONDS"},
         {"num":1,"name":"overall_sleep_score","base":"UINT8"},
-        {"num":2,"name":"rmssd_hrv","base":"UINT32","scale":65536},
+        {"num":2,"name":"rmssd_hrv","base":"SINT32","scale":65536},
         {"num":3,"name":"sleep_start_time","base":"UINT32","type":"LocalDateTime","UOM":"SECONDS"},
         {"num":4,"name":"sleep_start_timezone_offset","base":"SINT16","UOM":"MINUTES"},
         {"num":5,"name":"sleep_end_time","base":"UINT32","type":"LocalDateTime","UOM":"SECONDS"},
@@ -4632,6 +4632,13 @@
       ]
     },
     {
+      "name": "EcgRhythmClassification",
+      "entries": [
+        {"num":0,"name":"SINUS_NORMAL"},
+        {"num":3,"name":"INCONCLUSIVE_HR_UNDER_50"}
+      ]
+    },
+    {
       "name": "EllipticalExerciseName",
       "entries": [
         {"num":0,"name":"ELLIPTICAL"}
@@ -5216,6 +5223,15 @@
       ]
     },
     {
+      "name": "ExerciseLoadCategory",
+      "entries": [
+        {"num":1,"name":"LIGHT"},
+        {"num":2,"name":"MODERATE"},
+        {"num":3,"name":"HEAVY"},
+        {"num":4,"name":"VERY_HEAVY"}
+      ]
+    },
+    {
       "name": "FitBaseUnit",
       "entries": [
         {"num":0,"name":"OTHER"},
@@ -5258,7 +5274,8 @@
         {"num":5,"name":"ascent"},
         {"num":6,"name":"active_minutes"},
         {"num":7,"name":"hydration"},
-        {"num":8,"name":"weight"}
+        {"num":8,"name":"weight"},
+        {"num":9,"name":"wheelchair_pushes"}
       ]
     },
     {
@@ -5371,6 +5388,60 @@
         {"num":1,"name":"SINGLE_ARM_DUMBBELL_SWING"},
         {"num":2,"name":"STEP_OUT_SWING"},
         {"num":3,"name":"ONE_ARM_SWING"}
+      ]
+    },
+    {
+      "name": "HotKey",
+      "entries": [
+        {"num":0,"name":"NONE"},
+        {"num":4,"name":"ALARM_CLOCK"},
+        {"num":5,"name":"BACKLIGHT_SETTINGS"},
+        {"num":6,"name":"BARO_WATCH_MODE"},
+        {"num":7,"name":"BROADCAST_HR"},
+        {"num":8,"name":"CHANGE_SPORT"},
+        {"num":9,"name":"CLOCKS"},
+        {"num":11,"name":"DUAL_GRID"},
+        {"num":12,"name":"FLASHLIGHT"},
+        {"num":15,"name":"LAP"},
+        {"num":16,"name":"LOCK_UNLOCK_DEVICE"},
+        {"num":17,"name":"METRONOME"},
+        {"num":18,"name":"MOB"},
+        {"num":19,"name":"MUSIC"},
+        {"num":20,"name":"NAVIGATION"},
+        {"num":23,"name":"PHONE"},
+        {"num":25,"name":"SAVE_LOCATION"},
+        {"num":26,"name":"SCREENSHOT"},
+        {"num":27,"name":"SIGHT_AND_GO"},
+        {"num":28,"name":"STOPWATCH"},
+        {"num":29,"name":"SYNC_TIME"},
+        {"num":30,"name":"TIMERS"},
+        {"num":31,"name":"WALLET"},
+        {"num":32,"name":"WIFI"},
+        {"num":33,"name":"WATCH_FACE"},
+        {"num":35,"name":"TOUCH_LOCK"},
+        {"num":39,"name":"DISPLAY_OFF"},
+        {"num":40,"name":"DO_NOT_DISTURB"},
+        {"num":41,"name":"SLEEP_MODE"},
+        {"num":42,"name":"ABC"},
+        {"num":51,"name":"REFERENCE_POINT"},
+        {"num":52,"name":"SETTINGS"},
+        {"num":53,"name":"TROLLING_MOTOR"},
+        {"num":54,"name":"TROLLING_MOTOR_ANCHOR_LOCK"},
+        {"num":55,"name":"RECENT_APPS"},
+        {"num":56,"name":"SUNRISE_SUNSET"},
+        {"num":57,"name":"WEATHER"},
+        {"num":58,"name":"CALENDAR"},
+        {"num":59,"name":"HISTORY"},
+        {"num":60,"name":"PULSE_OX"},
+        {"num":61,"name":"NOTIFICATIONS"},
+        {"num":62,"name":"COLOR_SHIFT"},
+        {"num":63,"name":"MOON_PHASE"},
+        {"num":77,"name":"MESSENGER"},
+        {"num":88,"name":"SLEEP_FOCUS"},
+        {"num":89,"name":"ACTIVITY_FOCUS"},
+        {"num":110,"name":"CALCULATOR"},
+        {"num":113,"name":"SILENT_MODE"},
+        {"num":119,"name":"PHONE_CONNECTION"}
       ]
     },
     {
@@ -6635,6 +6706,13 @@
       ]
     },
     {
+      "name": "Side",
+      "entries": [
+        {"num":0,"name":"RIGHT"},
+        {"num":1,"name":"LEFT"}
+      ]
+    },
+    {
       "name": "SitUpExerciseName",
       "entries": [
         {"num":0,"name":"ALTERNATING_SIT_UP"},
@@ -7193,6 +7271,19 @@
         {"num":0,"name":"KICK"},
         {"num":1,"name":"PULL"},
         {"num":2,"name":"DRILL"}
+      ]
+    },
+    {
+      "name": "WktSwimEffort",
+      "entries": [
+        {"num":0,"name":"RECOVERY"},
+        {"num":2,"name":"EASY"},
+        {"num":3,"name":"MODERATE"},
+        {"num":4,"name":"HARD"},
+        {"num":5,"name":"VERY_HARD"},
+        {"num":6,"name":"ALL_OUT"},
+        {"num":8,"name":"ASCENDING"},
+        {"num":9,"name":"DESCENDING"}
       ]
     },
     {

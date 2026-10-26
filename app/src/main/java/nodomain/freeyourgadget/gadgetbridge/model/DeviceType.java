@@ -280,6 +280,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.D3Coordinat
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.DotnP66DCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.GrvFc1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.HaylouWatch2ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.HiFutureZone2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.ImikiFrame2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.KieslectCallingSmartwatchKrProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.gloryfit.watches.OukitelBT103Coordinator;
@@ -300,6 +301,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt7.Huawei
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.C20ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.ColmiP81Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.FireBoltt069Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.FireBolttNinjaPhantomCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.GarettEvaCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.haylou.HaylouS35AncCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.EXRIZUK8Coordinator;
@@ -600,6 +602,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreLifeTuneC
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreLifeTuneXRCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreMotion300Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreQ30Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSpaceOneCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSportX20Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreV20iCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.supercars.SuperCarsCoordinator;
@@ -1109,6 +1112,7 @@ public enum DeviceType {
     SOUNDCORE_LIBERTY4_NC(SoundcoreLiberty4NCCoordinator.class),
     SOUNDCORE_MOTION300(SoundcoreMotion300Coordinator.class),
     SOUNDCORE_Q30(SoundcoreQ30Coordinator.class),
+    SOUNDCORE_SPACE_ONE(SoundcoreSpaceOneCoordinator.class),
     SOUNDCORE_LIFE_TUNE(SoundcoreLifeTuneCoordinator.class),
     SOUNDCORE_LIFE_TUNE_XR(SoundcoreLifeTuneXRCoordinator.class),
     SOUNDCORE_AEROFIT2(SoundcoreAeroFit2Coordinator.class),
@@ -1219,6 +1223,7 @@ public enum DeviceType {
     KIESLECT_CALLING_SMARTWATCH_KR_PRO(KieslectCallingSmartwatchKrProCoordinator.class),
     HAYLOU_WATCH_2_PRO(HaylouWatch2ProCoordinator.class),
     S52(S52Coordinator.class),
+    HIFUTURE_ZONE2(HiFutureZone2Coordinator.class),
     D3(D3Coordinator.class),
     Y6(Y6Coordinator.class),
     Y66(Y66Coordinator.class),
@@ -1275,6 +1280,7 @@ public enum DeviceType {
     KSIX_VENTURE(KsixVentureCoordinator.class),
     FIREBOLTT_069(FireBoltt069Coordinator.class),
     FIREBOLTT_TALK(FireBolttTalkCoordinator.class),
+    FIREBOLTT_NINJA_PHANTOM(FireBolttNinjaPhantomCoordinator.class),
     VIRAN_C29(ViranC29Coordinator.class),
     ZL02D(ZL02DCoordinator.class),
     R50PRO(R50ProCoordinator.class),

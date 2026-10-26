@@ -292,6 +292,7 @@
             android:label="@string/text_file_viewer" />
         <activity
             android:name=".activities.BackupRestoreProgressActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:label="@string/activity_db_management_backup_restore_label"
             android:parentActivityName=".activities.DataManagementActivity" />
         <activity
@@ -381,10 +382,30 @@
             android:label="@string/title_activity_musicmanager"
             android:parentActivityName=".activities.SettingsActivity" />
         <activity
-            android:name=".activities.AppBlacklistActivity"
-            android:label="@string/title_activity_notification_management"
-            android:parentActivityName=".activities.SettingsActivity"
+            android:name=".activities.notifications.apps.NotificationAppListActivity"
+            android:label="@string/pref_applications_settings"
+            android:parentActivityName=".activities.NotificationManagementActivity"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".activities.notifications.apps.NotificationAppSettingsActivity"
+            android:label="@string/pref_applications_settings"
+            android:parentActivityName=".activities.notifications.apps.NotificationAppListActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".activities.notifications.apps.NotificationAppFilterEntriesActivity"
+            android:label="@string/notification_apps_filter_entries"
+            android:parentActivityName=".activities.notifications.apps.NotificationAppSettingsActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".activities.notifications.apps.NotificationAppReplacementsActivity"
+            android:label="@string/notification_apps_text_replacements"
+            android:parentActivityName=".activities.notifications.apps.NotificationAppSettingsActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".activities.notifications.apps.NotificationAppReplacementActivity"
+            android:label="@string/notification_apps_text_replacement"
+            android:parentActivityName=".activities.notifications.apps.NotificationAppReplacementsActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.CalendarSelectionActivity"
             android:label="@string/pref_title_calendar_sync_choose"
@@ -862,6 +883,10 @@
             android:label="@string/title_activity_discovery"
             android:parentActivityName=".activities.ControlCenterv2" />
         <activity
+            android:name=".activities.discovery.DiscoveryRequirementsActivity"
+            android:label="@string/title_activity_discovery"
+            android:parentActivityName=".activities.ControlCenterv2" />
+        <activity
             android:name=".activities.discovery.DeviceCandidateDetailsActivity"
             android:label="@string/title_activity_device_candidate_details"
             android:parentActivityName=".activities.discovery.DiscoveryActivityV2" />
@@ -991,11 +1016,6 @@
             android:name=".activities.VibrationActivity"
             android:label="@string/title_activity_vibration"
             android:parentActivityName=".activities.ControlCenterv2" />
-        <activity
-            android:name=".activities.NotificationFilterActivity"
-            android:label="@string/title_activity_notification_filter"
-            android:parentActivityName=".activities.AppBlacklistActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".activities.FindPhoneActivity"
             android:label="@string/prefs_find_phone"

@@ -635,6 +635,22 @@
         <item name="ensureMinTouchTargetSize">false</item>
     </style>
 
+    <style name="Widget.App.Chip.Tag" parent="Widget.Material3.Chip.Assist">
+        <item name="chipMinHeight">24dp</item>
+        <item name="chipCornerRadius">8dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerHighest</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelSmall</item>
+        <item name="chipStartPadding">6dp</item>
+        <item name="chipEndPadding">6dp</item>
+        <item name="textStartPadding">2dp</item>
+        <item name="textEndPadding">2dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
+
     <!-- Single-select metric chips above the sport statistics chart: a solid on-surface fill when
          selected, an outline otherwise -->
     <style name="ThemeOverlay.App.ChartConfigSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">

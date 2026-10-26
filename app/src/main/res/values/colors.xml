@@ -208,6 +208,7 @@
     <color name="workout_step_color_group" type="color">#B0BEC5</color>
 
     <color name="transparent">#00000000</color>
+    <color name="device_candidate_status">#B3261E</color>
 
     <drawable name="selected">@color/accent</drawable>
 
