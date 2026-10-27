@@ -374,7 +374,7 @@
             android:launchMode="singleTop"
             android:parentActivityName=".activities.appmanager.AppManagerActivity" />
         <activity
-            android:name=".activities.appmanager.RebbleAppStoreActivity"
+            android:name=".activities.appmanager.PebbleAppStoreActivity"
             android:label="@string/activity_title_rebble_app_store"
             android:parentActivityName=".activities.appmanager.AppManagerActivity" />
         <activity
@@ -446,6 +446,14 @@
             android:name=".activities.install.InstallSessionActivity"
             android:label="@string/title_activity_fw_app_insaller"
             android:parentActivityName=".activities.ControlCenterv2" />
+        <activity
+            android:name=".activities.vendorimport.VendorDataImportDeviceActivity"
+            android:label="@string/vendor_data_import_title"
+            android:parentActivityName=".activities.DataManagementActivity" />
+        <activity
+            android:name=".activities.vendorimport.VendorDataImportActivity"
+            android:label="@string/vendor_data_import_title"
+            android:parentActivityName=".activities.vendorimport.VendorDataImportDeviceActivity" />
         <activity
             android:name=".activities.install.FileInstallerActivity"
             android:label="@string/title_activity_file_installer"

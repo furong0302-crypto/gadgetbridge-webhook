@@ -36,6 +36,7 @@ import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler
+import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleCoordinator
 import nodomain.freeyourgadget.gadgetbridge.entities.PebbleAppstoreIdEntry
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.internet.InternetRequestType
@@ -52,11 +53,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
-class RebbleAppStoreActivity : AbstractGBActivity()  {
-    val LOG: Logger = LoggerFactory.getLogger(RebbleAppStoreActivity::class.java)
+class PebbleAppStoreActivity : AbstractGBActivity()  {
+    val LOG: Logger = LoggerFactory.getLogger(PebbleAppStoreActivity::class.java)
     private lateinit var mGBDevice: GBDevice
     private var webView: WebView? = null
-    private var url = "https://apps.rebble.io/en_US/watchfaces"
+    private lateinit var appStoreDomain: String
+    private lateinit var url: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +68,12 @@ class RebbleAppStoreActivity : AbstractGBActivity()  {
         val gbDevice: GBDevice? = intent?.extras?.getParcelableCompat(GBDevice.EXTRA_DEVICE)
         requireNotNull(gbDevice) { "Must provide a device when invoking this activity" }
         mGBDevice = gbDevice
-        url = intent?.extras?.getString(DeviceService.EXTRA_URI, url)!!
+        appStoreDomain = (mGBDevice.deviceCoordinator as PebbleCoordinator).getAppStoreDomain(mGBDevice)
+        val defaultAppStoreUrl = "https://apps.$appStoreDomain/en_US/watchfaces"
+        url = intent?.extras?.getString(
+            DeviceService.EXTRA_URI,
+            defaultAppStoreUrl
+        ) ?: defaultAppStoreUrl
         initViews()
 
         // Let the back gesture/button walk the app loader WebView history first
@@ -120,7 +127,7 @@ class RebbleAppStoreActivity : AbstractGBActivity()  {
     }
 
     private fun downloadInstallWatchappById(storeId: String) {
-        val appUrl = "https://appstore-api.rebble.io/api/v1/apps/id/$storeId"
+        val appUrl = "https://appstore-api.$appStoreDomain/api/v1/apps/id/$storeId"
         val response: JSONObject? = InternetUtils.doJsonRequest(appUrl.toUri())
         if (response != null) {
             val dataArray = response.getJSONArray("data")
@@ -236,9 +243,7 @@ class RebbleAppStoreActivity : AbstractGBActivity()  {
                     return true  // Indicate that the URL loading is handled
                 }
 
-                val intent = Intent(Intent.ACTION_VIEW, requestUrl)
-                wv.context.startActivity(intent)
-                return true
+                return super.shouldOverrideUrlLoading(wv, request)
             }
 
             override fun onReceivedError(

@@ -1618,7 +1618,8 @@
     <string name="activity_DB_delete_legacy_button">Delete old DB</string>
     <string name="activity_DB_empty_button">Empty Database</string>
     <string name="activity_db_management_empty_DB">Empty Database</string>
-    <string name="activity_db_management_exportimport_label">Export and Import</string>
+    <string name="activity_db_management_data_label">External Data</string>
+    <string name="activity_db_management_legacy_export_label">Legacy export/import</string>
     <string name="activity_db_management_empty_db_warning">Warning! By pushing this button you will wipe your database and start from scratch.</string>
     <string name="persisting_samples_failed">Error saving samples: %1$s</string>
     <string name="cancel">Cancel</string>
@@ -1635,7 +1636,7 @@
     <string name="status">Status</string>
     <string name="set">Set</string>
     <string name="activity_data_management_directory_content_title">Export/Import directory content</string>
-    <string name="activity_DB_ShowContentButton">Show Export/Import directory content</string>
+    <string name="activity_DB_ShowExternalDataButton">Show external data directory content</string>
     <string name="dbmanagementactivity_export_finished">Deletion finished</string>
     <!-- Strings related to Vibration Activity -->
     <string name="title_activity_vibration">Vibration</string>
@@ -2708,6 +2709,7 @@
     <string name="menuitem_vo2_max">VO₂ Max</string>
     <string name="generic_metrics">Other</string>
     <string name="vo2max_any_sport">Any sport</string>
+    <string name="generic_watch_measured_metrics">Metrics</string>
     <string name="generic_metric_select_metric">Metric</string>
     <string name="number_of_generic_metrics">%1$d metrics</string>
     <string name="generic_metric_samples">Samples</string>
@@ -4839,6 +4841,7 @@
     <string name="devicetype_xiaomi_watch_s1" translatable="false">Xiaomi Watch S1</string>
     <string name="devicetype_xiaomi_watch_s3" translatable="false">Xiaomi Watch S3</string>
     <string name="devicetype_xiaomi_watch_s4" translatable="false">Xiaomi Watch S4</string>
+    <string name="devicetype_xiaomi_watch_s5" translatable="false">Xiaomi Watch S5</string>
     <string name="devicetype_xiaomi_watch_5" translatable="false">Xiaomi Watch 5</string>
     <string name="devicetype_xiaomi_watch_s1_active" translatable="false">Xiaomi Watch S1 Active</string>
     <string name="devicetype_xiaomi_watch_s1_pro" translatable="false">Xiaomi Watch S1 Pro</string>
@@ -5822,7 +5825,7 @@
     <string name="movement_evaluation">Movement Evaluation</string>
     <string name="pref_notifications_pictures_enable">Send notification pictures</string>
     <string name="pref_notifications_pictures_enable_summary">Send notification pictures for current device</string>
-    <string name="activity_title_rebble_app_store">Rebble app store</string>
+    <string name="activity_title_rebble_app_store">Pebble app store</string>
     <string name="prefs_internet_helper_title">Internet Helper</string>
     <string name="prefs_internet_helper_summary">Configure the URLs that are allowed to be requested through the internet helper add-on app</string>
     <string name="internet_helper_pref_app_req_title">Add-on app required</string>
@@ -6570,4 +6573,34 @@
     <string name="pref_main_screens_title">Main screens</string>
     <string name="pref_main_screens_summary">Select and order the main screens of the app. Note that even when enabled, Dashboard and Workouts can remain hidden if no devices providing the necessary data are available.</string>
     <string name="pref_default_main_screen_title">First screen on startup</string>
+    <string name="prefs_pebble_appstore_title">App store</string>
+    <string name="prefs_pebble_appstore_summary">Choose the app store to use for installing and updating watchfaces and watch apps</string>
+    <string name="prefs_pebble_appstore_rebble">Rebble</string>
+    <string name="prefs_pebble_appstore_repebble">RePebble</string>
+    <string name="vendor_data_import_title">Import vendor data</string>
+    <string name="vendor_data_import_summary">Import the data from an export of the vendor app.</string>
+    <string name="vendor_data_import_section">Vendor app import</string>
+    <string name="vendor_data_import_select_target">Select the device into which you want to import the data.</string>
+    <string name="vendor_data_import_more_info">More information</string>
+    <string name="vendor_data_import_scanning">Reading the export file…</string>
+    <string name="vendor_data_import_scan_failed">Failed to read the file. Make sure that you selected the zip file from the vendor, and that you did not extract it.</string>
+    <string name="vendor_data_import_no_devices">The file contains no data that Gadgetbridge can import.</string>
+    <string name="vendor_data_import_select_device">The vendor data export contains %1$d devices, select the device whose data you want to import into %2$s.</string>
+    <string name="vendor_data_import_running_other">An import into %1$s is already running.</string>
+    <string name="vendor_data_import_model_mismatch">%1$s is not the same model as %2$s.</string>
+    <string name="vendor_data_import_categories">Data to import</string>
+    <string name="vendor_data_import_category_count">%1$s (%2$d)</string>
+    <string name="vendor_data_import_app_category_count">%1$s, manual entries from the app (%2$d)</string>
+    <string name="vendor_data_import_serial_number">Serial number: %1$s</string>
+    <string name="vendor_data_import_notification_title">Importing vendor data</string>
+    <string name="vendor_data_import_finished">Import finished</string>
+    <string name="vendor_data_import_failed">Import failed</string>
+    <string name="vendor_data_import_cancelled">Import cancelled</string>
+    <string name="vendor_data_import_result">%1$s: %2$d imported, %3$d skipped, %4$d failed</string>
+    <string name="vendor_data_import_garmin_step_1">Sign in to your Garmin account on the Garmin website.</string>
+    <string name="vendor_data_import_garmin_step_2">Go to Account › Data Management › Export Your Data, and select \"Request Data Export\"".</string>
+    <string name="vendor_data_import_garmin_step_3">Your request will be submitted, and you will receive an email with a download link. The link usually arrives within 48 hours, but it can take up to 30 days to be sent.</string>
+    <string name="vendor_data_import_garmin_step_4">Download the zip file to this phone. Do not extract it.</string>
+    <string name="vendor_data_import_garmin_step_5">Select the zip file.</string>
+    <string name="vendor_data_import_garmin_unknown_product">Garmin product %1$d</string>
 </resources>

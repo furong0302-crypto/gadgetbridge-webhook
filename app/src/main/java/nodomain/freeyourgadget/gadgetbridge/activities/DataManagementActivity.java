@@ -21,7 +21,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +47,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBDatabaseManager;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.files.FileManagerActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.vendorimport.VendorDataImportDeviceActivity;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
@@ -115,6 +118,27 @@ public class DataManagementActivity extends AbstractGBActivity {
 
         final Button restoreFromZipButton = findViewById(R.id.restoreFromZipButton);
         restoreFromZipButton.setOnClickListener(v -> restoreFileChooser.launch(new String[]{"application/zip"}));
+
+        //
+        // Vendor import
+        //
+
+        final View vendorImportSection = findViewById(R.id.vendorImportSection);
+        vendorImportSection.setVisibility(VendorDataImportDeviceActivity.getSupportedDevices().isEmpty() ? View.GONE : View.VISIBLE);
+        final Button vendorImportButton = findViewById(R.id.vendorImportButton);
+        vendorImportButton.setOnClickListener(v -> startActivity(new Intent(this, VendorDataImportDeviceActivity.class)));
+
+        //
+        // Legacy export/import
+        //
+
+        final View legacyExportContent = findViewById(R.id.legacyExportContent);
+        final ImageView legacyExportArrow = findViewById(R.id.legacyExportArrow);
+        findViewById(R.id.legacyExportHeader).setOnClickListener(v -> {
+            final boolean expand = legacyExportContent.getVisibility() != View.VISIBLE;
+            legacyExportContent.setVisibility(expand ? View.VISIBLE : View.GONE);
+            legacyExportArrow.setRotation(expand ? 180 : 0);
+        });
 
         TextView dbPath = findViewById(R.id.activity_data_management_path);
         dbPath.setText(getExternalPath());

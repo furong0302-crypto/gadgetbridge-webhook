@@ -4980,4 +4980,13 @@
         <item>devices</item>
     </string-array>
 
+    <string-array name="prefs_pebble_app_stores">
+        <item>@string/prefs_pebble_appstore_rebble</item>
+        <item>@string/prefs_pebble_appstore_repebble</item>
+    </string-array>
+    <string-array name="prefs_pebble_app_stores_values">
+        <item>rebble</item>
+        <item>repebble</item>
+    </string-array>
+
 </resources>

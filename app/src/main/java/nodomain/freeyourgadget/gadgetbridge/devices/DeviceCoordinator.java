@@ -86,6 +86,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.WorkoutLoadSample;
 import nodomain.freeyourgadget.gadgetbridge.model.heartratezones.HeartRateZonesSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.ServiceDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.vendorimport.VendorDataImporter;
 import nodomain.freeyourgadget.gadgetbridge.widgets.DeviceWidgetsProvider;
 
 /**
@@ -1061,6 +1062,14 @@ public interface DeviceCoordinator {
      */
     @Nullable
     default DeviceSettingsSpec getDeviceSettings(@NonNull final GBDevice device) {
+        return null;
+    }
+
+    /**
+     * An importer for data exports of the vendor app, null if not supported for this device.
+     */
+    @Nullable
+    default VendorDataImporter getVendorDataImporter(@NonNull final GBDevice device) {
         return null;
     }
 

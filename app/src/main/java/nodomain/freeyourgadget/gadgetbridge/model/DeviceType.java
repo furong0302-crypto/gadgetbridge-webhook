@@ -653,6 +653,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.XiaomiWatchS1
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.XiaomiWatchS1ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.XiaomiWatchS3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.XiaomiWatchS4Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.XiaomiWatchS5Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi_hipee.XiaomiHipeeP1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi_scooters.XiaomiScooter5MaxCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.zeblaze.Beyond3ProCoordinator;
@@ -763,6 +764,7 @@ public enum DeviceType {
     XIAOMI_WATCH_S1(XiaomiWatchS1Coordinator.class),
     XIAOMI_WATCH_S3(XiaomiWatchS3Coordinator.class),
     XIAOMI_WATCH_S4(XiaomiWatchS4Coordinator.class),
+    XIAOMI_WATCH_S5(XiaomiWatchS5Coordinator.class),
     XIAOMI_WATCH_5(XiaomiWatch5Coordinator.class),
     AMAZFITGTS3(AmazfitGTS3Coordinator.class),
     AMAZFITGTR3(AmazfitGTR3Coordinator.class),

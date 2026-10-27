@@ -95,6 +95,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminSupport
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.watchapps.GarminLoyaltyCardsApp;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs;
+import nodomain.freeyourgadget.gadgetbridge.vendorimport.VendorDataImporter;
 import nodomain.freeyourgadget.gadgetbridge.widgets.DeviceWidgetsProvider;
 
 public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
@@ -266,6 +267,11 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public HydrationSampleProvider getHydrationSampleProvider(final GBDevice device, final DaoSession session) {
         return new HydrationSampleProvider(device, session);
+    }
+
+    @Override
+    public VendorDataImporter getVendorDataImporter(@NonNull final GBDevice device) {
+        return new GarminVendorDataImporter();
     }
 
     @Override
