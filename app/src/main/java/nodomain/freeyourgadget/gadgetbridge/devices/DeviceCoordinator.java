@@ -1150,7 +1150,37 @@ public interface DeviceCoordinator {
 
     boolean supportsNavigation(@NonNull final GBDevice device);
 
-    boolean supportsNotifications(@NonNull final GBDevice device);
+    boolean supportsAppNotifications(@NonNull final GBDevice device);
+
+    /**
+     * Returns true if the device supports receiving phone call notifications.
+     */
+    boolean supportsPhoneCalls(@NonNull final GBDevice device);
+
+    /**
+     * Returns true if the device supports controlling calls on the phone (accept/reject/end).
+     */
+    boolean supportsCallControl(@NonNull final GBDevice device);
+
+    /**
+     * Returns true if the device has features that need network access from the phone.
+     */
+    boolean supportsInternetAccess(@NonNull final GBDevice device);
+
+    /**
+     * Returns true if the device can reply to a call with an SMS.
+     */
+    boolean supportsSmsReply(@NonNull final GBDevice device);
+
+    /**
+     * Returns true if the device can change the phone's silent mode / do not disturb.
+     */
+    boolean supportsPhoneSilentMode(@NonNull final GBDevice device);
+
+    /**
+     * Returns true if the device can receive the real-time GPS location of the phone.
+     */
+    boolean supportsGpsSharing(@NonNull final GBDevice device);
 
     int getOrderPriority();
 

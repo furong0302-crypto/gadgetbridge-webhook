@@ -118,7 +118,11 @@ abstract class AbstractYawellRingCoordinator : AbstractBLEDeviceCoordinator() {
         return false
     }
 
-    override fun supportsNotifications(device: GBDevice): Boolean {
+    override fun supportsAppNotifications(device: GBDevice): Boolean {
+        return false
+    }
+
+    override fun supportsPhoneCalls(device: GBDevice): Boolean {
         return false
     }
 
@@ -234,7 +238,7 @@ abstract class AbstractYawellRingCoordinator : AbstractBLEDeviceCoordinator() {
             key = DeviceSpecificSettingsScreen.CALLS_AND_NOTIFICATIONS.key,
             title = R.string.pref_header_calls_and_notifications,
             icon = R.drawable.ic_notifications,
-            visibleWhen = { supportsNotifications(device) },
+            visibleWhen = { supportsAppNotifications(device) },
         ) {
             seekbar(
                 key = YawellRingConstants.PREF_NOTIFICATION_VIBRATION_COUNT,

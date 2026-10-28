@@ -729,13 +729,9 @@ public class YawellRingDeviceSupport extends AbstractBTLESingleDeviceSupport {
         sendWrite("findDeviceRequest", findDevicePacket);
     }
 
-    private boolean supportsNotifications() {
-        return getCoordinator().supportsNotifications(getDevice());
-    }
-
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
-        if (!supportsNotifications()) return;
+        if (!getCoordinator().supportsAppNotifications(getDevice())) return;
 
         BluetoothGattCharacteristic characteristic = getCharacteristic(YawellRingConstants.CHARACTERISTIC_WRITE);
         if (characteristic == null) return;
@@ -758,7 +754,7 @@ public class YawellRingDeviceSupport extends AbstractBTLESingleDeviceSupport {
 
     @Override
     public void onSetCallState(CallSpec callSpec) {
-        if (!supportsNotifications()) return;
+        if (!getCoordinator().supportsPhoneCalls(getDevice())) return;
 
         byte type;
         switch (callSpec.getCommand()) {

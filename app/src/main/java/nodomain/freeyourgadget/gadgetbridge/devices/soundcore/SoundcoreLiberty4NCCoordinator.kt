@@ -18,7 +18,7 @@ package nodomain.freeyourgadget.gadgetbridge.devices.soundcore
 
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
-import nodomain.freeyourgadget.gadgetbridge.service.devices.soundcore.devices.SoundcoreLibertyProtocol
+import nodomain.freeyourgadget.gadgetbridge.service.devices.soundcore.devices.SoundcoreLiberty4NCProtocol
 import java.util.regex.Pattern
 
 class SoundcoreLiberty4NCCoordinator : SoundcoreEarbudsCoordinator() {
@@ -28,8 +28,8 @@ class SoundcoreLiberty4NCCoordinator : SoundcoreEarbudsCoordinator() {
 
     override fun getDeviceNameResource(): Int = R.string.devicetype_soundcore_liberty4_nc
 
-    override fun createProtocol(device: GBDevice): SoundcoreLibertyProtocol =
-        SoundcoreLibertyProtocol(device)
+    override fun createProtocol(device: GBDevice): SoundcoreLiberty4NCProtocol =
+        SoundcoreLiberty4NCProtocol(device)
 
     override fun supportsExtendedInfoRequest(): Boolean = false
 

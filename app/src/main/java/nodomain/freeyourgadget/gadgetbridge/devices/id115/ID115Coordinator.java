@@ -106,4 +106,14 @@ public class ID115Coordinator extends AbstractBLEDeviceCoordinator {
     public int getDefaultIconResource() {
         return R.drawable.ic_device_h30_h10;
     }
+
+    @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPhoneCalls(@NonNull final GBDevice device) {
+        return true;
+    }
 }

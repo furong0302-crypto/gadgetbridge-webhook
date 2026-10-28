@@ -444,6 +444,9 @@ public class GBApplication extends Application {
     private static boolean isPrioritySender(int prioritySenders, String number) {
         if (prioritySenders == Policy.PRIORITY_SENDERS_ANY) {
             return true;
+        } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            LOG.warn("Contacts permission not granted, unable to check if {} is a priority sender", number);
+            return true;
         } else {
             Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
             String[] projection = new String[]{PhoneLookup._ID, PhoneLookup.STARRED};

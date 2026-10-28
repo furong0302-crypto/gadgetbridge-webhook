@@ -94,6 +94,11 @@ public class AmazfitTRexProCoordinator extends HuamiCoordinator {
     }
 
     @Override
+    public boolean supportsPhoneSilentMode(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
     public DeviceSpecificSettings getDeviceSpecificSettings(final GBDevice device) {
         final DeviceSpecificSettings deviceSpecificSettings = new DeviceSpecificSettings();
 

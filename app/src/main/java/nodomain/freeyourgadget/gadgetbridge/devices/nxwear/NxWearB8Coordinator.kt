@@ -270,6 +270,8 @@ class NxWearB8Coordinator : AbstractBLEDeviceCoordinator() {
     override fun getSpo2SampleProvider(device: GBDevice, session: DaoSession): TimeSampleProvider<out Spo2Sample> =
         GenericSpo2SampleProvider(device, session)
 
+    override fun supportsPhoneCalls(device: GBDevice): Boolean = true
+
     companion object {
         const val PREF_LIFT_ENABLED = "nx_wear_b8_lift_enabled"
         const val PREF_SHAKE_TO_TAKE_PICTURE = "nx_wear_b8_shake_to_take_picture"

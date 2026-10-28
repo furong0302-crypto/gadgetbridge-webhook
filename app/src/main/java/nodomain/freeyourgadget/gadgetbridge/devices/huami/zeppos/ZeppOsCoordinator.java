@@ -712,6 +712,11 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         return hasDisplay();
     }
 
+    @Override
+    public boolean supportsCallControl(@NonNull final GBDevice device) {
+        return supportsPhoneCalls(device) && hasDisplay();
+    }
+
     public boolean supportsMusicUpload(final GBDevice device) {
         return supportsDisplayItem(device, "music") &&
             (supportsBleFileTransfer(device, "music") || supportsWifiFtp(device));
@@ -747,5 +752,25 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
                 .stream()
                 .map(BarcodeFormat::valueOf)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean supportsInternetAccess(@NonNull final GBDevice device) {
+        return supportsWifiHotspot(device);
+    }
+
+    @Override
+    public boolean supportsSmsReply(@NonNull final GBDevice device) {
+        return getCannedRepliesSlotCount(device) > 0;
+    }
+
+    @Override
+    public boolean supportsPhoneSilentMode(@NonNull final GBDevice device) {
+        return hasDisplay();
+    }
+
+    @Override
+    public boolean supportsGpsSharing(@NonNull final GBDevice device) {
+        return hasDisplay() && !hasGps(device);
     }
 }

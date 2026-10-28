@@ -167,10 +167,12 @@ public class PermissionsUtils {
                 Manifest.permission.READ_CALENDAR,
                 activity.getString(R.string.permission_calendar_title),
                 activity.getString(R.string.permission_calendar_summary)));
-        permissionsList.add(new PermissionDetails(
-                Manifest.permission.RECEIVE_SMS,
-                activity.getString(R.string.permission_receive_sms_title),
-                activity.getString(R.string.permission_receive_sms_summary)));
+        if (GBApplication.getPrefs().getBoolean(GBPrefs.DEPRECATED_SMS_RECEIVER, false)) {
+            permissionsList.add(new PermissionDetails(
+                    Manifest.permission.RECEIVE_SMS,
+                    activity.getString(R.string.permission_receive_sms_title),
+                    activity.getString(R.string.permission_receive_sms_summary)));
+        }
         permissionsList.add(new PermissionDetails(
                 Manifest.permission.SEND_SMS,
                 activity.getString(R.string.permission_send_sms_title),

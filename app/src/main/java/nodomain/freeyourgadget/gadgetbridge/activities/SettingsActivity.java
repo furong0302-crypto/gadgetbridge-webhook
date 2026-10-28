@@ -688,6 +688,17 @@ public class SettingsActivity extends AbstractSettingsActivityV2 implements Acti
                     return neededPermissions.size() < allPermissions.size();
                 });
             }
+
+            pref = findPreference(GBPrefs.DEPRECATED_SMS_RECEIVER);
+            if (pref != null) {
+                pref.setOnPreferenceChangeListener((preference, newValue) -> {
+                    if ((boolean) newValue && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.RECEIVE_SMS}, 0);
+                        return false;
+                    }
+                    return true;
+                });
+            }
         }
 
         /*

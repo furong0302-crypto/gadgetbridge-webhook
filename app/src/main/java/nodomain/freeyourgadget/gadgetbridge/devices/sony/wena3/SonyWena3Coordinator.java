@@ -161,6 +161,16 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPhoneCalls(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
     public String[] getSupportedLanguageSettings(GBDevice device) {
         return new String[]{
                 "auto",

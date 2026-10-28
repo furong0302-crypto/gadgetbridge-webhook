@@ -2551,6 +2551,7 @@
     <string name="devicetype_huawei_watchgt2e" translatable="false">Huawei Watch GT 2e</string>
     <string name="devicetype_huawei_talk_band_b6" translatable="false">Huawei Talk Band B6</string>
     <string name="devicetype_huawei_watchd2" translatable="false">Huawei Watch D2</string>
+    <string name="devicetype_huawei_watchd3" translatable="false">Huawei Watch D3</string>
     <string name="devicetype_huawei_watchgt3" translatable="false">Huawei Watch GT 3 (Pro)</string>
     <string name="devicetype_huawei_watchgt4" translatable="false">Huawei Watch GT 4</string>
     <string name="devicetype_huawei_watchgt5" translatable="false">Huawei Watch GT 5 (Pro)</string>
@@ -5236,6 +5237,8 @@
     <string name="pref_header_deprecated_functionalities_warning">The following functionalities have been deprecated and will be removed soon from the software.\nIf you need to enable one of the following settings be sure to get in touch with the project team.</string>
     <string name="pref_deprecated_media_control_title">Deprecated media control</string>
     <string name="pref_deprecated_media_control_summary">Send media control commands as key events instead of the media controller.</string>
+    <string name="pref_deprecated_sms_receiver_title">Deprecated SMS receiver</string>
+    <string name="pref_deprecated_sms_receiver_summary">Receive SMS messages from the system instead of from the notifications of the messaging app.</string>
     <string name="devicetype_ble_gatt_client" translatable="false">Generic BLE GATT Client</string>
     <string name="prefs_title_gatt_client_notification_intents">Broadcast GATT notification Intents through BLE Intent API</string>
     <string name="prefs_summary_gatt_client_notification_intents">Receive BLE characteristic changes through Intents</string>

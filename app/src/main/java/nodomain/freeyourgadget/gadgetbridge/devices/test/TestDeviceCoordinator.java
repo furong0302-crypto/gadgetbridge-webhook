@@ -845,6 +845,41 @@ public class TestDeviceCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.APP_NOTIFICATIONS);
+    }
+
+    @Override
+    public boolean supportsPhoneCalls(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.PHONE_CALLS);
+    }
+
+    @Override
+    public boolean supportsCallControl(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.CALL_CONTROL);
+    }
+
+    @Override
+    public boolean supportsInternetAccess(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.INTERNET_ACCESS);
+    }
+
+    @Override
+    public boolean supportsSmsReply(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.SMS_REPLY);
+    }
+
+    @Override
+    public boolean supportsPhoneSilentMode(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.PHONE_SILENT_MODE);
+    }
+
+    @Override
+    public boolean supportsGpsSharing(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.GPS_SHARING);
+    }
+
+    @Override
     public boolean supportsNavigation(@NonNull final GBDevice device) {
         return supports(device, TestFeature.NAVIGATION);
     }

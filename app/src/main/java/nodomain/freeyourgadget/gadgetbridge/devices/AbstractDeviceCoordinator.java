@@ -1279,14 +1279,43 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
 
     @Override
     public boolean supportsNavigation(@NonNull final GBDevice device) {
-        return supportsNotifications(device) &&
+        return supportsAppNotifications(device) &&
             GBApplication.getPrefs().getBoolean(GBPrefs.NAVIGATION_ALLOW_UNSUPPORTED_DEVICES, false);
     }
 
     @Override
-    public boolean supportsNotifications(@NonNull final GBDevice device) {
-        // FIXME override this per-device
-        return true;
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsPhoneCalls(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsCallControl(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsInternetAccess(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsSmsReply(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsPhoneSilentMode(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsGpsSharing(@NonNull final GBDevice device) {
+        return false;
     }
 
     @Override

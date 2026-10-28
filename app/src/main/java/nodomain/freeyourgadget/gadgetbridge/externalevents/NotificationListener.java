@@ -135,6 +135,19 @@ public class NotificationListener extends NotificationListenerService {
         add("org.fossify.phone");
     }};
 
+    public static final Set<String> SMS_APPS = new HashSet<>() {{
+        add("com.android.messaging");
+        add("com.android.mms");
+        add("com.goodwy.smsmessenger");
+        add("com.google.android.apps.messaging");
+        add("com.moez.QKSMS");
+        add("com.simplemobiletools.smsmessenger");
+        add("com.sonyericsson.conversations");
+        add("dev.octoshrimpy.quik");
+        add("org.fossify.messages");
+        add("org.smssecure.smssecure");
+    }};
+
     private static final Set<String> NOTI_USE_TITLE_APPS = new HashSet<>() {{
         add("com.whatsapp");
         add("org.thoughtcrime.securesms");
@@ -1168,16 +1181,7 @@ public class NotificationListener extends NotificationListenerService {
             return true;
         }
 
-        if (source.equals("com.moez.QKSMS") ||
-                source.equals("com.android.mms") ||
-                source.equals("com.sonyericsson.conversations") ||
-                source.equals("com.android.messaging") ||
-                source.equals("com.google.android.apps.messaging") ||
-                source.equals("org.smssecure.smssecure") ||
-                source.equals("org.fossify.messages") ||
-                source.equals("com.goodwy.smsmessenger") ||
-                source.equals("com.simplemobiletools.smsmessenger") ||
-                source.equals("dev.octoshrimpy.quik")) {
+        if (prefs.getBoolean(GBPrefs.DEPRECATED_SMS_RECEIVER, false) && SMS_APPS.contains(source)) {
             if (!"never".equals(prefs.getString("notification_mode_sms", "when_screen_off"))) {
                 LOG.info("Ignoring notification, it's a sms notification");
                 return true;

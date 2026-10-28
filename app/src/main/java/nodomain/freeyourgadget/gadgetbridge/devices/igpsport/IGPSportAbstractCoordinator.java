@@ -120,4 +120,14 @@ public abstract class IGPSportAbstractCoordinator extends AbstractBLEDeviceCoord
     public boolean supportsWatchfaceManagement(@NonNull final GBDevice device) {
         return false;
     }
+
+    @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPhoneCalls(@NonNull final GBDevice device) {
+        return true;
+    }
 }

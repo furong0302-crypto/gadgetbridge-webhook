@@ -106,6 +106,11 @@ public class OVTouch26Coordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
     public DeviceCoordinator.DeviceKind getDeviceKind(@NonNull GBDevice device) {
         return DeviceCoordinator.DeviceKind.FITNESS_BAND;
     }

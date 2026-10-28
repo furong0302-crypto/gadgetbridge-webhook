@@ -108,7 +108,7 @@ public class SoundcoreProtocolImplV1 extends AbstractSoundcoreProtocol {
             case DeviceSettingsPreferenceConst.PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE:
             case DeviceSettingsPreferenceConst.PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING:
             case DeviceSettingsPreferenceConst.PREF_SONY_AMBIENT_SOUND_LEVEL:
-                return encodeAdvancedAudioMode(appendAdvancedAudioModeStateByte());
+                return encodeAdvancedAudioMode();
             case DeviceSettingsPreferenceConst.PREF_SOUNDCORE_CONTROL_SINGLE_TAP_ACTION_LEFT:
             case DeviceSettingsPreferenceConst.PREF_SOUNDCORE_CONTROL_SINGLE_TAP_ACTION_RIGHT:
             case DeviceSettingsPreferenceConst.PREF_SOUNDCORE_CONTROL_DOUBLE_TAP_ACTION_LEFT:
@@ -164,7 +164,12 @@ public class SoundcoreProtocolImplV1 extends AbstractSoundcoreProtocol {
         }
     }
 
-    protected boolean appendAdvancedAudioModeStateByte() { return false; }
+    /**
+     * Bytes appended to the advanced audio mode payload.
+     */
+    protected byte[] getAdvancedAudioModeTrailer() {
+        return new byte[0];
+    }
 
     private byte[] encodeConfiguredTapFunction(final String config, final Prefs prefs) {
         // Action: single tap, double tap, hold.
@@ -679,7 +684,7 @@ public class SoundcoreProtocolImplV1 extends AbstractSoundcoreProtocol {
      * PREF_SOUNDCORE_WIND_NOISE_REDUCTION If Transparency or ANC should reduce Wind Noise
      * @return The payload
     */
-    protected byte[] encodeAdvancedAudioMode(final boolean appendStateByte) {
+    protected byte[] encodeAdvancedAudioMode() {
         final Prefs prefs = getDevicePrefs();
         final AmbientSoundMode ambientSoundMode = AmbientSoundMode.fromPreference(prefs.getString(
                 DeviceSettingsPreferenceConst.PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL,
@@ -720,13 +725,11 @@ public class SoundcoreProtocolImplV1 extends AbstractSoundcoreProtocol {
                 windNoiseReduction
         };
 
-        if (appendStateByte) {
-            final byte[] statePayload = Arrays.copyOf(payload, payload.length + 1);
-            statePayload[statePayload.length - 1] = 0x01;
-            return encodeCommand(CMD_SET_AUDIO_MODE, statePayload);
-        }
+        final byte[] trailer = getAdvancedAudioModeTrailer();
+        final byte[] fullPayload = Arrays.copyOf(payload, payload.length + trailer.length);
+        System.arraycopy(trailer, 0, fullPayload, payload.length, trailer.length);
 
-        return encodeCommand(CMD_SET_AUDIO_MODE, payload);
+        return encodeCommand(CMD_SET_AUDIO_MODE, fullPayload);
     }
 
     /** Decodes the shared five-field Liberty/Sport X20 audio layout; ignores trailing state bytes. */

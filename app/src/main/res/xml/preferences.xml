@@ -663,6 +663,31 @@
             app:iconSpaceReserved="false" />
 
         <PreferenceCategory
+            android:key="pref_header_deprecated_sms_receiver"
+            android:title="@string/pref_deprecated_sms_receiver_title"
+            app:iconSpaceReserved="false"
+            app:singleLineTitle="false">
+
+            <SwitchPreferenceCompat
+                android:defaultValue="false"
+                android:key="prefs_key_enable_deprecated_smsreceiver"
+                android:layout="@layout/preference_checkbox"
+                android:summary="@string/pref_deprecated_sms_receiver_summary"
+                android:title="@string/pref_deprecated_sms_receiver_title"
+                app:iconSpaceReserved="false" />
+
+            <ListPreference
+                android:defaultValue="when_screen_off"
+                android:dependency="prefs_key_enable_deprecated_smsreceiver"
+                android:entries="@array/notification_mode"
+                android:entryValues="@array/notification_mode_values"
+                android:key="notification_mode_sms"
+                android:title="@string/pref_title_notifications_sms"
+                app:iconSpaceReserved="false"
+                app:useSimpleSummaryProvider="true" />
+        </PreferenceCategory>
+
+        <PreferenceCategory
             android:key="pref_header_media_control"
             android:title="@string/pref_deprecated_media_control_title"
             app:iconSpaceReserved="false"

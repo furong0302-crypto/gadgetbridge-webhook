@@ -1,6 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.garmin;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR;
+import static nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPreferences.PREF_GARMIN_EXPLORE_SYNC;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -262,7 +263,7 @@ public class ProtocolBufferHandler implements MessageHandler {
                 processed = pushNotificationHandler.handle(smart.getDeviceMessageService());
             }
             if (smart.hasExploreSyncService()) {
-                if (deviceSupport.getDevicePrefs().getBoolean("garmin_exploresync", false)) {
+                if (deviceSupport.getDevicePrefs().getBoolean(PREF_GARMIN_EXPLORE_SYNC, false)) {
                     processed = true;
                     final GdiExploreSync.ExploreSyncService response = exploreSyncHandler.handle(smart.getExploreSyncService());
                     if (response != null) {

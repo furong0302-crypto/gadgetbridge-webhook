@@ -12,8 +12,8 @@ public class SoundcoreLibertyProtocol extends SoundcoreProtocolImplV1 {
     }
 
     @Override
-    protected boolean appendAdvancedAudioModeStateByte() {
-        return true;
+    protected byte[] getAdvancedAudioModeTrailer() {
+        return new byte[]{0x01};
     }
 
     @Override

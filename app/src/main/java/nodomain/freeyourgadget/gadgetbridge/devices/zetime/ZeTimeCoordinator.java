@@ -53,6 +53,21 @@ public class ZeTimeCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPhoneCalls(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCallControl(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
     public boolean supportsFindDevice(@NonNull GBDevice device) {
         return true;
     }
@@ -89,6 +104,11 @@ public class ZeTimeCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsMusicInfo(@NonNull GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsCalendarEvents(@NonNull final GBDevice device) {
         return true;
     }
 

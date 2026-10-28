@@ -181,8 +181,13 @@ import static nodomain.freeyourgadget.gadgetbridge.GBApplication.ACTION_APP_IS_I
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALLOW_HIGH_MTU;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYDRATION_SEND_TODAY;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYDRATION_UNIT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEEP_ACTIVITY_DATA_ON_DEVICE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_NEW_SYNC_PROTOCOL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SEND_APP_NOTIFICATIONS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIME_SYNC;
+import static nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPreferences.PREF_GARMIN_EXPLORE_SYNC;
+import static nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPreferences.PREF_GARMIN_LEGACY_SYNC_FLUSH;
+import static nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPreferences.PREF_GARMIN_MLR;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_GOAL_HYDRATION_ML;
 import static nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiFileAccess.TransportProtocol.MULTILINK_TRANSPORT_PIPE;
 
@@ -663,7 +668,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
      * @noinspection BooleanMethodIsAlwaysInverted
      */
     private boolean getKeepActivityDataOnDevice() {
-        return getDevicePrefs().getBoolean("keep_activity_data_on_device", false);
+        return getDevicePrefs().getBoolean(PREF_KEEP_ACTIVITY_DATA_ON_DEVICE, false);
     }
 
     @Override
@@ -678,7 +683,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
             requestBatteryUpdate();
         }
 
-        if (newSyncProtocol() && !getDevicePrefs().getBoolean("garmin_legacy_sync_flush", true)) {
+        if (newSyncProtocol() && !getDevicePrefs().getBoolean(PREF_GARMIN_LEGACY_SYNC_FLUSH, true)) {
             // #6700 - Some firmwares will freeze on the legacy sync request
             LOG.warn("Legacy sync flush is disabled - requesting file list directly");
             sendProtobufRequest("directly request file list",
@@ -715,11 +720,11 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
     }
 
     public boolean newSyncProtocol() {
-        return getDevicePrefs().getBoolean("new_sync_protocol", false);
+        return getDevicePrefs().getBoolean(PREF_NEW_SYNC_PROTOCOL, false);
     }
 
     public boolean mlrEnabled() {
-        return getDevicePrefs().getBoolean("garmin_mlr", true);
+        return getDevicePrefs().getBoolean(PREF_GARMIN_MLR, true);
     }
 
     @Override
@@ -1298,7 +1303,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
         getDevice().sendDeviceUpdateIntent(getContext());
 
         if (getCoordinator().supports(getDevice(), GarminCapability.EXPLORE_SYNC)) {
-            if (getDevicePrefs().getBoolean("garmin_exploresync", false)) {
+            if (getDevicePrefs().getBoolean(PREF_GARMIN_EXPLORE_SYNC, false)) {
                 protocolBufferHandler.getExploreSyncHandler().startSession();
             }
         }

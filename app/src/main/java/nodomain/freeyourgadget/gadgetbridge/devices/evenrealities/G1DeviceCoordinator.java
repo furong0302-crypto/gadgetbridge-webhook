@@ -232,6 +232,11 @@ public class G1DeviceCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppNotifications(@NonNull final GBDevice device) {
+        return true;
+    }
+
+    @Override
     public boolean supportsCalendarEvents(@NonNull final GBDevice device) {
         return true;
     }

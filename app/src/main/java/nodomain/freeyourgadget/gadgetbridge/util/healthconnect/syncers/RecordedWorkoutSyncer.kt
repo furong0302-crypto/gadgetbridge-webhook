@@ -963,7 +963,7 @@ internal object RecordedWorkoutSyncer {
         // Try dedicated active_calories field first, fall back to caloriesBurnt
         val activeCaloriesPermission = HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class)
         if (activeCaloriesPermission in grantedPermissions) {
-            var activeCalories = summaryData.getNumber(ActivitySummaryEntries.CALORIES_BURNT, 0.0).toDouble()
+            val activeCalories = summaryData.getNumber(ActivitySummaryEntries.CALORIES_BURNT, 0.0).toDouble()
 
             if (activeCalories > 0) {
                 recordsToInsert.add(
@@ -989,15 +989,17 @@ internal object RecordedWorkoutSyncer {
             LOG.debug("Permission for ActiveCaloriesBurnedRecord not granted for device '{}'.", deviceName)
         }
 
-        // Only sync TotalCaloriesBurnedRecord if we have both active AND resting calories
+        // Only sync TotalCaloriesBurnedRecord if we either (1) have the total calories reported by the device
+        // or (2) have both active AND resting calories
         // Otherwise, syncing the same value as both active and total would be misleading
         val totalCaloriesPermission = HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class)
         if (totalCaloriesPermission in grantedPermissions) {
             val activeCalories = summaryData.getNumber(ActivitySummaryEntries.CALORIES_BURNT, 0.0).toDouble()
             val restingCalories = summaryData.getNumber(ActivitySummaryEntries.CALORIES_RESTING, 0.0).toDouble()
+            val reportedTotalCalories = summaryData.getNumber(ActivitySummaryEntries.CALORIES_TOTAL, 0.0).toDouble()
 
-            if (activeCalories > 0 && restingCalories > 0) {
-                val totalCalories = activeCalories + restingCalories
+            if (reportedTotalCalories > 0 || (activeCalories > 0 && restingCalories > 0)) {
+                val totalCalories = if (reportedTotalCalories > 0) reportedTotalCalories else activeCalories + restingCalories
                 recordsToInsert.add(
                     TotalCaloriesBurnedRecord(
                         startTime = startTime,
@@ -1013,8 +1015,12 @@ internal object RecordedWorkoutSyncer {
                         )
                     )
                 )
-                LOG.debug("Added TotalCaloriesBurnedRecord ({} kcal = {} active + {} resting) for workout at {} for device '{}'.",
-                    totalCalories, activeCalories, restingCalories, startTime, deviceName)
+                LOG.debug(
+                    "Added TotalCaloriesBurnedRecord ({} kcal) for workout at {} for device '{}'.",
+                    totalCalories,
+                    startTime,
+                    deviceName
+                )
             } else {
                 LOG.debug("Not syncing TotalCaloriesBurnedRecord - need both active and resting calories (have: active={}, resting={}) for device '{}'",
                     activeCalories, restingCalories, deviceName)

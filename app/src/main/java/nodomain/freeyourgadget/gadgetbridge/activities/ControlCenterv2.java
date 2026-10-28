@@ -493,9 +493,10 @@ public class ControlCenterv2 extends AppCompatActivity
             }
         }
 
-        GBChangeLog cl = GBChangeLog.createChangeLog(this);
-        boolean showChangelog = prefs.getBoolean("show_changelog", true);
-        if (showChangelog && cl.isFirstRun() && cl.hasChanges(cl.isFirstRunEver())) {
+        final GBChangeLog cl = GBChangeLog.createChangeLog(this);
+        if (cl.isFirstRunEver()) {
+            cl.skipLogDialog();
+        } else if (prefs.getBoolean("show_changelog", true) && cl.isFirstRun() && cl.hasChanges(false)) {
             try {
                 cl.getMaterialLogDialog().show();
             } catch (Exception ex) {

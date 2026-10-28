@@ -111,7 +111,7 @@ public class HttpHandler {
 
         if (response == null) {
             return GdiHttp.RawResourceResponse.newBuilder()
-                    .setStatus(GdiHttp.RawResourceResponse.ResponseStatus.UNKNOWN)
+                    .setStatus(GdiHttp.RawResourceResponse.ResponseStatus.NETWORK_REQUEST_TIMED_OUT)
                     .build();
         }
 
@@ -239,7 +239,7 @@ public class HttpHandler {
 
             if (response == null) {
                 return GdiHttp.ConnectIQHTTPResponse.newBuilder()
-                        .setStatus(GdiHttp.ConnectIQHTTPResponse.ResponseStatus.UNKNOWN)
+                        .setStatus(GdiHttp.ConnectIQHTTPResponse.ResponseStatus.NETWORK_REQUEST_TIMED_OUT)
                         .setHttpStatusCode(0)
                         .build();
             }

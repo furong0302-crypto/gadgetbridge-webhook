@@ -80,4 +80,6 @@ class UnaDeviceCoordinator : AbstractBLEDeviceCoordinator() {
 
     override fun getSampleProvider(device: GBDevice, session: DaoSession): SampleProvider<out AbstractActivitySample> =
         UnaDailySampleProvider(device, session)
+
+    override fun supportsAppNotifications(device: GBDevice): Boolean = true
 }
