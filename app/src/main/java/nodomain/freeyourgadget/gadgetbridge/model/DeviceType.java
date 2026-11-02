@@ -36,6 +36,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.asteroidos.AsteroidOSDeviceC
 import nodomain.freeyourgadget.gadgetbridge.devices.atcbleoepl.ATCBLEOEPLCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.bandwpseries.BandWPSeriesDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.beurer.BeurerBm59Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.beurer.BeurerBm69Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.binary_sensor.coordinator.BinarySensorCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.bm2.Bm2Coordinator;
@@ -59,6 +60,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.cycling_sensor.coordinator.C
 import nodomain.freeyourgadget.gadgetbridge.devices.divoom.PixooCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.dji.cameras.DjiOsmoAction4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.concept2.Concept2PM5Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.coros.CorosPace3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.domyos.DomyosT540Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.earfun.EarFunAirPro4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.earfun.EarFunAirSCoordinator;
@@ -481,6 +483,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.moondrop.MoondropSpaceTravel
 import nodomain.freeyourgadget.gadgetbridge.devices.moondrop.MoondropSpaceTravelCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.AdvanWatchSE1AICoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.AltVibeCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.BettdowFB051Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.BlackviewR60Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.C20Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.ColmiI28UltraCoordinator;
@@ -602,6 +605,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreLiberty4N
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreLifeTuneCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreLifeTuneXRCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreMotion300Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreMotionPlusCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreQ30Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSpaceOneCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSportX20Coordinator;
@@ -1114,6 +1118,7 @@ public enum DeviceType {
     SOUNDCORE_LIBERTY3_PRO(SoundcoreLiberty3ProCoordinator.class),
     SOUNDCORE_LIBERTY4_NC(SoundcoreLiberty4NCCoordinator.class),
     SOUNDCORE_MOTION300(SoundcoreMotion300Coordinator.class),
+    SOUNDCORE_MOTION_PLUS(SoundcoreMotionPlusCoordinator.class),
     SOUNDCORE_Q30(SoundcoreQ30Coordinator.class),
     SOUNDCORE_SPACE_ONE(SoundcoreSpaceOneCoordinator.class),
     SOUNDCORE_LIFE_TUNE(SoundcoreLifeTuneCoordinator.class),
@@ -1292,6 +1297,7 @@ public enum DeviceType {
     MT55(MT55Coordinator.class),
     GARETT_EVA(GarettEvaCoordinator.class),
     ADVAN_WATCH_SE1_AI(AdvanWatchSE1AICoordinator.class),
+    BETTDOW_FB051(BettdowFB051Coordinator.class),
     B_AND_W_P_SERIES(BandWPSeriesDeviceCoordinator.class),
     EARFUN_AIR_S(EarFunAirSCoordinator.class),
     EARFUN_AIR_PRO_4(EarFunAirPro4Coordinator.class),
@@ -1315,6 +1321,7 @@ public enum DeviceType {
     SOLARFLOW(SolarFlowDeviceCoordinator.class),
     SANITAS_SBM_67(SanitasSBM67Coordinator.class),
     SILVERCREST_SBM_67(SilverCrestSBM67Coordinator.class),
+    BEURER_BM_59(BeurerBm59Coordinator.class),
     BEURER_BM_69(BeurerBm69Coordinator.class),
     BRAUN_BPW4500(BraunBPW4500DeviceCoordinator.class),
     TEUFEL_MYND(TeufelMyndCoordinator.class),
@@ -1330,6 +1337,7 @@ public enum DeviceType {
     IGPSPORT_BINAVI(IGPSportBiNaviCoordinator.class),
     OLLEE_WATCH_ONE(OlleeDeviceCoordinator.class),
     UNA_WATCH(UnaDeviceCoordinator.class),
+    COROS_PACE_3(CorosPace3Coordinator.class),
     ZEBLAZE_BEYOND_3_PRO(Beyond3ProCoordinator.class),
     ZEBLAZE_STRATOS_4_PRO(Stratos4ProCoordinator.class),
     QN_SCALE(QnScaleCoordinator.class),

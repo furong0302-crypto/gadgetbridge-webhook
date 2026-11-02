@@ -371,6 +371,8 @@
     <string name="pref_summary_notification_times_enabled">Only send notifications between specific times</string>
     <string name="pref_title_notification_media_ignores_application_list">Media notifications ignore app list</string>
     <string name="pref_summary_notification_media_ignores_application_list">Process media notifications before the app list. If this preference is unchecked, media applications need to be allowed in the application list for media controls to work on the device.</string>
+    <string name="pref_title_notification_calls_ignore_application_list">Calls ignore app list</string>
+    <string name="pref_summary_notification_calls_ignore_application_list">Forward calls from apps that are not allowed in the application list. Requires \"Enable VoIP app calls\".</string>
     <string name="pref_header_notification_application_settings">Per application settings</string>
     <string name="pref_title_transliteration">Transliteration</string>
     <string name="pref_summary_transliteration">Enable this if your device has no support for your language\'s font</string>
@@ -2490,6 +2492,7 @@
     <string name="devicetype_soundcore_a30i" translatable="false">Soundcore A30i</string>
     <string name="devicetype_soundcore_liberty3_pro" translatable="false">Soundcore Liberty 3 Pro</string>
     <string name="devicetype_soundcore_liberty4_nc" translatable="false">Soundcore Liberty 4 NC</string>
+    <string name="devicetype_soundcore_motion_plus" translatable="false">Soundcore Motion+</string>
     <string name="devicetype_soundcore_motion300" translatable="false">Soundcore Motion 300</string>
     <string name="devicetype_soundcore_q30" translatable="false">Soundcore Q30</string>
     <string name="devicetype_soundcore_space_one" translatable="false">Soundcore Space One</string>
@@ -2646,6 +2649,7 @@
     <string name="devicetype_rainbuvvy_t97" translatable="false">Rainbuvvy T97</string>
     <string name="devicetype_garett_eva" translatable="false">Garret Eva</string>
     <string name="devicetype_advan_watch_se1ai" translatable="false">Advan Watch SE1 AI</string>
+    <string name="devicetype_bettdow_fb051" translatable="false">Bettdow FB051</string>
     <string name="devicetype_mt55" translatable="false">MT55</string>
     <string name="devicetype_ultrahuma_ring_air" translatable="false">Ultrahuman Ring AIR</string>
     <string name="devicetype_bandw_pseries" translatable="false">Bowers and Wilkins P series</string>
@@ -3815,6 +3819,7 @@
     <string name="devicetype_galaxybuds_3_pro" translatable="false">Galaxy Buds3 Pro</string>
     <string name="devicetype_sanitas_sbm_67" translatable="false">Sanitas SBM67</string>
     <string name="devicetype_silvercrest_sbm_67" translatable="false">SilverCrest SBM67</string>
+    <string name="devicetype_beurer_bm_59" translatable="false">Beurer BM59</string>
     <string name="devicetype_beurer_bm_69" translatable="false">Beurer BM69</string>
     <string name="nothing_prefs_inear_summary">Play/pause the music depending on whether you wear the earbuds</string>
     <string name="nothing_prefs_inear_title">In-Ear detection</string>
@@ -4286,6 +4291,10 @@
     <string name="haylou_s35_anc_eq_classic">Classic</string>
     <string name="haylou_s35_anc_eq_bass">Bass</string>
     <string name="soundcore_equalizer_preset">Preset</string>
+    <string name="soundcore_equalizer_preset_bass_off">Bass Off</string>
+    <string name="soundcore_equalizer_preset_heavy">Heavy</string>
+    <string name="soundcore_equalizer_preset_classic">Classic</string>
+    <string name="soundcore_equalizer_preset_original">Original</string>
     <string name="soundcore_equalizer_preset_signature">soundcore Signature</string>
     <string name="soundcore_equalizer_preset_xtra_bass">Xtra Bass</string>
     <string name="soundcore_equalizer_preset_voice">Voice</string>
@@ -5657,6 +5666,7 @@
     <string name="devicetype_oukitel_bt103" translatable="false">Oukitel BT103</string>
     <string name="devicetype_swiss_peak" translatable="false">Swiss Peak</string>
     <string name="devicetype_una_watch" translatable="false">UNA Watch</string>
+    <string name="devicetype_coros_pace_3" translatable="false">COROS PACE 3</string>
     <string name="devicetype_dm58" translatable="false">DM58</string>
     <string name="devicetype_zeblaze_stratos_4_pro" translatable="false">Zeblaze Stratos 4 Pro</string>
     <string name="devicetype_y6" translatable="false">Y6</string>
@@ -6394,6 +6404,7 @@
     <string name="workout_template_save_failed">Could not save this workout template.</string>
     <string name="workout_template_unsupported">Not supported by this device</string>
     <string name="workout_template_share_failed">Could not share this workout template</string>
+    <string name="workout_template_import_failed">Could not import this workout template</string>
 
     <plurals name="workout_template_step_count">
         <item quantity="one">%d step</item>
