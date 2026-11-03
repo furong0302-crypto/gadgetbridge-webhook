@@ -118,6 +118,7 @@
     <!-- Strings related to AppManager -->
     <string name="title_activity_appmanager">App Manager</string>
     <string name="appmanager_cached_watchapps_watchfaces">Apps in cache</string>
+    <string name="appmanager_watchapps_watchfaces_updates">Updates</string>
     <string name="appmanager_installed_watchapps">Installed apps</string>
     <string name="appmanager_installed_watchfaces">Installed watchfaces</string>
     <string name="appmanager_watchface_activate">Activate</string>
@@ -260,6 +261,8 @@
     <string name="pref_summary_navigation_allow_unsupported_devices">Send navigation instructions as notifications to devices that do not support navigation</string>
     <string name="pref_title_navigation_right_hand_driving">Right-hand traffic</string>
     <string name="pref_description_navigation_right_hand_driving">Controls which navigation icon is shown for roundabouts.</string>
+    <string name="pref_title_navigation_symbols">Show arrows</string>
+    <string name="pref_description_navigation_symbols">Add a unicode arrow for the next maneuver to the notification title. Disable if the gadget shows empty boxes instead.</string>
     <string name="pref_title_navigation_continuous_updates">Send continuous updates</string>
     <string name="pref_description_navigation_continuous_updates">If enabled, updates are sent continuously to the gadget. If disabled, updates are sent at each turn.</string>
     <string name="pref_title_navigation_update_rate">Update rate for continuous mode (in milliseconds)</string>
@@ -466,6 +469,51 @@
     <string name="casio_interval_timer_repeat">Auto-repeat</string>
     <string name="casio_interval_timer_default_label">Timer %1$d</string>
     <string name="casio_interval_timer_total">Total: %1$s × %2$d = %3$s</string>
+    <string name="pref_casio_location_indicator_title">Location indicator</string>
+    <string name="casio_location_indicator_add">Add waypoint</string>
+    <string name="casio_location_indicator_active">Active location</string>
+    <string name="casio_location_indicator_empty">No waypoints saved yet</string>
+    <string name="casio_location_indicator_default_label">Location %1$d</string>
+    <string name="casio_location_indicator_no_fix">No GPS fix</string>
+    <string name="casio_location_indicator_invalid_coordinates">Invalid coordinates</string>
+    <string name="casio_location_indicator_use_current">Use current location</string>
+    <string name="casio_location_indicator_import_gpx">Import GPX</string>
+    <string name="casio_location_indicator_export_gpx">Export GPX</string>
+    <string name="casio_location_indicator_imported">Imported %1$d waypoints</string>
+    <string name="casio_location_indicator_import_no_waypoints">No waypoints found in file</string>
+    <string name="casio_location_indicator_import_failed">Could not import GPX file</string>
+    <string name="casio_location_indicator_exported">GPX exported</string>
+    <string name="casio_location_indicator_empty_export">No waypoints to export</string>
+    <string name="casio_location_indicator_export_failed">Could not export GPX file</string>
+    <string name="pref_casio_countdown_timer_title">Countdown timer (HH:MM:SS)</string>
+    <string name="pref_casio_pressure_energy_calc_title">Use pressure data for energy calculation</string>
+    <string name="pref_casio_compass_auto_correction_title">Compass auto-correction</string>
+    <string name="pref_casio_altitude_interval_title">Altitude auto-measurement interval</string>
+    <string name="pref_casio_altimeter_display_title">Altimeter display</string>
+    <string name="pref_casio_mode_carousel_title">Mode carousel</string>
+    <string name="pref_casio_mode_carousel_summary">Enable and reorder the watch modes</string>
+    <string name="pref_casio_display_screens_title">Display screens</string>
+    <string name="pref_casio_display_screens_summary">Enable and reorder the timekeeping screens</string>
+    <string name="pref_casio_mode_carousel_barometer">Barometer</string>
+    <string name="pref_casio_mode_carousel_temperature">Temperature</string>
+    <string name="pref_casio_mode_carousel_data_recall">Data recall</string>
+    <string name="pref_casio_mode_carousel_sunrise_sunset">Sunrise/sunset</string>
+    <string name="pref_casio_mode_carousel_stopwatch">Stopwatch</string>
+    <string name="pref_casio_mode_carousel_timer">Timer</string>
+    <string name="pref_casio_mode_carousel_alarm">Alarm</string>
+    <string name="pref_casio_mode_carousel_world_time">World time</string>
+    <string name="pref_casio_display_screens_day_date">Day and date</string>
+    <string name="pref_casio_display_screens_pressure_graph_date">Pressure graph + date</string>
+    <string name="pref_casio_display_screens_hours_min_sec">Hours/min/sec</string>
+    <string name="pref_casio_display_screens_steps_today">Steps (today)</string>
+    <string name="pref_casio_display_screens_year_date">Year date</string>
+    <string name="pref_casio_display_screens_pressure_graph">Pressure graph</string>
+    <string name="pref_casio_display_screens_world_time">World time (HH:MM)</string>
+    <string name="pref_casio_display_screens_sunrise_sunset_today">Sunrise/sunset (today)</string>
+    <string name="pref_casio_altimeter_display_plain">Altitude</string>
+    <string name="pref_casio_altimeter_display_100">Altitude ±100 m</string>
+    <string name="pref_casio_altimeter_display_1000">Altitude ±1000 m</string>
+    <string name="pref_casio_pressure_graph_title">Pressure graph</string>
     <string name="pref_title_autoremove_notifications">Autoremove dismissed notifications</string>
     <string name="pref_summary_autoremove_notifications">Notifications are automatically removed from the device when dismissed from the phone</string>
     <string name="pref_title_screen_on_on_notifications">Screen On on Notifications</string>
@@ -2151,6 +2199,7 @@
     <string name="devicetype_miband8pro" translatable="false">Xiaomi Smart Band 8 Pro</string>
     <string name="devicetype_miband9" translatable="false">Xiaomi Smart Band 9</string>
     <string name="devicetype_miband9active" translatable="false">Xiaomi Smart Band 9 Active</string>
+    <string name="devicetype_miband11active" translatable="false">Xiaomi Smart Band 11 Active</string>
     <string name="devicetype_miband9pro" translatable="false">Xiaomi Smart Band 9 Pro</string>
     <string name="devicetype_miband10" translatable="false">Xiaomi Smart Band 10</string>
     <string name="devicetype_miband10pro" translatable="false">Xiaomi Smart Band 10 Pro</string>
@@ -2435,6 +2484,7 @@
     <string name="devicetype_casiogwb5600" translatable="false">Casio GW-B5600</string>
     <string name="devicetype_casiogmwb5000" translatable="false">Casio GMW-B5000</string>
     <string name="devicetype_casiogbd200" translatable="false">Casio GBD-200</string>
+    <string name="devicetype_casioggb100" translatable="false">Casio GG-B100</string>
     <string name="devicetype_mismartscale" translatable="false">Mi Smart Scale 2</string>
     <string name="devicetype_micompositionscale" translatable="false">Mi Body Composition Scale 2</string>
     <string name="devicetype_qnscale" translatable="false">QN-Scale (Chipsea CS20)</string>
@@ -2500,6 +2550,7 @@
     <string name="devicetype_soundcore_life_tune_xr" translatable="false">Soundcore Life Tune XR</string>
     <string name="devicetype_soundcore_aerofit2" translatable="false">Soundcore AeroFit 2</string>
     <string name="devicetype_soundcore_sport_x20" translatable="false">Soundcore Sport X20</string>
+    <string name="devicetype_soundcore_r50i_nc" translatable="false">Soundcore R50i NC</string>
     <string name="devicetype_soundcore_p42i" translatable="false">Soundcore P42i</string>
     <string name="devicetype_soundcore_p41i" translatable="false">Soundcore P41i</string>
     <string name="devicetype_soundcore_p40i" translatable="false">Soundcore P40i</string>
@@ -2820,6 +2871,8 @@
     <string name="menuitem_temperature">Temperature</string>
     <string name="body_mass_index">BMI</string>
     <string name="menuitem_weight">Weight</string>
+    <string name="menuitem_altitude">Altitude</string>
+    <string name="altitude_value_format">%1$d m</string>
     <string name="menuitem_barometer">Barometer</string>
     <string name="menuitem_flashlight">Flashlight</string>
     <string name="menuitem_text_size">Text Size</string>
@@ -4290,6 +4343,8 @@
     <string name="soundcore_light_effect_music">Music follows</string>
     <string name="haylou_s35_anc_eq_classic">Classic</string>
     <string name="haylou_s35_anc_eq_bass">Bass</string>
+    <string name="soundcore_equalizer_command">Equalizer command</string>
+    <string name="soundcore_equalizer_command_compact">Compact</string>
     <string name="soundcore_equalizer_preset">Preset</string>
     <string name="soundcore_equalizer_preset_bass_off">Bass Off</string>
     <string name="soundcore_equalizer_preset_heavy">Heavy</string>
@@ -4530,6 +4585,8 @@
     <string name="intent_api_broadcast_activity_sync_title">Broadcast on activity sync finish</string>
     <string name="intent_api_broadcast_activity_sync_summary">Broadcast an intent when activity sync finishes for any device</string>
     <string name="intent_activity_sync_title">Activity sync</string>
+    <string name="intent_api_allow_watch_app_messages_title">Allow messages to watch apps</string>
+    <string name="intent_api_allow_watch_app_messages_summary">Allow other apps to send messages to apps installed on the watch via Intent API</string>
     <string name="intent_api_allow_debug_commands_title">Allow Debug Commands</string>
     <string name="intent_api_allow_debug_commands_summary">Allow triggering debug menu commands via Intent API</string>
     <string name="intent_api_allow_global_settings_summary">Allow 3rd party apps to set global Gadgetbridge settings through intents. Please restart Gadgetbridge in order to take effect.</string>
@@ -4541,6 +4598,7 @@
     <string name="pref_title_debug">Debug request</string>
     <string name="devicetype_asteroidos" translatable="false">AsteroidOS</string>
     <string name="devicetype_soflow_s06" translatable="false">SoFlow SO6</string>
+    <string name="devicetype_ninebot_kickscooter" translatable="false">Ninebot KickScooter</string>
     <string name="devicetype_xiaomi_scooter_5_max" translatable="false">Xiaomi Scooter 5 Max</string>
     <string name="scooter_lock_motor_title">Lock motor</string>
     <string name="scooter_lock_motor_summary">After 24h, the scooter will automatically turn off and won\'t remain locked when it is off. This function cannot protect the scooter from being stolen.</string>
@@ -4588,6 +4646,37 @@
     <string name="xiaomi_scooter_tire_pressure_reset_title">Reset reminder</string>
     <string name="xiaomi_scooter_tire_pressure_reset_summary">Click this button to restart the tire pressure maintenance timer.</string>
     <string name="xiaomi_scooter_tire_pressure_reset_confirmation">Reset the tire pressure maintenance reminder?</string>
+    <string name="ninebot_press_power_button">Press the power button on the scooter to confirm the pairing</string>
+    <string name="ninebot_retrying">No answer from the scooter, trying again (%1$d/%2$d)</string>
+    <string name="ninebot_pairing_failed">Pairing with the scooter failed. If you used the original app in between, connect again and press the power button.</string>
+    <string name="ninebot_code_protection_title">Code protection</string>
+    <string name="ninebot_unlock_title">Unlock</string>
+    <string name="ninebot_unlock_summary">Unlock the scooter now</string>
+    <string name="ninebot_auto_unlock_title">Unlock on connect</string>
+    <string name="ninebot_auto_unlock_summary">Unlock the scooter as soon as it connects to this phone</string>
+    <string name="ninebot_lock_state_title">Lock state</string>
+    <string name="ninebot_lock_state_locked">Locked</string>
+    <string name="ninebot_lock_state_unlocked">Unlocked</string>
+    <string name="ninebot_kers_title">Energy recovery</string>
+    <string name="ninebot_kers_weak">Weak</string>
+    <string name="ninebot_kers_medium">Medium</string>
+    <string name="ninebot_kers_strong">Strong</string>
+    <string name="ninebot_charge_limit_title">Charge limit</string>
+    <string name="ninebot_charge_limit_95">95 %</string>
+    <string name="ninebot_charge_limit_100">100 %</string>
+    <string name="ninebot_power_on_title">Switch on</string>
+    <string name="ninebot_power_on_summary">Switch the scooter on after it was switched off with this app.</string>
+    <string name="ninebot_power_off_title">Switch off</string>
+    <string name="ninebot_power_off_summary">Switch the scooter off. It has to be switched on with the power button again.</string>
+    <string name="ninebot_range_title">Remaining range</string>
+    <string name="ninebot_odometer_title">Total distance</string>
+    <string name="ninebot_temperature_title">Temperature</string>
+    <string name="ninebot_mode_title">Riding mode</string>
+    <string name="ninebot_mode_eco">Eco</string>
+    <string name="ninebot_mode_dynamic">Dynamic</string>
+    <string name="ninebot_mode_sport">Sport</string>
+    <string name="ninebot_search_title">Search for the scooter</string>
+    <string name="ninebot_search_summary">Looks for the scooter every 3 seconds and unlocks it as soon as it is found. Uses more battery of the phone.</string>
     <string name="mi_hipee_p1_history">Raw posture history</string>
     <string name="mi_hipee_p1_position">Position</string>
     <string name="mi_hipee_p1_history_forward">Forward (humpback)</string>
@@ -6617,4 +6706,5 @@
     <string name="vendor_data_import_garmin_step_4">Download the zip file to this phone. Do not extract it.</string>
     <string name="vendor_data_import_garmin_step_5">Select the zip file.</string>
     <string name="vendor_data_import_garmin_unknown_product">Garmin product %1$d</string>
+    <string name="appmanager_everything_up_to_date_message">Everything is up to date</string>
 </resources>
