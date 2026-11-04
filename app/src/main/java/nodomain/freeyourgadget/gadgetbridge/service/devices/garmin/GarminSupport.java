@@ -564,7 +564,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
             if (capabilities.contains(GarminCapability.REALTIME_SETTINGS)) {
                 final String language = Locale.getDefault().getLanguage();
                 final String country = Locale.getDefault().getCountry();
-                final String localeString = language + "_" + country.toUpperCase();
+                final String localeString = language + "_" + country.toUpperCase(Locale.ROOT);
                 sendProtobufRequest("init realtime settings", Smart.newBuilder()
                         .setRealtimeSettingsService(
                             GdiRealtimeSettings.RealtimeSettingsService.newBuilder()
@@ -1571,7 +1571,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
             dataRecords.add(alarmBuilder.build());
 
             deviceSettingsTimes.add(alarm.getHour() * 60 + alarm.getMinute());
-            deviceSettingsMode.add(AlarmMode.Custom.num);
+            deviceSettingsMode.add(AlarmMode.CUSTOM.num);
             deviceSettingsEnabled.add(alarm.getEnabled() ? 1 : 0);
             deviceSettingsRepeat.add(repetitionCode);
 
@@ -1797,7 +1797,7 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
 
             final String language = Locale.getDefault().getLanguage();
             final String country = Locale.getDefault().getCountry();
-            final String localeString = language + "_" + country.toUpperCase();
+            final String localeString = language + "_" + country.toUpperCase(Locale.ROOT);
 
             sendProtobufRequest("get settings screen " + screenId,
                     Smart.newBuilder()
