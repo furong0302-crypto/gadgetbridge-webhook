@@ -34,6 +34,7 @@ import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
+import nodomain.freeyourgadget.gadgetbridge.devices.GenericMetricSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.GlucoseSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider
@@ -44,6 +45,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.HealthConnectSyncState
 import nodomain.freeyourgadget.gadgetbridge.entities.HealthConnectSyncStateDao
 import nodomain.freeyourgadget.gadgetbridge.entities.HealthConnectWorkoutSyncFailureDao
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
+import nodomain.freeyourgadget.gadgetbridge.model.MetricSample
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample
 import nodomain.freeyourgadget.gadgetbridge.model.SleepSession
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs
@@ -738,6 +740,10 @@ class HealthConnectUtils {
                     healthConnectClient, gbDevice, metadata, offset,
                     currentSliceStartTs, currentSliceEndTs, grantedPermissions
                 ))
+                HealthConnectPermissionManager.HealthConnectDataType.BASAL_METABOLIC_RATE -> sliceStats.add(BasalMetabolicRateSyncer.sync(
+                    healthConnectClient, gbDevice, metadata, offset,
+                    currentSliceStartTs, currentSliceEndTs, grantedPermissions
+                ))
                 HealthConnectPermissionManager.HealthConnectDataType.BLOOD_GLUCOSE -> sliceStats.add(BloodGlucoseSyncer.sync(
                     healthConnectClient, gbDevice, metadata, offset,
                     currentSliceStartTs, currentSliceEndTs, grantedPermissions
@@ -861,6 +867,11 @@ class HealthConnectUtils {
             dataType: HealthConnectPermissionManager.HealthConnectDataType
         ): Instant? {
             return when (val provider = getProviderForDataType(deviceCoordinator, device, db, dataType)) {
+                // The metrics table holds every metric: bound the range by the synced metric only,
+                // otherwise samples of other metrics widen it for nothing.
+                is GenericMetricSampleProvider -> {
+                    provider.getLatestSample(MetricSample.Metric.GENERIC_RESTING_METABOLIC_RATE)?.timestamp?.takeIf { it > 0 }?.let { Instant.ofEpochMilli(it) }
+                }
                 is TimeSampleProvider<*> -> {
                     provider.latestSample?.timestamp?.takeIf { it > 0 }?.let { Instant.ofEpochMilli(it) }
                 }
@@ -896,6 +907,7 @@ class HealthConnectUtils {
                 HealthConnectPermissionManager.HealthConnectDataType.HRV -> coordinator.getHrvValueSampleProvider(device, db.daoSession)
                 HealthConnectPermissionManager.HealthConnectDataType.RESPIRATORY_RATE -> coordinator.getRespiratoryRateSampleProvider(device, db.daoSession)
                 HealthConnectPermissionManager.HealthConnectDataType.RESTING_HEART_RATE -> coordinator.getHeartRateRestingSampleProvider(device, db.daoSession)
+                HealthConnectPermissionManager.HealthConnectDataType.BASAL_METABOLIC_RATE -> coordinator.getMetricsSampleProvider(device, db.daoSession)
                 HealthConnectPermissionManager.HealthConnectDataType.BLOOD_GLUCOSE -> GlucoseSampleProvider(device, db.daoSession)
                 HealthConnectPermissionManager.HealthConnectDataType.BLOOD_PRESSURE -> coordinator.getBloodPressureSampleProvider(device, db.daoSession)
                 HealthConnectPermissionManager.HealthConnectDataType.WEIGHT -> coordinator.getWeightSampleProvider(device, db.daoSession)
