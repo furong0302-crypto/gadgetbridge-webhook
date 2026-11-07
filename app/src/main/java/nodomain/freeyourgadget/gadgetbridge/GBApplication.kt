@@ -24,7 +24,6 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Application
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.UiModeManager
 import android.bluetooth.BluetoothAdapter
@@ -35,19 +34,15 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
-import android.preference.PreferenceManager
-import android.provider.ContactsContract.PhoneLookup
 import android.util.TypedValue
 import android.view.WindowManager
 import androidx.annotation.StyleRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -57,19 +52,19 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper
 import nodomain.freeyourgadget.gadgetbridge.database.PeriodicDbExporter
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager
+import nodomain.freeyourgadget.gadgetbridge.di.DefaultPrefs
 import nodomain.freeyourgadget.gadgetbridge.externalevents.BluetoothStateChangeReceiver
 import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.apps.NotificationAppRepository
 import nodomain.freeyourgadget.gadgetbridge.externalevents.opentracks.OpenTracksContentObserver
 import nodomain.freeyourgadget.gadgetbridge.externalservices.ExternalServiceRegistry
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceService
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService
-import nodomain.freeyourgadget.gadgetbridge.model.weather.Weather
-import nodomain.freeyourgadget.gadgetbridge.model.weather.WeatherCacheManager
+import nodomain.freeyourgadget.gadgetbridge.model.weather.WeatherRepository
 import nodomain.freeyourgadget.gadgetbridge.prefs.GBPrefsMigrator
 import nodomain.freeyourgadget.gadgetbridge.service.NotificationCollectorMonitorService
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils
 import nodomain.freeyourgadget.gadgetbridge.util.CompanionDeviceUtil
+import nodomain.freeyourgadget.gadgetbridge.util.DoNotDisturbPolicy
 import nodomain.freeyourgadget.gadgetbridge.util.GB
 import nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID
 import nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_ID_ERROR
@@ -80,6 +75,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.PermissionsUtils
 import nodomain.freeyourgadget.gadgetbridge.util.backup.PeriodicZipExporter
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectPermissionManager
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs
+import nodomain.freeyourgadget.gadgetbridge.util.preferences.ScopedPrefsProvider
 import nodomain.freeyourgadget.gadgetbridge.widgets.launcher.LauncherWidgetUpdateTriggers
 import org.slf4j.LoggerFactory
 import java.util.Locale
@@ -101,7 +97,40 @@ open class GBApplication : Application() {
     @Inject
     lateinit var launcherWidgetUpdateTriggers: LauncherWidgetUpdateTriggers
 
+    /**
+     * The app's default shared preferences, which back [gbPrefs].
+     */
+    @Inject
+    @DefaultPrefs
+    lateinit var defaultSharedPreferences: SharedPreferences
+
+    @Inject
+    lateinit var gbPrefs: GBPrefs
+
+    @Inject
+    lateinit var scopedPrefs: ScopedPrefsProvider
+
+    @Inject
+    lateinit var doNotDisturbPolicy: DoNotDisturbPolicy
+
+    @Inject
+    lateinit var deviceServiceInstance: DeviceService
+
+    @Inject
+    lateinit var databaseManager: GBDatabaseManager
+
+    @Inject
+    lateinit var weatherRepository: WeatherRepository
+
+    private val themePreferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if ("pref_key_theme" == key) {
+            updateApplicationNightMode()
+        }
+    }
+
     private val lifecycleObserver = AppLifecycleObserver()
+
+    private val activityLifecycleCallbacks = GBActivityLifecycleCallbacks()
 
     private var exceptionHandler: GBExceptionHandler? = null
 
@@ -154,10 +183,6 @@ open class GBApplication : Application() {
         }
     }
 
-    protected open fun createDeviceService(): DeviceService {
-        return GBDeviceService(this)
-    }
-
     /**
      * Every step must be safe to repeat: Robolectric creates a new application instance and calls
      * onCreate() for each test, while static and process-wide state survives across tests in the same JVM.
@@ -167,9 +192,6 @@ open class GBApplication : Application() {
         appInstance = this
         super.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver)
-
-        sharedPrefsInstance = PreferenceManager.getDefaultSharedPreferences(appContext)
-        prefsInstance = GBPrefs(sharedPrefsInstance)
 
         val environmentSetup = GBEnvironment.isEnvironmentSetup()
 
@@ -181,32 +203,32 @@ open class GBApplication : Application() {
         }
 
         Logging.getInstance().initialize(
-            prefsInstance.getBoolean("log_to_file", false),
-            prefsInstance.getBoolean("log_level_trace", false),
+            gbPrefs.getBoolean("log_to_file", false),
+            gbPrefs.getBoolean("log_level_trace", false),
         )
 
         if (!environmentSetup) {
             // setup db after the environment is set up, but don't do it in test mode
             // in test mode, it's done individually, see TestBase
-            GBDatabaseManager.setupDatabase(this)
+            databaseManager.setupDatabase()
         }
 
         migratePrefsIfNeeded()
         updateApplicationNightMode()
-        sharedPrefsInstance.registerOnSharedPreferenceChangeListener(themePreferenceListener)
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(themePreferenceListener)
 
-        setupExceptionHandler(prefsInstance.getBoolean("crash_notification", isDebug()))
+        setupExceptionHandler(gbPrefs.getBoolean("crash_notification", isDebug()))
 
-        registerActivityLifecycleCallbacks(GBActivityLifecycleCallbacks())
+        // Unregister first, so that calling onCreate() again does not register the callbacks twice
+        unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
 
-        Weather.initializeCache(WeatherCacheManager(cacheDir, prefsInstance.getBoolean("cache_weather", true)))
+        weatherRepository.initialize()
 
         // Prefs and the database are ready at this point.
         deviceManagerInstance.initialize()
-        val languageCode = prefsInstance.getString("language", "default") ?: "default"
+        val languageCode = gbPrefs.getString("language", "default") ?: "default"
         setLanguage(languageCode)
-
-        deviceServiceInstance = createDeviceService()
 
         if (!GBEnvironment.env().isTest) {
             PeriodicDbExporter.scheduleNextExecution(appContext)
@@ -214,21 +236,21 @@ open class GBApplication : Application() {
             NotificationAppRepository.loadInBackground()
         }
 
-        notificationManager = appContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if (isRunningOreoOrLater()) {
-            bluetoothStateChangeReceiver = BluetoothStateChangeReceiver()
+        if (isRunningOreoOrLater() && bluetoothStateChangeReceiver == null) {
+            val receiver = BluetoothStateChangeReceiver()
             val bif = IntentFilter()
             bif.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
             if (isRunningPieOrLater()) {
                 bif.addAction(BluetoothStateChangeReceiver.ANDROID_BLUETOOTH_DEVICE_ACTION_BATTERY_LEVEL_CHANGED)
             }
-            registerReceiver(bluetoothStateChangeReceiver, bif)
+            registerReceiver(receiver, bif)
+            bluetoothStateChangeReceiver = receiver
         }
         startNotificationCollectorMonitorService()
 
         CompanionDeviceUtil.StartObservingAll(baseContext)
 
-        if (prefsInstance.getBoolean(GBPrefs.HEALTH_CONNECT_ENABLED, false)) {
+        if (gbPrefs.getBoolean(GBPrefs.HEALTH_CONNECT_ENABLED, false)) {
             HealthConnectPermissionManager.checkAndRectifyPermissions(this)
         }
 
@@ -244,7 +266,7 @@ open class GBApplication : Application() {
     }
 
     private fun startNotificationCollectorMonitorService() {
-        if (!prefsInstance.getBoolean("prefs_key_enable_deprecated_notificationcollectormonitor", false)) {
+        if (!gbPrefs.getBoolean("prefs_key_enable_deprecated_notificationcollectormonitor", false)) {
             return
         }
         LOG.info("Starting the deprecated NotificationCollectorMonitorService foreground service.")
@@ -307,10 +329,15 @@ open class GBApplication : Application() {
      */
     override fun onTerminate() {
         ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleObserver)
+        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(themePreferenceListener)
         launcherWidgetUpdateTriggers.unregister()
         deviceManagerInstance.shutdown()
+        databaseManager.closeDatabase()
         exceptionHandler?.unregister()
         exceptionHandler = null
+        unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        bluetoothStateChangeReceiver?.let { unregisterReceiver(it) }
+        bluetoothStateChangeReceiver = null
         super.onTerminate()
     }
 
@@ -321,7 +348,7 @@ open class GBApplication : Application() {
 
     @VisibleForTesting
     protected open fun migratePrefsIfNeeded() {
-        GBPrefsMigrator.migratePrefsIfNeeded(sharedPrefsInstance)
+        GBPrefsMigrator.migratePrefsIfNeeded(defaultSharedPreferences)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -358,7 +385,7 @@ open class GBApplication : Application() {
 
     private class GBActivityLifecycleCallbacks : ActivityLifecycleCallbacks {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-            val preventScreenshots = getPrefs().getBoolean(GBPrefs.BLOCK_SCREENSHOTS, false)
+            val preventScreenshots = app().gbPrefs.getBoolean(GBPrefs.BLOCK_SCREENSHOTS, false)
             if (preventScreenshots) {
                 LOG.debug("set FLAG_SECURE for {}", activity.localClassName)
                 activity.window.setFlags(
@@ -397,18 +424,8 @@ open class GBApplication : Application() {
         private lateinit var appContext: GBApplication
         private var context: GBApplication? = null
         private var appInstance: GBApplication? = null
-        private lateinit var deviceServiceInstance: DeviceService
-        private lateinit var sharedPrefsInstance: SharedPreferences
-        private lateinit var prefsInstance: GBPrefs
-        private lateinit var notificationManager: NotificationManager
         private lateinit var language: Locale
         private val idSenderLookup = LimitedQueue<Int, String>(16)
-
-        private val themePreferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if ("pref_key_theme" == key) {
-                updateApplicationNightMode()
-            }
-        }
 
         const val ACTION_QUIT = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.quit"
         const val ACTION_LANGUAGE_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.language_change"
@@ -427,8 +444,8 @@ open class GBApplication : Application() {
             CompanionDeviceUtil.StopObservingAll(getContext())
             val quitIntent = Intent(ACTION_QUIT)
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(quitIntent)
-            deviceServiceInstance.quit()
-            GBDatabaseManager.closeDatabase()
+            app().deviceServiceInstance.quit()
+            app().databaseManager.closeDatabase()
             exitProcess(0)
         }
 
@@ -438,9 +455,9 @@ open class GBApplication : Application() {
             CompanionDeviceUtil.StopObservingAll(getContext())
             val quitIntent = Intent(ACTION_QUIT)
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(quitIntent)
-            deviceServiceInstance.quit()
+            app().deviceServiceInstance.quit()
 
-            GBDatabaseManager.closeDatabase()
+            app().databaseManager.closeDatabase()
 
             val startActivity = Intent(appContext, ControlCenterv2::class.java)
             val pendingIntent = PendingIntent.getActivity(
@@ -457,7 +474,7 @@ open class GBApplication : Application() {
 
         @JvmStatic
         fun minimizeNotification(): Boolean {
-            return prefsInstance.getBoolean("minimize_priority", false)
+            return app().gbPrefs.getBoolean("minimize_priority", false)
         }
 
         @JvmStatic
@@ -480,9 +497,10 @@ open class GBApplication : Application() {
          *
          * @return the facade for talking to the service/devices.
          */
+        @Deprecated("Use Hilt DI to inject DeviceService instead.")
         @JvmStatic
         fun deviceService(): DeviceService {
-            return deviceServiceInstance
+            return app().deviceServiceInstance
         }
 
         /**
@@ -491,27 +509,30 @@ open class GBApplication : Application() {
          *
          * @return the facade for talking to the service/device.
          */
+        @Deprecated("Use Hilt DI to inject DeviceService and call DeviceService.forDevice() instead.")
         @JvmStatic
         fun deviceService(device: GBDevice?): DeviceService {
-            return deviceServiceInstance.forDevice(device)
+            return app().deviceServiceInstance.forDevice(device)
         }
 
         /**
          * @see GBDatabaseManager.acquireWrite
          */
+        @Deprecated("Use Hilt DI to inject GBDatabaseManager instead.")
         @JvmStatic
         @Throws(GBException::class)
         fun acquireDB(): DBHandler {
-            return GBDatabaseManager.acquireWrite()
+            return app().databaseManager.acquireWrite()
         }
 
         /**
          * @see GBDatabaseManager.acquireReadOnly
          */
+        @Deprecated("Use Hilt DI to inject GBDatabaseManager instead.")
         @JvmStatic
         @Throws(GBException::class)
         fun acquireDbReadOnly(): DBHandler {
-            return GBDatabaseManager.acquireReadOnly()
+            return app().databaseManager.acquireReadOnly()
         }
 
         @JvmStatic
@@ -544,104 +565,49 @@ open class GBApplication : Application() {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
         }
 
-        private fun isPrioritySender(prioritySenders: Int, number: String?): Boolean {
-            if (prioritySenders == NotificationManager.Policy.PRIORITY_SENDERS_ANY) {
-                return true
-            } else if (ContextCompat.checkSelfPermission(
-                    appContext,
-                    Manifest.permission.READ_CONTACTS,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                LOG.warn("Contacts permission not granted, unable to check if {} is a priority sender", number)
-                return true
-            } else if (number.isNullOrEmpty()) {
-                // Unknown/hidden number cannot match a contact or a starred contact
-                return false
-            } else {
-                val uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number))
-                val projection = arrayOf(PhoneLookup._ID, PhoneLookup.STARRED)
-                val cursor = appContext.contentResolver.query(uri, projection, null, null, null)
-                var exists = false
-                var starred = 0
-                cursor?.use {
-                    if (it.moveToFirst()) {
-                        exists = true
-                        starred = it.getInt(it.getColumnIndexOrThrow(PhoneLookup.STARRED))
-                    }
-                }
-                return prioritySenders == NotificationManager.Policy.PRIORITY_SENDERS_CONTACTS && exists || prioritySenders == NotificationManager.Policy.PRIORITY_SENDERS_STARRED && starred == 1
-            }
-        }
-
+        @Deprecated("Use Hilt DI to inject DoNotDisturbPolicy instead.")
         @JvmStatic
         fun isPriorityNumber(priorityType: Int, number: String?): Boolean {
-            val notificationPolicy = notificationManager.notificationPolicy
-            if (priorityType == NotificationManager.Policy.PRIORITY_CATEGORY_MESSAGES) {
-                if ((notificationPolicy.priorityCategories and NotificationManager.Policy.PRIORITY_CATEGORY_MESSAGES) == NotificationManager.Policy.PRIORITY_CATEGORY_MESSAGES) {
-                    return isPrioritySender(notificationPolicy.priorityMessageSenders, number)
-                }
-            } else if (priorityType == NotificationManager.Policy.PRIORITY_CATEGORY_CALLS) {
-                if ((notificationPolicy.priorityCategories and NotificationManager.Policy.PRIORITY_CATEGORY_CALLS) == NotificationManager.Policy.PRIORITY_CATEGORY_CALLS) {
-                    return isPrioritySender(notificationPolicy.priorityCallSenders, number)
-                }
-            }
-            return false
+            return app().doNotDisturbPolicy.isPriorityNumber(priorityType, number)
         }
 
+        @Deprecated("Use Hilt DI to inject DoNotDisturbPolicy instead.")
         @JvmStatic
         fun getGrantedInterruptionFilter(): Int {
-            return if (notificationManager.isNotificationPolicyAccessGranted) {
-                notificationManager.currentInterruptionFilter
-            } else {
-                NotificationManager.INTERRUPTION_FILTER_ALL
-            }
+            return app().doNotDisturbPolicy.getGrantedInterruptionFilter()
         }
 
+        @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun getDeviceSpecificSharedPrefs(deviceIdentifier: CharSequence?): SharedPreferences {
-            require(!deviceIdentifier.isNullOrEmpty()) { "Invalid device identifier" }
-            return appContext.getSharedPreferences(
-                "devicesettings_" + deviceIdentifier.toString().uppercase(Locale.ROOT),
-                MODE_PRIVATE,
-            )
+            return app().scopedPrefs.getDeviceSpecificSharedPrefs(deviceIdentifier)
         }
 
+        @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun getDevicePrefs(gbDevice: GBDevice): DevicePrefs {
-            return DevicePrefs(getDeviceSpecificSharedPrefs(gbDevice.address), gbDevice)
+            return app().scopedPrefs.getDevicePrefs(gbDevice)
         }
 
+        @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun deleteDeviceSpecificSharedPrefs(deviceIdentifier: CharSequence?) {
-            if (deviceIdentifier.isNullOrEmpty()) {
-                return
-            }
-            appContext.getSharedPreferences(
-                "devicesettings_" + deviceIdentifier.toString().uppercase(Locale.ROOT),
-                MODE_PRIVATE,
-            ).edit { clear() }
+            app().scopedPrefs.deleteDeviceSpecificSharedPrefs(deviceIdentifier)
         }
 
         /**
          * The per-instance settings file for a dashboard widget instance, keyed by its instance id.
          */
+        @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun getWidgetSharedPrefs(instanceId: CharSequence?): SharedPreferences? {
-            if (instanceId.isNullOrEmpty()) {
-                return null
-            }
-            return appContext.getSharedPreferences("widgetsettings_$instanceId", MODE_PRIVATE)
+            return app().scopedPrefs.getWidgetSharedPrefs(instanceId)
         }
 
+        @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun deleteWidgetSharedPrefs(instanceId: CharSequence?) {
-            if (instanceId.isNullOrEmpty()) {
-                return
-            }
-            appContext.getSharedPreferences("widgetsettings_$instanceId", MODE_PRIVATE)
-                .edit {
-                    clear()
-                }
+            app().scopedPrefs.deleteWidgetSharedPrefs(instanceId)
         }
 
         @JvmStatic
@@ -678,7 +644,7 @@ open class GBApplication : Application() {
 
         @JvmStatic
         fun isDarkThemeEnabled(): Boolean {
-            val selectedTheme = prefsInstance.getString(
+            val selectedTheme = app().gbPrefs.getString(
                 "pref_key_theme",
                 appContext.getString(R.string.pref_theme_value_system),
             )
@@ -701,7 +667,7 @@ open class GBApplication : Application() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 return
             }
-            val selectedTheme = prefsInstance.getString(
+            val selectedTheme = app().gbPrefs.getString(
                 "pref_key_theme",
                 appContext.getString(R.string.pref_theme_value_system),
             )
@@ -715,12 +681,12 @@ open class GBApplication : Application() {
 
         @JvmStatic
         fun isAmoledBlackEnabled(): Boolean {
-            return prefsInstance.getBoolean("pref_key_theme_amoled_black", false)
+            return app().gbPrefs.getBoolean("pref_key_theme_amoled_black", false)
         }
 
         @JvmStatic
         fun areDynamicColorsEnabled(): Boolean {
-            val selectedTheme = prefsInstance.getString(
+            val selectedTheme = app().gbPrefs.getString(
                 "pref_key_theme",
                 appContext.getString(R.string.pref_theme_value_system),
             )
@@ -735,7 +701,7 @@ open class GBApplication : Application() {
         @JvmStatic
         @StyleRes
         fun getAccentColorOverlay(dark: Boolean): Int {
-            val accent = prefsInstance.getString(PREF_ACCENT_COLOR, PREF_ACCENT_COLOR_DEFAULT)
+            val accent = app().gbPrefs.getString(PREF_ACCENT_COLOR, PREF_ACCENT_COLOR_DEFAULT)
             return when (accent) {
                 "coral" -> if (dark) R.style.ThemeOverlay_App_Accent_Coral_Dark else R.style.ThemeOverlay_App_Accent_Coral_Light
                 "orange" -> if (dark) R.style.ThemeOverlay_App_Accent_Orange_Dark else R.style.ThemeOverlay_App_Accent_Orange_Light
@@ -756,7 +722,7 @@ open class GBApplication : Application() {
 
         @JvmStatic
         fun areContrastingSurfacesEnabled(dark: Boolean): Boolean {
-            return prefsInstance.getBoolean(PREF_CONTRASTING_SURFACES, dark)
+            return app().gbPrefs.getBoolean(PREF_CONTRASTING_SURFACES, dark)
         }
 
         @JvmStatic
@@ -826,9 +792,10 @@ open class GBApplication : Application() {
             return hasDirectInternetAccess() || InternetHelperSingleton.ensureInternetHelperBound()
         }
 
+        @Deprecated("Use Hilt DI to inject GBPrefs instead.")
         @JvmStatic
         fun getPrefs(): GBPrefs {
-            return prefsInstance
+            return app().gbPrefs
         }
 
         @JvmStatic

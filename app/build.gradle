@@ -12,9 +12,16 @@ plugins {
 }
 
 tasks.withType(Test).configureEach {
-    systemProperty("MiFirmwareDir", System.getProperty("MiFirmwareDir", null))
+    final def miFirmwareDir = providers.systemProperty("MiFirmwareDir")
+    if (miFirmwareDir.isPresent()) {
+        systemProperty("MiFirmwareDir", miFirmwareDir.get())
+    }
+
     systemProperty("logback.configurationFile", System.getProperty("user.dir", null) + "/app/src/main/assets/logback.xml")
-    systemProperty("GB_LOGFILES_DIR", Files.createTempDirectory("gblog").toString())
+
+    doFirst {
+        systemProperty("GB_LOGFILES_DIR", Files.createTempDirectory("gblog").toString())
+    }
 }
 
 Integer getVersionCode() {
@@ -27,68 +34,9 @@ Integer getVersionCode() {
         return null
     }
 }
+ext.getVersionCode = getVersionCode()
 
-tasks.register("buildGitChangelog"){
-    final def changelogFile = new File("${project.rootDir}/app/build/generated/res/changelog/xml/changelog_git.xml")
-
-    def gitFile = project.rootProject.file(".git")
-    def gitHead = null
-
-    if (gitFile.directory) {
-        gitHead = new File(gitFile, "HEAD")
-    } else if (gitFile.file) {
-        def gitDir = gitFile.text.trim().replaceFirst(/^gitdir:\s*/, "")
-        gitHead = new File(gitDir).with {
-            isAbsolute() ? new File(it, "HEAD") : new File(gitFile.parentFile, it.path + "/HEAD")
-        }
-    }
-
-    inputs.file(gitHead)
-    outputs.file(changelogFile)
-
-    doLast {
-        def allCommits
-        try {
-            allCommits = providers.exec {
-                commandLine("git", "log", "--pretty=format:%H %s")
-            }.standardOutput.asText.get()
-        } catch (ignored) {
-            logger.warn("Skipping git changelog: git is not available")
-            changelogFile.getParentFile().mkdirs()
-            changelogFile.write(groovy.xml.XmlUtil.serialize(new Node(null, "changelog")))
-            return
-        }
-
-        def commitVersionCode = getVersionCode()
-        def includedCommits = 0
-        def includedTranslations = 0
-        final def changelogNode = new Node(null, "changelog")
-
-        allCommits.trim().eachLine { final line ->
-            if (includedCommits > 100) {
-                return true
-            }
-
-            final def (fullCommitHash, commitMessage) = line.split(" ", 2)
-            final def commitHash = fullCommitHash.take(10)
-            if (commitMessage.contains("Translated using Weblate")) {
-                if (includedTranslations == 0) {
-                    final def releaseNode = new Node(changelogNode, "release", [version: commitHash, versioncode: commitVersionCode--])
-                    def _ = new Node(releaseNode, "change", [:], "Sync translations from Weblate")
-                }
-                includedTranslations++
-                return true
-            }
-
-            final def releaseNode = new Node(changelogNode, "release", [version: commitHash, versioncode: commitVersionCode--])
-            def _ = new Node(releaseNode, "change", [:], commitMessage)
-            includedCommits++
-        }
-
-        changelogFile.getParentFile().mkdirs()
-        changelogFile.write(groovy.xml.XmlUtil.serialize(changelogNode))
-    }
-}
+apply from: rootProject.file("gradle/changelog.gradle")
 
 String getGitHashShort() {
     try {
@@ -146,7 +94,6 @@ android {
         // Note: always bump BOTH versionCode and versionName!
         versionName = "2026.11.0"
         versionCode = 256
-        vectorDrawables.useSupportLibrary = true
         buildConfigField("String", "GIT_HASH_SHORT", "\"${getGitHashShort()}\"")
         buildConfigField("String", "GIT_DIRTY_STATUS", "\"${getGitDirtyFlag()}\"")
         buildConfigField("boolean", "INTERNET_ACCESS", "false")
@@ -156,13 +103,18 @@ android {
         ]
     }
 
+    final def nightlyStoreFile = providers.systemProperty("nightly_store_file")
+    final def nightlyStorePassword = providers.systemProperty("nightly_store_password")
+    final def nightlyKeyAlias = providers.systemProperty("nightly_key_alias")
+    final def nightlyKeyPassword = providers.systemProperty("nightly_key_password")
+
     signingConfigs {
         create("nightly") {
-            if (System.getProperty("nightly_store_file") != null) {
-                storeFile = file(System.getProperty("nightly_store_file"))
-                storePassword = System.getProperty("nightly_store_password")
-                keyAlias = System.getProperty("nightly_key_alias")
-                keyPassword = System.getProperty("nightly_key_password")
+            if (nightlyStoreFile.isPresent()) {
+                storeFile = file(nightlyStoreFile.get())
+                storePassword = nightlyStorePassword.orNull
+                keyAlias = nightlyKeyAlias.orNull
+                keyPassword = nightlyKeyPassword.orNull
             }
         }
     }
@@ -217,44 +169,34 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
 
+        final def nightlySigning = nightlyStoreFile.isPresent()
+            ? signingConfigs.getByName("nightly")
+            : signingConfigs.getByName("debug")
+
         create("nightly") {
+            initWith(getByName("release"))
             applicationIdSuffix = ".nightly"
             versionNameSuffix = "-${getGitHashShort()}"
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            minifyEnabled = true
-            debuggable = false
-
-            if (System.getProperty("nightly_store_file") != null) {
-                signingConfig = signingConfigs.getByName("nightly")
-            } else {
-                signingConfig = signingConfigs.getByName("debug")
-            }
+            signingConfig = nightlySigning
         }
 
         create("nopebble") {
+            initWith(getByName("release"))
             applicationIdSuffix = ".nightly_nopebble"
             versionNameSuffix = "-${getGitHashShort()}"
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            minifyEnabled = true
-            debuggable = false
-
-            if (System.getProperty("nightly_store_file") != null) {
-                signingConfig = signingConfigs.getByName("nightly")
-            } else {
-                signingConfig = signingConfigs.getByName("debug")
-            }
+            signingConfig = nightlySigning
         }
     }
 
     lint {
         abortOnError = true
-        lintConfig = file("${rootDir}/app/src/main/lint.xml")
+        lintConfig = layout.projectDirectory.file("src/main/lint.xml").asFile
         // If true, generate an HTML report (with issue explanations, sourcecode, etc)
         htmlReport = true
         // Optional path to report (default will be lint-results.html in the builddir)
         htmlOutput = layout.buildDirectory.file("reports/lint/lint.html").get().asFile
         // Ignore checks present in the snapshot
-        baseline = file("lint-baseline.xml")
+        baseline = layout.projectDirectory.file("lint-baseline.xml").asFile
     }
 
     testOptions {
@@ -263,19 +205,13 @@ android {
             includeAndroidResources = true
         }
     }
+
     buildFeatures {
         aidl = true
         buildConfig = true
         viewBinding = true
         // AGP 9 defaults to false, but we still use it in the androidComponents.onVariants block below
         resValues = true
-    }
-    packaging {
-        // Unable to strip the following libraries, packaging them as they are.
-        // https://issuetracker.google.com/issues/353554169
-        jniLibs.keepDebugSymbols.add("**/libimage_processing_util_jni.so")
-        jniLibs.keepDebugSymbols.add("**/libsurface_util_jni.so")
-        jniLibs.keepDebugSymbols.add("**/libandroidx.graphics.path.so")
     }
 }
 
@@ -389,18 +325,20 @@ dependencies {
 }
 
 tasks.named("preBuild").configure {
-    dependsOn(":GBDaoGenerator:genSources")
-    dependsOn(":FitCodeGenerator:genFit")
-    dependsOn(":KaitaiAuxGenerator:genKaitaiAux")
+    dependsOn(project(":GBDaoGenerator").tasks.named("genSources"))
+    dependsOn(project(":FitCodeGenerator").tasks.named("genFit"))
+    dependsOn(project(":KaitaiAuxGenerator").tasks.named("genKaitaiAux"))
     dependsOn(tasks.named("buildGitChangelog"))
 }
 
-tasks.register("cleanGenerated", Delete) {
-    delete(fileTree("src/main/java/nodomain/freeyourgadget/gadgetbridge/entities") {
-        include("**/*.java")
-        exclude("**/Abstract*.java")
-        exclude("**/GenericActivitySample.java")
-    })
+tasks.register("cleanGenerated", Delete) { task ->
+    task.delete {
+        layout.projectDirectory.dir("src/main/java/nodomain/freeyourgadget/gadgetbridge/entities").asFileTree.matching {
+            include("**/*.java")
+            exclude("**/Abstract*.java")
+            exclude("**/GenericActivitySample.java")
+        }
+    }
 }
 
 tasks.named("clean").configure {
