@@ -77,6 +77,7 @@ import java.util.Set;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.data.DashboardPreferences;
 import nodomain.freeyourgadget.gadgetbridge.activities.debug.DebugActivityV2;
 import nodomain.freeyourgadget.gadgetbridge.activities.discovery.DiscoveryActivityV2;
 import nodomain.freeyourgadget.gadgetbridge.activities.welcome.WelcomeActivity;
@@ -93,7 +94,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBChangeLog;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
-import nodomain.freeyourgadget.gadgetbridge.util.PermissionsUtils;
 
 //TODO: extend AbstractGBActivity, but it requires actionbar that is not available
 public class ControlCenterv2 extends AppCompatActivity
@@ -176,7 +176,7 @@ public class ControlCenterv2 extends AppCompatActivity
             }
         }
     };
-    private boolean pesterWithPermissions = true;
+
     private final Map<GBDevice, Integer> currentHeartRate = new HashMap<>();
     private final Map<GBDevice, Long> currentHeartRateReceivedAt = new HashMap<>();
 
@@ -294,7 +294,10 @@ public class ControlCenterv2 extends AppCompatActivity
 
     private void selectDefaultTab() {
         String key = GBApplication.getPrefs().getString("default_main_screen", "dashboard");
-        NavTab tab = NavTab.fromKey(key);
+        selectTab(NavTab.fromKey(key));
+    }
+
+    private void selectTab(final NavTab tab) {
         int index = visibleTabs.indexOf(tab);
         if (index < 0) return;
 
@@ -495,17 +498,10 @@ public class ControlCenterv2 extends AppCompatActivity
         filterLocal.addAction(DeviceManager.ACTION_DEVICES_CHANGED);
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filterLocal);
 
-        // Open the Welcome flow on first run, only check permissions on next runs
+        // Open the Welcome flow on first run
         boolean firstRun = prefs.getBoolean("first_run", true);
         if (firstRun) {
             launchWelcomeActivity();
-        } else {
-            pesterWithPermissions = prefs.getBoolean("permission_pestering", true);
-            if (pesterWithPermissions && !PermissionsUtils.checkAllPermissions(this)) {
-                Intent permissionsIntent = new Intent(this, PermissionsActivity.class);
-                permissionsIntent.putExtra(PermissionsActivity.ARG_SHOW_DO_NOT_ASK_BUTTON, true);
-                startActivity(permissionsIntent);
-            }
         }
 
         final GBChangeLog cl = GBChangeLog.createChangeLog(this);
@@ -582,6 +578,10 @@ public class ControlCenterv2 extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         handleShortcut(getIntent());
+        if (new DashboardPreferences().hasStartEditingRequest()) {
+            // onResume only runs for the current page, DashboardFragment consumes this
+            selectTab(NavTab.DASHBOARD);
+        }
         if (isLanguageInvalid || isThemeInvalid) {
             isLanguageInvalid = false;
             isThemeInvalid = false;
