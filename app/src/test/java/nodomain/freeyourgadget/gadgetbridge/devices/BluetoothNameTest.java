@@ -25,6 +25,7 @@ public class BluetoothNameTest extends TestBase {
             put("BSC 100Max", DeviceType.IGPSPORT_BSC100MAX); // #7168
             put("UGREEN HiTune Max5c", DeviceType.UGREEN_HITUNE_MAX_5C);
             put("UGREEN HiTune Max 5c", DeviceType.UGREEN_HITUNE_MAX_5C);
+            put("SOUNDPEATS Q3 Pro", DeviceType.SOUNDPEATS_Q3_PRO); // #7285
             put("Active 2 NFC (Round)", DeviceType.AMAZFITACTIVE2NFC);
             put("Amazfit Balance 3", DeviceType.AMAZFITBALANCE3); // #6895
             put("Balance 3", DeviceType.AMAZFITBALANCE3); // #6895
@@ -170,6 +171,7 @@ public class BluetoothNameTest extends TestBase {
             put("fenix 6S", DeviceType.GARMIN_FENIX_6S);
             put("xiaomi.scooter.5max", DeviceType.XIAOMI_SCOOTER_5_MAX);
             put("NAGVF2421C0000", DeviceType.NINEBOT_KICKSCOOTER); // #7136
+            put("xiaomi.magic_touch.jj02", DeviceType.MAGIC_TOUCH_JJ02); // #7112
             put("R50Pro", DeviceType.R50PRO);
             put("P22B1", DeviceType.P22B1);
             put("SBM67", DeviceType.SILVERCREST_SBM_67);

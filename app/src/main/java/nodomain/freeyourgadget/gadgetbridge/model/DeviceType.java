@@ -616,6 +616,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreR50iNCCoo
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSpaceOneCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSportX20Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreV20iCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.soundpeats.SoundpeatsQ3ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.supercars.SuperCarsCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.TestDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.teufel.TeufelMyndCoordinator;
@@ -632,6 +633,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.victron.VictronSmartShuntCoo
 import nodomain.freeyourgadget.gadgetbridge.devices.waspos.WaspOSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.WearFitCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.magic_touch.MagicTouchJj02Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand11ActiveCoordinator;
@@ -861,6 +863,7 @@ public enum DeviceType {
     MIJIA_LYWSD03(MijiaLywsd03Coordinator::new),
     MIJIA_XMWSDJ04(MijiaXmwsdj04Coordinator::new),
     MIJIA_MHO_C303(MijiaMhoC303Coordinator::new),
+    MAGIC_TOUCH_JJ02(MagicTouchJj02Coordinator::new),
     LEFUN(LefunDeviceCoordinator::new),
     VIVITAR_HR_BP_MONITOR_ACTIVITY_TRACKER(VivitarHrBpMonitorActivityTrackerCoordinator::new),
     BOHEMIC_SMART_BRACELET(BohemicSmartBraceletDeviceCoordinator::new),
@@ -1155,6 +1158,7 @@ public enum DeviceType {
     SOUNDCORE_P41I(SoundcoreP41iCoordinator::new),
     SOUNDCORE_P42I(SoundcoreP42iCoordinator::new),
     SOUNDCORE_V20I(SoundcoreV20iCoordinator::new),
+    SOUNDPEATS_Q3_PRO(SoundpeatsQ3ProCoordinator::new),
     HAYLOU_S35_ANC(HaylouS35AncCoordinator::new),
     MOONDROP_SPACE_TRAVEL(MoondropSpaceTravelCoordinator::new),
     MOONDROP_SPACE_TRAVEL_2(MoondropSpaceTravel2Coordinator::new),
