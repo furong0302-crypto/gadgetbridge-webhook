@@ -450,6 +450,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBSC100MaxCo
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBSC200Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBSC200SCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBSC300Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBSC300TCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBSC500Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBiNaviAirCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.igpsport.IGPSportBiNaviCoordinator;
@@ -633,6 +634,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.vibratissimo.VibratissimoCoo
 import nodomain.freeyourgadget.gadgetbridge.devices.victron.VictronSmartShuntCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.waspos.WaspOSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.WearFitCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.devices.WearfitX9UltraCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.magic_touch.MagicTouchJj02Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10Coordinator;
@@ -1273,6 +1275,7 @@ public enum DeviceType {
     FEMOMETER_VINCA2(FemometerVinca2DeviceCoordinator::new),
     PIXOO(PixooCoordinator::new),
     WEARFIT_HK8_PRO(WearFitCoordinator::new),
+    WEARFIT_X9_ULTRA(WearfitX9UltraCoordinator::new),
     HAMA_FIT6900(HamaFit6900DeviceCoordinator::new),
     XPLORA_XMOVE(XploraXmoveDeviceCoordinator::new),
     YAWELL_R05(YawellR05Coordinator::new),
@@ -1351,6 +1354,7 @@ public enum DeviceType {
     IGPSPORT_BSC200(IGPSportBSC200Coordinator::new),
     IGPSPORT_BSC200S(IGPSportBSC200SCoordinator::new),
     IGPSPORT_BSC300(IGPSportBSC300Coordinator::new),
+    IGPSPORT_BSC300T(IGPSportBSC300TCoordinator::new),
     IGPSPORT_BSC500(IGPSportBSC500Coordinator::new),
     IGPSPORT_IGS630(IGPSportiGS630Coordinator::new),
     IGPSPORT_IGS630S(IGPSportiGS630SCoordinator::new),

@@ -349,6 +349,7 @@ public class BluetoothNameTest extends TestBase {
             put("F8", DeviceType.F8SCALE); // #5748
             put("Stratos 4 Pro", DeviceType.ZEBLAZE_STRATOS_4_PRO); // #6884
             put("Stratos 4 Pro 2", null); // #6884
+            put("X9 UItra", DeviceType.WEARFIT_X9_ULTRA); // #3700
         }};
 
         for (Map.Entry<String, DeviceType> e : bluetoothNameToExpectedType.entrySet()) {
