@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.charts;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 
 import com.github.mikephil.charting.charts.Chart;
 
@@ -45,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
@@ -109,7 +110,7 @@ public class TrainingStatusDayFragment extends AbstractChartFragment<TrainingSta
         final Integer selected = report.getStatus();
         final int textColor = selected != null
                 ? TrainingStatus.color(requireContext(), selected)
-                : GBApplication.getSecondaryTextColor(requireContext());
+                : MaterialColors.getColor(requireContext(), R.attr.textColorSecondary, Color.GRAY);
         final String label = selected != null ? TrainingStatus.label(requireContext(), selected) : getString(R.string.no_data);
         iconView.setImageResource(selected != null ? TrainingStatus.icon(selected) : R.drawable.ic_help_outline);
         iconView.setImageTintList(ColorStateList.valueOf(textColor));
@@ -160,7 +161,7 @@ public class TrainingStatusDayFragment extends AbstractChartFragment<TrainingSta
             final TextView letter = new TextView(requireContext());
             letter.setText(dayOfWeek.getDisplayName(TextStyle.NARROW, locale));
             letter.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-            letter.setTextColor(selected ? GBApplication.getTextColor(requireContext()) : GBApplication.getSecondaryTextColor(requireContext()));
+            letter.setTextColor(MaterialColors.getColor(letter, selected ? R.attr.textColorPrimary : R.attr.textColorSecondary));
             letter.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
             final LinearLayout.LayoutParams letterParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             letterParams.topMargin = dp(5);
@@ -181,7 +182,7 @@ public class TrainingStatusDayFragment extends AbstractChartFragment<TrainingSta
         final GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(dp(6));
         if (status == null) {
-            drawable.setStroke(dp(1), ColorUtils.setAlphaComponent(GBApplication.getSecondaryTextColor(requireContext()), 0x60), dp(4), dp(3));
+            drawable.setStroke(dp(1), ColorUtils.setAlphaComponent(MaterialColors.getColor(requireContext(), R.attr.textColorSecondary, Color.GRAY), 0x60), dp(4), dp(3));
         } else {
             final int color = TrainingStatus.color(requireContext(), status);
             drawable.setColor(selected ? color : ColorUtils.setAlphaComponent(color, Math.round(0.45f * 255)));

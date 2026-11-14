@@ -1,9 +1,10 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.charts
 
 import android.content.Context
+import android.graphics.Color
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.load.LoadChartData
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData
@@ -15,7 +16,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.HrvSummarySample
 object TrainingStatTiles {
     @JvmStatic
     fun indicator(context: Context, value: String, label: String, indicatorText: String, @ColorRes colorRes: Int?): StatTileData {
-        val color = if (colorRes != null) ContextCompat.getColor(context, colorRes) else GBApplication.getSecondaryTextColor(context)
+        val color = if (colorRes != null) ContextCompat.getColor(context, colorRes) else MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY)
         return StatTileData(value, label, null, indicatorText, null, color)
     }
 

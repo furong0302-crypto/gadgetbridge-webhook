@@ -45,6 +45,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.DeviceSettingsSpec;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.BarcodeFormat;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.EcgDataProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.GarminBodyEnergySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.GarminSolarChargeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.GarminHeartRateRestingSampleProvider;
@@ -432,6 +433,17 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public boolean supportsHydration(@NonNull final GBDevice device) {
         return getPrefs(device).getBoolean(GarminPreferences.PREF_GARMIN_HYDRATION_SUPPORTED, false);
+    }
+
+    @Override
+    public boolean supportsEcgMeasurement(@NonNull final GBDevice device) {
+        return getPrefs(device).getBoolean(GarminPreferences.PREF_GARMIN_ECG_SUPPORTED, false);
+    }
+
+    @Nullable
+    @Override
+    public EcgDataProvider getEcgDataProvider(@NonNull final GBDevice device, @NonNull final DaoSession session) {
+        return new GarminEcgDataProvider(device, session);
     }
 
     public boolean supportsAgpsUpdates(final GBDevice device) {

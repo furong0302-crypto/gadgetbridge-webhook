@@ -39,6 +39,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.Dispatchers
@@ -656,7 +657,7 @@ class WorkoutDetailsFragment : Fragment(), MenuProvider {
 
                 val bitmap = createBitmap(width, height)
                 val canvas = Canvas(bitmap)
-                canvas.drawColor(GBApplication.getWindowBackgroundColor(requireContext()))
+                canvas.drawColor(MaterialColors.getColor(screenshotView, android.R.attr.colorBackground))
                 screenshotView.draw(canvas)
 
                 val fileName = FileUtils.makeValidFileName(

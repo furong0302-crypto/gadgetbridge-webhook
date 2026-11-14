@@ -46,10 +46,10 @@ public class AuthenticationHandler extends AbstractResponseHandler {
 
     // TODO: Save this somewhere if we actually decide to use te secret for more security:
     private final String secret = "2EM5zNP37QzM00hmP6BFTD92nG15XwNd";
-    private WithingsSteelHRDeviceSupport support;
+    private WithingsBaseDeviceSupport support;
     private Challenge challengeToSend;
 
-    public AuthenticationHandler(WithingsSteelHRDeviceSupport support) {
+    public AuthenticationHandler(WithingsBaseDeviceSupport support) {
         super(support);
         this.support = support;
     }

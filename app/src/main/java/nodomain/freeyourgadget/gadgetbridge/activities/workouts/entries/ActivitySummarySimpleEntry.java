@@ -27,7 +27,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import com.google.android.material.color.MaterialColors;
+
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.WorkoutValueFormatter;
 
 public class ActivitySummarySimpleEntry extends ActivitySummaryEntry {
@@ -72,7 +74,7 @@ public class ActivitySummarySimpleEntry extends ActivitySummaryEntry {
         valueTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         valueTextView.setTextSize(20);
         valueTextView.setText(workoutValueFormatter.formatTileValue(value, unit));
-        valueTextView.setTextColor(GBApplication.getTextColor(context));
+        valueTextView.setTextColor(MaterialColors.getColor(valueTextView, R.attr.textColorPrimary));
 
         // Label
         final TextView labelTextView = new TextView(context);

@@ -442,6 +442,17 @@ public interface DeviceCoordinator {
     boolean supportsHydration(@NonNull final GBDevice device);
 
     /**
+     * Returns true if the device supports ECG measurements.
+     */
+    boolean supportsEcgMeasurement(@NonNull final GBDevice device);
+
+    /**
+     * Returns the ECG data provider for the device, or null if the device does not provide ECG data.
+     */
+    @Nullable
+    EcgDataProvider getEcgDataProvider(@NonNull final GBDevice device, @NonNull final DaoSession session);
+
+    /**
      * Returns the sample provider for the device being supported.
      */
     @Nullable

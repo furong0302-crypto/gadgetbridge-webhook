@@ -55,6 +55,7 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:text="Activity Name"
+                    android:textColor="?attr/textColorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:lineHeight="22sp"

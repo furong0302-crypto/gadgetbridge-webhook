@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -178,7 +179,7 @@ class WorkoutTabOverviewFragment : Fragment(), WorkoutTabScreenshotProvider {
             gravity = Gravity.START
             setPaddingRelative(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(8))
             typeface = Typeface.DEFAULT_BOLD
-            setTextColor(GBApplication.getTextColor(context))
+            setTextColor(MaterialColors.getColor(this, R.attr.textColorPrimary))
             text = workoutValueFormatter.getStringResourceByName(groupKey)
         }
         binding.summaryDetails.addView(labelField)
@@ -219,7 +220,6 @@ class WorkoutTabOverviewFragment : Fragment(), WorkoutTabScreenshotProvider {
             // Activity name
             binding.activityname.apply {
                 text = activityName
-                setTextColor(GBApplication.getTextColor(context))
                 visibility = if (StringUtils.isBlank(activityName)) View.GONE else View.VISIBLE
             }
 

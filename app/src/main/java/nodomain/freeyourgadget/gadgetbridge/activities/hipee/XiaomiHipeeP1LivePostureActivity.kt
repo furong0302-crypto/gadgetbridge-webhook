@@ -27,6 +27,7 @@ import android.graphics.RectF
 import android.os.Bundle
 import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity
@@ -102,7 +103,6 @@ class XiaomiHipeeP1LivePostureActivity : AbstractGBActivity() {
         context: Context,
         private val reminderAngle: Float,
     ) : View(context) {
-        private val backgroundColor = GBApplication.getBackgroundColor(context)
         private val normalArcColor = 0xff4f6bed.toInt()
         private val warningArcColor = 0xffd32f2f.toInt()
         private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -117,7 +117,7 @@ class XiaomiHipeeP1LivePostureActivity : AbstractGBActivity() {
         private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             textAlign = Paint.Align.CENTER
             textSize = 52f
-            color = GBApplication.getTextColor(context)
+            color = MaterialColors.getColor(this@LivePostureView, R.attr.textColorPrimary)
         }
         private var angleDegrees = 0f
 
@@ -129,7 +129,6 @@ class XiaomiHipeeP1LivePostureActivity : AbstractGBActivity() {
 
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
-            canvas.drawColor(backgroundColor)
 
             val radius = min(width * 0.4f, height * 0.36f)
             val centerX = width / 2f

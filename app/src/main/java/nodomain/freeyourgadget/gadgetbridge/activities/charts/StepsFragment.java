@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -39,11 +39,10 @@ abstract class StepsFragment<T extends ChartsData> extends AbstractChartFragment
 
     @Override
     protected void init() {
-        TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
-        BACKGROUND_COLOR = GBApplication.getBackgroundColor(getContext());
-        DESCRIPTION_COLOR = GBApplication.getTextColor(getContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(getContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        TEXT_COLOR = DESCRIPTION_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = chartTheme.getSecondaryTextColor();
+        BACKGROUND_COLOR = chartTheme.getBackgroundColor();
     }
 
     protected List<StepsFragment.StepsDay> getMyStepsDaysData(DBHandler db, Calendar day, GBDevice device) {

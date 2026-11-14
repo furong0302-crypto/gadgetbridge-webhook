@@ -1,10 +1,11 @@
 package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.VO2MaxRanges
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.DeviceSettingsSpec
@@ -216,7 +217,7 @@ object Vo2MaxWidget : MetricWidget<Vo2MaxWidget.Data>() {
             xMax = (weeks.size - 1).toFloat(),
             yMin = yMin,
             yMax = yMax,
-            color = GBApplication.getTextColor(context),
+            color = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK),
             bands = bands,
         )
     }

@@ -29,6 +29,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.ChartSelection;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.GbChartView;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.steps.StepsPeriodChartData;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
@@ -111,11 +112,10 @@ public class StepsPeriodFragment extends StepsFragment<StepsPeriodFragment.Steps
 
     @Override
     protected void init() {
-        TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
-        BACKGROUND_COLOR = GBApplication.getBackgroundColor(getContext());
-        DESCRIPTION_COLOR = GBApplication.getTextColor(getContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(getContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        TEXT_COLOR = DESCRIPTION_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = chartTheme.getSecondaryTextColor();
+        BACKGROUND_COLOR = chartTheme.getBackgroundColor();
     }
 
     @Override

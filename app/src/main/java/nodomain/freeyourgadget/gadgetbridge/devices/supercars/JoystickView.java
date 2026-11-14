@@ -15,7 +15,6 @@ import android.view.View;
 
 import com.google.android.material.color.MaterialColors;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 
 public class JoystickView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
@@ -61,7 +60,7 @@ public class JoystickView extends SurfaceView implements SurfaceHolder.Callback,
         if (getHolder().getSurface().isValid()) {
             Canvas myCanvas = this.getHolder().lockCanvas();
             Paint colors = new Paint();
-            myCanvas.drawColor(GBApplication.getWindowBackgroundColor(getContext()));
+            myCanvas.drawColor(MaterialColors.getColor(this, android.R.attr.colorBackground));
 
             float hypotenuse = (float) Math.sqrt(Math.pow(newX - centerX, 2) + Math.pow(newY - centerY, 2));
             float sin = (newY - centerY) / hypotenuse; //sin = o/h

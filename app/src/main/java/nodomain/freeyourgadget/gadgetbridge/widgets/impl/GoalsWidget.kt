@@ -195,7 +195,7 @@ object GoalsWidget : GBWidget<GoalsWidget.Data> {
         text.setSpan(TypefaceSpan("sans-serif-medium"), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         val start = text.length
         text.append(context.getString(R.string.widget_value_target, target))
-        text.setSpan(ForegroundColorSpan(GBApplication.getSecondaryTextColor(context)), start, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text.setSpan(ForegroundColorSpan(MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY)), start, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         return text
     }
 

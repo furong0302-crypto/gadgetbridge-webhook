@@ -71,6 +71,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.workouts.entries.Activity
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.databinding.FragmentSleepchartBinding;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
@@ -139,6 +140,8 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
 
         final SleepStagesChartData.Overlay overlay = samples.isEmpty() ? null : buildOverlay(db, device, samples, stageSamples, hrData);
 
+        final float spo2Average = calculateSpo2Average(db, device, sleepSessions, samples);
+
         final DeviceChartsProvider chartsProvider = device.getDeviceCoordinator().getChartsProvider();
         final Map<String, ActivitySummarySimpleEntry> customStats = chartsProvider.getDailySleepStats(requireContext(), db, device, getTSStart(), getTSEnd());
 
@@ -148,12 +151,54 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
                 hrData.getLeft(),
                 hrData.getMiddle(),
                 hrData.getRight(),
+                spo2Average,
                 intensityData.getLeft(),
                 intensityData.getMiddle(),
                 intensityData.getRight(),
                 overlay,
                 customStats
         );
+    }
+
+    private float calculateSpo2Average(final DBHandler db,
+                                       final GBDevice device,
+                                       final List<SleepSession> sleepSessions,
+                                       final List<? extends ActivitySample> samples) {
+        if (!supportsSpO2(device)) {
+            return 0f;
+        }
+
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
+        final TimeSampleProvider<? extends Spo2Sample> provider = coordinator.getSpo2SampleProvider(device, db.getDaoSession());
+        if (provider == null) {
+            return 0f;
+        }
+
+        final long tsStart;
+        final long tsEnd;
+        if (!sleepSessions.isEmpty()) {
+            tsStart = sleepSessions.get(0).getStartTime();
+            tsEnd = sleepSessions.get(sleepSessions.size() - 1).getEndTime();
+        } else if (!samples.isEmpty()) {
+            tsStart = samples.get(0).getTimestamp() * 1000L;
+            tsEnd = samples.get(samples.size() - 1).getTimestamp() * 1000L;
+        } else {
+            return 0f;
+        }
+
+        final Accumulator accumulator = new Accumulator();
+        for (final Spo2Sample sample : provider.getAllSamples(tsStart, tsEnd)) {
+            final int spo2 = sample.getSpo2();
+            if (spo2 > 0 && spo2 <= 100) {
+                accumulator.add(spo2);
+            }
+        }
+
+        if (accumulator.getCount() == 0) {
+            return 0f;
+        }
+
+        return (float) accumulator.getAverage();
     }
 
     private SleepStagesChartData.Overlay buildOverlay(final DBHandler db, final GBDevice device,
@@ -354,6 +399,14 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
             stats.add(new StatTileData(
                     heartRateAvg > 0 ? workoutValueFormatter.formatValue(heartRateAvg, UNIT_BPM) : getString(R.string.stats_empty_value),
                     getString(R.string.averageHR)
+            ));
+        }
+
+        if (supportsSpO2(getChartsHost().getDevice())) {
+            final int spo2Avg = Math.round(mcd.getSpo2Average());
+            stats.add(new StatTileData(
+                    spo2Avg > 0 ? workoutValueFormatter.formatValue(spo2Avg, UNIT_PERCENTAGE) : getString(R.string.stats_empty_value),
+                    getString(R.string.charts_legend_spo2_average)
             ));
         }
 
@@ -637,6 +690,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
         private final float heartRateAverage;
         private final int heartRateAxisMax;
         private final int heartRateAxisMin;
+        private final float spo2Average;
         private final float intensityAxisMax;
         private final float intensityAxisMin;
         private final float intensityTotal;
@@ -650,6 +704,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
                             float heartRateAverage,
                             int heartRateAxisMin,
                             int heartRateAxisMax,
+                            float spo2Average,
                             float intensityTotal,
                             float intensityAxisMin,
                             float intensityAxisMax,
@@ -660,6 +715,7 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
             this.heartRateAverage = heartRateAverage;
             this.heartRateAxisMax = heartRateAxisMax;
             this.heartRateAxisMin = heartRateAxisMin;
+            this.spo2Average = spo2Average;
             this.intensityTotal = intensityTotal;
             this.intensityAxisMin = intensityAxisMin;
             this.intensityAxisMax = intensityAxisMax;
@@ -685,6 +741,10 @@ public class SleepDailyFragment extends SleepFragment<SleepDailyFragment.MyChart
 
         public int getHeartRateAxisMin() {
             return heartRateAxisMin;
+        }
+
+        public float getSpo2Average() {
+            return spo2Average;
         }
 
         public float getIntensityAxisMax() {

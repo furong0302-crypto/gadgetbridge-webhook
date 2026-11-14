@@ -1,8 +1,9 @@
 package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
+import android.graphics.Color
 import androidx.core.content.ContextCompat
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.StressFragment
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.TrainingReadinessReport
@@ -142,7 +143,7 @@ object TrainingReadinessWidget : MetricWidget<TrainingReadinessWidget.Data>() {
      * HRV status, acute load, sleep, recovery, sleep over 3 nights and stress over 3 days, skipping missing ones.
      */
     internal fun factors(context: Context, report: TrainingReadinessReport): List<LegendRow> {
-        val neutral = GBApplication.getSecondaryTextColor(context)
+        val neutral = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY)
         fun color(res: Int) = ContextCompat.getColor(context, res)
         fun sleepColor(score: Int) = color(
             when {

@@ -1873,6 +1873,7 @@
     <string-array name="pref_withings_steel_activity_types">
         <item>@string/activity_type_outdoor_running</item>
         <item>@string/activity_type_hiking</item>
+        <item>@string/activity_type_bmx</item>
         <item>@string/activity_type_biking</item>
         <item>@string/activity_type_swimming</item>
         <item>@string/activity_type_surfing</item>
@@ -1887,6 +1888,7 @@
         <item>@string/activity_type_football</item>
         <item>@string/activity_type_rugby</item>
         <item>@string/activity_type_volleyball</item>
+        <item>@string/activity_type_water_polo</item>
         <item>@string/activity_type_baseball</item>
         <item>@string/activity_type_handball</item>
         <item>@string/activity_type_golf</item>
@@ -1898,6 +1900,9 @@
         <item>@string/activity_type_zumba</item>
         <item>@string/activity_type_weightlifting</item>
         <item>@string/activity_type_boxing</item>
+        <item>@string/activity_type_fencing</item>
+        <item>@string/activity_type_wrestling</item>
+        <item>@string/activity_type_martial_arts</item>
         <item>@string/activity_type_skiing</item>
         <item>@string/activity_type_snowboarding</item>
         <item>@string/activity_type_rowing_machine</item>
@@ -1905,6 +1910,55 @@
         <item>@string/activity_type_icehockey</item>
         <item>@string/activity_type_climbing</item>
         <item>@string/activity_type_iceskating</item>
+        <item>@string/activity_type_indoor_walking</item>
+        <item>@string/activity_type_indoor_running</item>
+        <item>@string/activity_type_indoor_cycling</item>
+        <item>@string/activity_type_stand_up_paddleboarding</item>
+        <item>@string/activity_type_padel</item>
+        <item>@string/activity_type_video_gaming</item>
+        <item>@string/activity_type_stair_stepper</item>
+        <item>@string/activity_type_skateboarding</item>
+        <item>@string/activity_type_parkour</item>
+        <item>@string/activity_type_kayaking</item>
+        <item>@string/activity_type_canoeing</item>
+        <item>@string/activity_type_fishing</item>
+        <item>@string/activity_type_trail_run</item>
+        <item>@string/activity_type_snowshoe</item>
+        <item>@string/activity_type_archery</item>
+        <item>@string/activity_type_biathlon</item>
+        <item>@string/activity_type_bocce</item>
+        <item>@string/activity_type_paragliding</item>
+        <item>@string/activity_type_frisbee</item>
+        <item>@string/activity_type_sky_diving</item>
+        <item>@string/activity_type_pickleball</item>
+        <item>@string/activity_type_dodgeball</item>
+        <item>@string/activity_type_ultimate_disc</item>
+        <item>@string/activity_type_push_run_speed</item>
+        <item>@string/activity_type_push_walk_speed</item>
+        <item>@string/activity_type_track_and_field</item>
+        <item>@string/activity_type_shooting</item>
+        <item>@string/activity_type_triathlon</item>
+        <item>@string/activity_type_mountain_bike</item>
+        <item>@string/activity_type_gravel_bike</item>
+        <item>@string/activity_type_e_bike</item>
+        <item>@string/activity_type_e_mountain_bike</item>
+        <item>@string/activity_type_cross_country_skiing</item>
+        <item>@string/activity_type_racquetball</item>
+        <item>@string/activity_type_muay_thai</item>
+        <item>@string/activity_type_taekwondo</item>
+        <item>@string/activity_type_judo</item>
+        <item>@string/activity_type_trampoline</item>
+        <item>@string/activity_type_breaking</item>
+        <item>@string/activity_type_crossfit</item>
+        <item>@string/activity_type_spinning</item>
+        <item>@string/activity_type_cricket</item>
+        <item>@string/activity_type_hiit</item>
+        <item>@string/activity_type_meditation</item>
+        <item>@string/activity_type_stretching</item>
+        <item>@string/activity_type_lacrosse</item>
+        <item>@string/activity_type_breathwork</item>
+        <item>@string/activity_type_bowling</item>
+        <item>@string/activity_type_laser_tag</item>
         <item>@string/activity_type_riding</item>
         <item>@string/activity_type_other</item>
     </string-array>
@@ -1912,6 +1966,7 @@
     <string-array name="pref_withings_steel_activity_types_values">
         <item>running</item>
         <item>hiking</item>
+        <item>bmx</item>
         <item>biking</item>
         <item>swimming</item>
         <item>surfing</item>
@@ -1926,6 +1981,7 @@
         <item>football</item>
         <item>rugby</item>
         <item>volleyball</item>
+        <item>water_polo</item>
         <item>baseball</item>
         <item>handball</item>
         <item>golf</item>
@@ -1937,6 +1993,9 @@
         <item>zumba</item>
         <item>weightlifting</item>
         <item>boxing</item>
+        <item>fencing</item>
+        <item>wrestling</item>
+        <item>martial_arts</item>
         <item>skiing</item>
         <item>snowboarding</item>
         <item>rowing_machine</item>
@@ -1944,6 +2003,55 @@
         <item>icehockey</item>
         <item>climbing</item>
         <item>iceskating</item>
+        <item>indoor_walking</item>
+        <item>indoor_running</item>
+        <item>indoor_cycling</item>
+        <item>paddleboarding</item>
+        <item>padel</item>
+        <item>gaming</item>
+        <item>stair_stepper</item>
+        <item>skateboarding</item>
+        <item>parkour</item>
+        <item>kayaking</item>
+        <item>canoeing</item>
+        <item>fishing</item>
+        <item>trail_running</item>
+        <item>snowshoeing</item>
+        <item>archery</item>
+        <item>biathlon</item>
+        <item>bocce</item>
+        <item>paragliding</item>
+        <item>frisbee</item>
+        <item>skydiving</item>
+        <item>pickleball</item>
+        <item>dodgeball</item>
+        <item>ultimate</item>
+        <item>pushing_wheelchair_fast</item>
+        <item>pushing_wheelchair_regular</item>
+        <item>track_and_field</item>
+        <item>sport_shooting</item>
+        <item>triathlon</item>
+        <item>mountain_biking</item>
+        <item>gravel_biking</item>
+        <item>e_biking</item>
+        <item>e_mountain_biking</item>
+        <item>nordic_skiing</item>
+        <item>racquetball</item>
+        <item>muay_thai</item>
+        <item>taekwondo</item>
+        <item>judo</item>
+        <item>trampoline</item>
+        <item>breaking</item>
+        <item>crossfit</item>
+        <item>spin_class</item>
+        <item>cricket</item>
+        <item>hiit</item>
+        <item>meditation</item>
+        <item>stretching</item>
+        <item>lacrosse</item>
+        <item>breathing_exercises</item>
+        <item>bowling</item>
+        <item>laser_tag</item>
         <item>riding</item>
         <item>other</item>
     </string-array>
@@ -1955,6 +2063,149 @@
         <item>swimming</item>
         <item>climbing</item>
         <item>other</item>
+    </string-array>
+
+    <!-- Withings ScanWatch screen list (drag-to-reorder) -->
+    <string-array name="pref_withings_scanwatch_screens">
+        <item>@string/watchface_widget_type_date</item>
+        <item>@string/menuitem_sleep</item>
+        <item>@string/pref_screen_ecg</item>
+        <item>@string/Elevation</item>
+        <item>@string/heart_rate</item>
+        <item>@string/menuitem_spo2</item>
+        <item>@string/calories</item>
+        <item>@string/menuitem_settings</item>
+        <item>@string/bottom_nav_workouts</item>
+        <item>@string/distance</item>
+        <item>@string/watchface_widget_type_steps</item>
+        <item>@string/menuitem_breathing</item>
+        <item>@string/clock</item>
+    </string-array>
+
+    <string-array name="pref_withings_scanwatch_screens_values">
+        <item>date</item>
+        <item>sleep</item>
+        <item>ecg</item>
+        <item>elevation</item>
+        <item>heart_rate</item>
+        <item>spo2</item>
+        <item>calories</item>
+        <item>settings</item>
+        <item>workouts</item>
+        <item>distance</item>
+        <item>steps</item>
+        <item>breathe</item>
+        <item>clock</item>
+    </string-array>
+
+    <!-- Default order: all 13 screens enabled in the confirmed app order -->
+    <string-array name="pref_withings_scanwatch_screens_default">
+        <item>date</item>
+        <item>sleep</item>
+        <item>ecg</item>
+        <item>elevation</item>
+        <item>heart_rate</item>
+        <item>spo2</item>
+        <item>calories</item>
+        <item>settings</item>
+        <item>workouts</item>
+        <item>distance</item>
+        <item>steps</item>
+        <item>breathe</item>
+        <item>clock</item>
+    </string-array>
+
+    <!-- Long-press crown shortcut options.
+         ECG (1) and SpO2 (2) require the user to have accepted the health terms & conditions
+         in the Withings app before they can be activated via BLE - see ShortcutAction. -->
+    <string-array name="pref_withings_scanwatch_shortcut_entries">
+        <item>@string/none</item>
+        <item>@string/withings_scanwatch_shortcut_ecg</item>
+        <item>@string/withings_scanwatch_shortcut_spo2</item>
+        <item>@string/withings_scanwatch_shortcut_workout_start</item>
+        <item>@string/withings_scanwatch_shortcut_workout_selection</item>
+        <item>@string/menuitem_breathing</item>
+        <item>@string/hr_appname_stopwatch</item>
+        <item>@string/pref_casio_mode_carousel_timer</item>
+        <item>@string/mi2_prefs_do_not_disturb</item>
+        <item>@string/withings_scanwatch_pref_quicklook_title</item>
+    </string-array>
+    <!-- Values are the string representations of the action bytes (0-9).
+         10 = FINDMYPHONE and 11 = FLASHLIGHT are intentionally omitted (unsupported). -->
+    <string-array name="pref_withings_scanwatch_shortcut_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
+
+    <string-array name="pref_withings_scanwatch_respiratory_scan_entries">
+        <item>@string/off</item>
+        <item>@string/withings_scanwatch_pref_respiratory_scan_automatic</item>
+        <item>@string/withings_scanwatch_pref_respiratory_scan_always</item>
+    </string-array>
+    <string-array name="pref_withings_scanwatch_respiratory_scan_values">
+        <item>off</item>
+        <item>automatic</item>
+        <item>always</item>
+    </string-array>
+
+    <string-array name="pref_withings_scanwatch_spo2_mode_entries">
+        <item>@string/withings_scanwatch_pref_spo2_mode_on_demand</item>
+        <item>@string/withings_scanwatch_pref_spo2_mode_sleep</item>
+    </string-array>
+    <string-array name="pref_withings_scanwatch_spo2_mode_values">
+        <item>on_demand</item>
+        <item>sleep</item>
+    </string-array>
+
+    <string-array name="pref_withings_scanwatch_hr_alert_mode_entries">
+        <item>@string/off</item>
+        <item>@string/withings_scanwatch_pref_hr_alert_automatic</item>
+        <item>@string/withings_scanwatch_pref_hr_alert_custom</item>
+    </string-array>
+    <string-array name="pref_withings_scanwatch_hr_alert_mode_values">
+        <item>off</item>
+        <item>automatic</item>
+        <item>custom</item>
+    </string-array>
+
+    <string-array name="pref_withings_scanwatch_hr_alert_low_entries">
+        <item>@string/heartrate_bpm_35</item>
+        <item>@string/heartrate_bpm_40</item>
+        <item>@string/heartrate_bpm_45</item>
+        <item>@string/heartrate_bpm_50</item>
+        <item>@string/heartrate_bpm_55</item>
+    </string-array>
+    <string-array name="pref_withings_scanwatch_hr_alert_low_values">
+        <item>35</item>
+        <item>40</item>
+        <item>45</item>
+        <item>50</item>
+        <item>55</item>
+    </string-array>
+
+    <string-array name="pref_withings_scanwatch_hr_alert_high_entries">
+        <item>@string/heartrate_bpm_100</item>
+        <item>@string/heartrate_bpm_110</item>
+        <item>@string/heartrate_bpm_120</item>
+        <item>@string/heartrate_bpm_130</item>
+        <item>@string/heartrate_bpm_140</item>
+        <item>@string/heartrate_bpm_150</item>
+    </string-array>
+    <string-array name="pref_withings_scanwatch_hr_alert_high_values">
+        <item>100</item>
+        <item>110</item>
+        <item>120</item>
+        <item>130</item>
+        <item>140</item>
+        <item>150</item>
     </string-array>
 
     <string-array name="pref_neo_display_items">

@@ -22,6 +22,13 @@ public class TypeVersion extends WithingsStructure {
 
     private byte version = 0x01;
 
+    public TypeVersion() {
+    }
+
+    public TypeVersion(byte version) {
+        this.version = version;
+    }
+
     @Override
     public short getLength() {
         return 5;

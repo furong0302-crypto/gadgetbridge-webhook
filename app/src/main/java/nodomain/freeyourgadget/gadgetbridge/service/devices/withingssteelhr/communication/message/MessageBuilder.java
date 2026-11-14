@@ -24,28 +24,37 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsBaseDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class MessageBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageBuilder.class);
-    private WithingsSteelHRDeviceSupport support;
+    private WithingsBaseDeviceSupport support;
     private MessageFactory messageFactory;
     private ByteArrayOutputStream pendingMessage;
     private Message message;
 
-    public MessageBuilder(WithingsSteelHRDeviceSupport support, MessageFactory messageFactory) {
+    public MessageBuilder(WithingsBaseDeviceSupport support, MessageFactory messageFactory) {
         this.support = support;
         this.messageFactory = messageFactory;
     }
 
     public synchronized boolean buildMessage(byte[] rawData) {
-        if (pendingMessage == null && rawData[0] == 0x01) {
-            pendingMessage = new ByteArrayOutputStream();
-        } else if (pendingMessage == null) {
+        if (rawData == null || rawData.length == 0) {
             return false;
         }
+
+        if (rawData[0] == 0x01 && !hasPendingIncompleteMessage()) {
+            // First byte is 0x01 (version) and no incomplete message is pending:
+            // this is the start of a new WPP message.
+            pendingMessage = new ByteArrayOutputStream();
+        } else if (pendingMessage == null) {
+            logger.warn("Received continuation fragment without a pending message header -- discarding {} bytes", rawData.length);
+            return false;
+        }
+        // Otherwise: we have a pending incomplete message, so this chunk is a
+        // continuation fragment even if its first byte happens to be 0x01.
 
         try {
             pendingMessage.write(rawData);
@@ -71,6 +80,37 @@ public class MessageBuilder {
 
     public Message getMessage() {
         return message;
+    }
+
+    /**
+     * Returns true when a multi-fragment message is being accumulated and
+     * the declared payload length has NOT yet been reached.  In that case an
+     * incoming chunk whose first byte happens to be 0x01 must be treated as a
+     * continuation fragment, not as a new message header.
+     *
+     * Safety: if the accumulated data already exceeds the declared length
+     * (corrupt header / missed fragment), we consider it stale so the caller
+     * can start a fresh message.
+     */
+    private boolean hasPendingIncompleteMessage() {
+        if (pendingMessage == null) {
+            return false;
+        }
+        byte[] accumulated = pendingMessage.toByteArray();
+        if (accumulated.length < 5) {
+            // Still accumulating the header itself.
+            return true;
+        }
+        short totalDataLength = (short) BLETypeConversions.toInt16(accumulated[4], accumulated[3]);
+        int dataReceived = accumulated.length - 5;
+        if (dataReceived >= totalDataLength) {
+            // Already have enough (or too many) bytes -- treat as stale.
+            logger.warn("Pending message has {} data bytes but declared {}; treating as stale",
+                    dataReceived, totalDataLength);
+            pendingMessage = null;
+            return false;
+        }
+        return true;
     }
 
     private boolean isMessageComplete(byte[] messageData) {

@@ -2,6 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.Gravity
@@ -15,7 +16,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import com.google.android.material.color.MaterialColors
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.TrainingStatTiles
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.TrainingStatusReport
@@ -177,7 +177,7 @@ object TrainingStatusWidget : GBWidget<TrainingStatusWidget.Data> {
         val report = data.report
         val days = report?.days ?: arrayOfNulls<Int>(DAYS)
         val status = days.last()
-        val color = if (status != null) TrainingStatus.color(context, status) else GBApplication.getSecondaryTextColor(context)
+        val color = if (status != null) TrainingStatus.color(context, status) else MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY)
         val name = if (status != null) TrainingStatus.label(context, status) else context.getString(R.string.no_data)
         val range = report?.rangeText(context)
 

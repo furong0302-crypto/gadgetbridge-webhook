@@ -5,23 +5,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Mode toggle: App dial vs Watch crown -->
+    <RadioGroup
+        android:id="@+id/withings_calibration_mode_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp">
+
+        <RadioButton
+            android:id="@+id/withings_calibration_mode_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/withings_calibration_mode_app"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/withings_calibration_mode_crown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="@string/withings_calibration_mode_crown" />
+    </RadioGroup>
+
     <TextView
         android:id="@+id/withings_calibration_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/withings_calibration_mode_group"
         android:padding="30dp"
         android:text="@string/withings_calibration_text_hours"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <!-- App dial mode: RotaryControl -->
     <nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.RotaryControl
         android:id="@+id/rotary_control"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/withings_calibration_textview"
+        android:layout_above="@id/withings_calibration_button_previous"
         android:padding="30dp"
         rotaryControl:controlpoint_color="?attr/accent_color"
         rotaryControl:controlpoint_size="20dp"
         rotaryControl:line_color="@color/design_default_color_on_secondary"
         rotaryControl:line_thickness="10dp" />
+
+    <!-- Crown mode: Confirm button (hidden by default) -->
+    <Button
+        android:id="@+id/withings_calibration_button_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="24dp"
+        android:text="@string/withings_calibration_confirm"
+        android:textSize="18sp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/withings_calibration_button_previous"

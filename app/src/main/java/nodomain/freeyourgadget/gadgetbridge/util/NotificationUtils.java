@@ -22,7 +22,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -119,6 +121,77 @@ public class NotificationUtils {
 
             return null;
         }
+    }
+
+    /**
+     * Get the icon for a notification: the notification's own small icon if it can be loaded,
+     * otherwise the icon of the source app. Apps that are only installed in another profile
+     * (e.g. the work profile) are looked up in that profile.
+     */
+    @Nullable
+    public static Drawable getNotificationIcon(final Context context, final NotificationSpec notificationSpec) {
+        if (notificationSpec.getIconId() != 0 && notificationSpec.getIconPackageId() != null) {
+            final Drawable icon = getPackageDrawable(context, notificationSpec.getIconPackageId(), notificationSpec.getIconId());
+            if (icon != null) {
+                return icon;
+            }
+        }
+
+        if (notificationSpec.getSourceAppId() == null) {
+            return null;
+        }
+
+        return getAppIcon(context, notificationSpec.getSourceAppId());
+    }
+
+    /**
+     * Load a drawable from another package's resources. If the package is not installed in the
+     * current profile, look for it in the other profiles of this user (e.g. the work profile).
+     */
+    @Nullable
+    private static Drawable getPackageDrawable(final Context context, final String packageName, final int resourceId) {
+        try {
+            final Context packageContext = context.createPackageContext(packageName, 0);
+            return ResourcesCompat.getDrawable(packageContext.getResources(), resourceId, null);
+        } catch (final PackageManager.NameNotFoundException e) {
+            // Not installed in the current profile - try the other profiles below
+        } catch (final Exception e) {
+            LOG.debug("Failed to load drawable {} from {}: {}", resourceId, packageName, e.getMessage());
+            return null;
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return null;
+        }
+
+        try {
+            final LauncherApps launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            final UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+            final UserHandle currentUser = Process.myUserHandle();
+            for (final UserHandle userHandle : userManager.getUserProfiles()) {
+                if (userHandle.equals(currentUser)) {
+                    continue;
+                }
+                try {
+                    final ApplicationInfo applicationInfo = launcherApps.getApplicationInfo(packageName, 0, userHandle);
+                    if (applicationInfo == null) {
+                        continue;
+                    }
+                    final Resources resources = context.getPackageManager().getResourcesForApplication(applicationInfo);
+                    final Drawable drawable = ResourcesCompat.getDrawable(resources, resourceId, null);
+                    if (drawable != null) {
+                        LOG.debug("Loaded drawable {} from {} in profile {}", resourceId, packageName, userHandle);
+                        return drawable;
+                    }
+                } catch (final Exception e) {
+                    LOG.debug("Failed to load drawable {} from {} in profile {}: {}", resourceId, packageName, userHandle, e.getMessage());
+                }
+            }
+        } catch (final Exception e) {
+            LOG.warn("Error while searching other profiles for {}", packageName, e);
+        }
+
+        return null;
     }
 
     @Nullable

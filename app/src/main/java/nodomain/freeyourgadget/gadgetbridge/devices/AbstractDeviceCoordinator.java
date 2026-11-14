@@ -868,6 +868,7 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
             supportsWeightMeasurement(device) ||
             supportsPointAltitudeMeasurement(device) ||
             supportsHydration(device) ||
+            supportsEcgMeasurement(device) ||
             supportsActiveCalories(device) ||
             supportsCyclingData(device) ||
             supportsRespiratoryRate(device) ||
@@ -896,6 +897,17 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     @Override
     public boolean supportsGlucoseMeasurement(@NonNull final GBDevice device) {
         return false;
+    }
+
+    @Override
+    public boolean supportsEcgMeasurement(@NonNull final GBDevice device) {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public EcgDataProvider getEcgDataProvider(@NonNull final GBDevice device, @NonNull final DaoSession session) {
+        return null;
     }
 
     @Override

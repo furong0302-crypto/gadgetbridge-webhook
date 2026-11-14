@@ -20,6 +20,8 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.BoundingBox;
@@ -80,7 +82,7 @@ public final class MapsManager {
             tileRendererLayer = null;
         }
 
-        mapView.getModel().displayModel.setBackgroundColor(GBApplication.getWindowBackgroundColor(mapView.getContext()));
+        mapView.getModel().displayModel.setBackgroundColor(MaterialColors.getColor(mapView, android.R.attr.colorBackground));
 
         isMapLoaded = false;
 

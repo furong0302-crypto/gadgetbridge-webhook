@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -41,13 +42,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -246,7 +248,7 @@ public class QHybridNotificationsConfigActivity extends AbstractGBActivity {
             Canvas c = new Canvas(bitmap);
 
             Paint black = new Paint();
-            black.setColor(GBApplication.getTextColor(getContext()));
+            black.setColor(MaterialColors.getColor(getContext(), R.attr.textColorPrimary, Color.BLACK));
             black.setStyle(Paint.Style.STROKE);
             black.setStrokeWidth(5);
 

@@ -23,8 +23,15 @@ public class AlarmName extends WithingsStructure {
 
     private String name;
 
+    /** No-arg constructor required by {@link DataStructureFactory}. */
+    public AlarmName() {}
+
     public AlarmName(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -35,6 +42,13 @@ public class AlarmName extends WithingsStructure {
     @Override
     protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
         addStringAsBytesWithLengthByte(rawDataBuffer, name);
+    }
+
+    @Override
+    protected void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        if (rawDataBuffer.remaining() >= 1) {
+            name = getNextString(rawDataBuffer);
+        }
     }
 
     @Override

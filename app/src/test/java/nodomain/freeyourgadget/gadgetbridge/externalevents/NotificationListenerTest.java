@@ -3,9 +3,14 @@ package nodomain.freeyourgadget.gadgetbridge.externalevents;
 import android.app.Notification;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import android.os.Bundle;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.Person;
 
 import org.junit.Test;
 import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import java.time.LocalTime;
 
@@ -75,6 +80,67 @@ public class NotificationListenerTest extends TestBase {
             /* start= */ LocalTime.of(20, 0),
             /* end= */ LocalTime.of(7, 0)
         ));
+    }
+
+    @Test
+    public void dissectNotificationTo_preservesStandardFieldsAndExtractsConversationMetadata() {
+        final NotificationListener listener = new NotificationListener();
+        final NotificationSpec spec = new NotificationSpec();
+
+        final Person sender = new Person.Builder().setName("Alice").build();
+        final Person user = new Person.Builder().setName("Me").build();
+        final Notification notification = new NotificationCompat.Builder(getContext(), "test")
+                .setContentTitle("Fallback title")
+                .setContentText("Fallback body")
+                .setStyle(new NotificationCompat.MessagingStyle(user)
+                        .setConversationTitle("Family Group")
+                        .addMessage("Latest message", System.currentTimeMillis(), sender))
+                .build();
+        final Bundle notificationExtras = NotificationCompat.getExtras(notification);
+        final String standardTitle = notificationExtras.getCharSequence(Notification.EXTRA_TITLE).toString();
+        final String standardBody = notificationExtras.getCharSequence(Notification.EXTRA_TEXT).toString();
+
+        ReflectionHelpers.callInstanceMethod(
+                listener,
+                "dissectNotificationTo",
+                ClassParameter.from(Notification.class, notification),
+                ClassParameter.from(NotificationSpec.class, spec),
+                ClassParameter.from(boolean.class, true)
+        );
+
+        assertEquals(standardTitle, spec.getTitle());
+        assertEquals(standardBody, spec.getBody());
+        assertEquals("Family Group", spec.getConversationTitle());
+        assertEquals("Alice", spec.getConversationSender());
+        assertEquals("Latest message", spec.getConversationBody());
+    }
+
+    @Test
+    public void dissectNotificationTo_extractsConversationMetadataWithoutSenderOverride() {
+        final NotificationListener listener = new NotificationListener();
+        final NotificationSpec spec = new NotificationSpec();
+
+        final Bundle extras = new Bundle();
+        extras.putCharSequence(NotificationCompat.EXTRA_CONVERSATION_TITLE, "Chat Room");
+        final Notification notification = new NotificationCompat.Builder(getContext(), "test")
+                .setExtras(extras)
+                .setStyle(new NotificationCompat.MessagingStyle(new Person.Builder().setName("Me").build())
+                        .setConversationTitle("Chat Room")
+                        .addMessage("Body text", System.currentTimeMillis(), new Person.Builder().setName("Bob").build()))
+                .build();
+
+        ReflectionHelpers.callInstanceMethod(
+                listener,
+                "dissectNotificationTo",
+                ClassParameter.from(Notification.class, notification),
+                ClassParameter.from(NotificationSpec.class, spec),
+                ClassParameter.from(boolean.class, true)
+        );
+
+        assertEquals("Chat Room", spec.getConversationTitle());
+        assertEquals("Bob", spec.getConversationSender());
+        assertEquals("Body text", spec.getConversationBody());
+        assertEquals(null, spec.getSender());
     }
 
     @Test

@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
@@ -24,8 +24,9 @@ abstract class HydrationFragment<T extends ChartsData> extends AbstractChartFrag
 
     @Override
     protected void init() {
-        TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        TEXT_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = chartTheme.getSecondaryTextColor();
     }
 
     @Override

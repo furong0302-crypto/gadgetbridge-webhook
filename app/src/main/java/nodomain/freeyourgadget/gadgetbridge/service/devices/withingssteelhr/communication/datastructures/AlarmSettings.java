@@ -27,6 +27,39 @@ public class AlarmSettings extends WithingsStructure {
     private short year;
     private short smartWakeupMinutes;
 
+    /** No-arg constructor required by {@link DataStructureFactory}. */
+    public AlarmSettings() {}
+
+    /**
+     * Returns whether this alarm is enabled (bit 7 of dayOfWeek flags).
+     */
+    public boolean isEnabled() {
+        return (dayOfWeek & 0x80) != 0;
+    }
+
+    /**
+     * Returns the repetition bitmask in Gadgetbridge format (MON=1..SUN=64),
+     * extracted from the Withings flags byte (bits 0-6).
+     * Returns 0 (ALARM_ONCE) if no day bits are set (one-time alarm).
+     */
+    public int getRepetitionMask() {
+        int gbRepetition = 0;
+        // Withings: bit0=Sun, bit1=Mon, bit2=Tue, bit3=Wed, bit4=Thu, bit5=Fri, bit6=Sat
+        // GB:       SUN=64, MON=1, TUE=2, WED=4, THU=8, FRI=16, SAT=32
+        if ((dayOfWeek & 0x01) != 0) gbRepetition |= 64;  // Sun
+        if ((dayOfWeek & 0x02) != 0) gbRepetition |= 1;   // Mon
+        if ((dayOfWeek & 0x04) != 0) gbRepetition |= 2;   // Tue
+        if ((dayOfWeek & 0x08) != 0) gbRepetition |= 4;   // Wed
+        if ((dayOfWeek & 0x10) != 0) gbRepetition |= 8;   // Thu
+        if ((dayOfWeek & 0x20) != 0) gbRepetition |= 16;  // Fri
+        if ((dayOfWeek & 0x40) != 0) gbRepetition |= 32;  // Sat
+        return gbRepetition;
+    }
+
+    public short getSmartWakeupMinutes() {
+        return smartWakeupMinutes;
+    }
+
     public short getHour() {
         return hour;
     }
@@ -102,6 +135,19 @@ public class AlarmSettings extends WithingsStructure {
     @Override
     public short getType() {
         return WithingsStructureType.ALARM;
+    }
+
+    @Override
+    protected void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        if (rawDataBuffer.remaining() >= 7) {
+            hour = (short) (rawDataBuffer.get() & 0xFF);
+            minute = (short) (rawDataBuffer.get() & 0xFF);
+            dayOfWeek = (short) (rawDataBuffer.get() & 0xFF);
+            dayOfMonth = (short) (rawDataBuffer.get() & 0xFF);
+            month = (short) (rawDataBuffer.get() & 0xFF);
+            year = (short) (rawDataBuffer.get() & 0xFF);
+            smartWakeupMinutes = (short) (rawDataBuffer.get() & 0xFF);
+        }
     }
 
     @Override

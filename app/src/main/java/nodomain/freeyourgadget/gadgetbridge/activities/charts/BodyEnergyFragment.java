@@ -38,6 +38,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.GbChartVie
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartPoint;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileData;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.StatTileGridUtilKt;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -92,8 +93,9 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
 
     @Override
     protected void init() {
-        TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        SUBTEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        TEXT_COLOR = chartTheme.getTextColor();
+        SUBTEXT_COLOR = chartTheme.getSecondaryTextColor();
         AVERAGE_LINE_COLOR = Color.GRAY;
     }
 

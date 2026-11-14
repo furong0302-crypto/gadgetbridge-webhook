@@ -18,36 +18,38 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.act
 
 import java.util.List;
 
-import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.AbstractWithingsActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 
 /**
- * This class is needed for sleep tracking as the withings steel HR sends heartrate while sleeping in an extra activity.
- * This leads to breaking the sleep session in the sleep calculation of GB.
+ * This class is needed for sleep tracking as the Withings Steel HR sends heartrate while sleeping
+ * in an extra activity. This leads to breaking the sleep session in the sleep calculation of GB.
  */
 public class SleepActivitySampleHelper {
-    public static WithingsSteelHRActivitySample mergeIfNecessary(WithingsSteelHRSampleProvider provider, WithingsSteelHRActivitySample sample) {
+    public static <T extends AbstractWithingsActivitySample> T mergeIfNecessary(
+            AbstractSampleProvider<T> provider, T sample) {
         if (!shouldMerge(sample)) {
             return sample;
         }
 
-        WithingsSteelHRActivitySample overlappingSample = getOverlappingSample(provider, (int)sample.getTimestamp());
+        T overlappingSample = getOverlappingSample(provider, (int) sample.getTimestamp());
         if (overlappingSample != null) {
-            sample = doMerge(overlappingSample, sample);
+            sample = doMerge(provider, overlappingSample, sample);
         }
 
         return sample;
     }
 
-    private static WithingsSteelHRActivitySample getOverlappingSample(WithingsSteelHRSampleProvider provider, long timestamp) {
-        List<WithingsSteelHRActivitySample> samples = provider.getActivitySamples((int)timestamp - 500, (int)timestamp);
+    private static <T extends AbstractWithingsActivitySample> T getOverlappingSample(
+            AbstractSampleProvider<T> provider, long timestamp) {
+        List<T> samples = provider.getActivitySamples((int) timestamp - 500, (int) timestamp);
         if (samples.isEmpty()) {
             return null;
         }
 
-        for (int i = samples.size()-1; i >= 0; i--) {
-            WithingsSteelHRActivitySample lastSample = samples.get(i);
+        for (int i = samples.size() - 1; i >= 0; i--) {
+            T lastSample = samples.get(i);
             if (isNotHeartRateOnly(lastSample)) {
                 return lastSample;
             }
@@ -56,11 +58,11 @@ public class SleepActivitySampleHelper {
         return null;
     }
 
-    private static boolean isNotHeartRateOnly(WithingsSteelHRActivitySample lastSample) {
-        return lastSample.getRawKind() != ActivityKind.NOT_MEASURED.getCode(); // && lastSample.getTimestamp() <= timestamp && (lastSample.getTimestamp() + lastSample.getDuration()) >= timestamp);
+    private static boolean isNotHeartRateOnly(AbstractWithingsActivitySample lastSample) {
+        return lastSample.getRawKind() != ActivityKind.NOT_MEASURED.getCode();
     }
 
-    private static boolean shouldMerge(WithingsSteelHRActivitySample sample) {
+    private static boolean shouldMerge(AbstractWithingsActivitySample sample) {
         return sample.getSteps() == 0
                 && sample.getDistance() == 0
                 && sample.getRawKind() == -1
@@ -69,15 +71,14 @@ public class SleepActivitySampleHelper {
                 && sample.getRawIntensity() == 0;
     }
 
-    private static WithingsSteelHRActivitySample doMerge(WithingsSteelHRActivitySample origin, WithingsSteelHRActivitySample update) {
-        WithingsSteelHRActivitySample mergeResult = new WithingsSteelHRActivitySample();
+    private static <T extends AbstractWithingsActivitySample> T doMerge(
+            AbstractSampleProvider<T> provider, T origin, T update) {
+        T mergeResult = provider.createActivitySample();
         mergeResult.setTimestamp(update.getTimestamp());
         mergeResult.setRawKind(origin.getRawKind());
         mergeResult.setRawIntensity(origin.getRawIntensity());
         mergeResult.setDuration(origin.getDuration() - (update.getTimestamp() - origin.getTimestamp()));
-        mergeResult.setDevice(origin.getDevice());
         mergeResult.setDeviceId(origin.getDeviceId());
-        mergeResult.setUser(origin.getUser());
         mergeResult.setUserId(origin.getUserId());
         mergeResult.setProvider(origin.getProvider());
         mergeResult.setHeartRate(update.getHeartRate());

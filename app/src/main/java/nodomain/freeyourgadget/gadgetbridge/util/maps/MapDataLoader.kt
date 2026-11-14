@@ -16,6 +16,7 @@ import java.util.Locale
 import java.util.zip.ZipInputStream
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
+import nodomain.freeyourgadget.gadgetbridge.util.ui.data.ThemeEntryPoint
 
 class MapDataLoader(private val context: Context) {
 
@@ -55,7 +56,8 @@ class MapDataLoader(private val context: Context) {
 
     fun resolveTheme(): XmlRenderTheme {
         val prefs = GBApplication.getPrefs()
-        val dark = GBApplication.isDarkThemeEnabled()
+        val dark = ThemeEntryPoint.themeRepository(context).themeSettings.value
+            .isDark(context.resources.configuration)
         val themePrefValue = if (dark) {
             prefs.getString(MapsManager.PREF_MAP_THEME_DARK, "dark_low_contrast")
         } else {

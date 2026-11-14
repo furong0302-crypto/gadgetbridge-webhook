@@ -40,7 +40,11 @@ public class GlyphId extends WithingsStructure {
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer buffer) {
-
+        // Write unicode codepoint as 4-byte little-endian
+        buffer.put((byte)(unicode & 0xFF));
+        buffer.put((byte)((unicode >> 8) & 0xFF));
+        buffer.put((byte)((unicode >> 16) & 0xFF));
+        buffer.put((byte)((unicode >> 24) & 0xFF));
     }
 
     @Override

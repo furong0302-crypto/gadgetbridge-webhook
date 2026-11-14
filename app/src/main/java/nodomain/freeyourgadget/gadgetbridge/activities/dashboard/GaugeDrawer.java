@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.NumberFormat;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 
 public class GaugeDrawer {
@@ -268,8 +267,8 @@ public class GaugeDrawer {
                                                   String text,
                                                   String lowerText,
                                                   Context context) {
-        int TEXT_COLOR = GBApplication.getTextColor(context);
-        int SUBTEXT_COLOR = GBApplication.getSecondaryTextColor(context);
+        int TEXT_COLOR = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK);
+        int SUBTEXT_COLOR = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY);
         int height = width;
         int barMargin = (int) Math.ceil(barWidth / 2f);
 
@@ -357,8 +356,8 @@ public class GaugeDrawer {
                                          int value,
                                          int maxValue,
                                          Context context) {
-        int TEXT_COLOR = GBApplication.getTextColor(context);
-        int SUB_TEXT_COLOR = GBApplication.getSecondaryTextColor(context);
+        int TEXT_COLOR = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK);
+        int SUB_TEXT_COLOR = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY);
         int height = width;
         int barMargin = (int) Math.ceil(barWidth / 2f);
         float filledFactor = (float) value / maxValue;

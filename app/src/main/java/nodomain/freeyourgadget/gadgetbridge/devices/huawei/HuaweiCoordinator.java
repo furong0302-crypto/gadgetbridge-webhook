@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.ParcelUuid;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -47,6 +48,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.SleepSessionProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.devices.EcgDataProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -370,6 +372,17 @@ public abstract class HuaweiCoordinator extends AbstractDeviceCoordinator {
             // For non-TruSleep watches
             new DefaultSleepSessionProvider(device, session)
         );
+    }
+
+    @Override
+    public boolean supportsEcgMeasurement(@NonNull final GBDevice device) {
+        return HuaweiDeviceStateManager.get(device).supportsECG();
+    }
+
+    @Nullable
+    @Override
+    public EcgDataProvider getEcgDataProvider(@NonNull final GBDevice device, @NonNull final DaoSession session) {
+        return new HuaweiEcgDataProvider(device, session);
     }
 
     @Override

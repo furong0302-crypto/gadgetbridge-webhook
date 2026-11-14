@@ -1,6 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.di
 
 import android.app.NotificationManager
+import android.app.UiModeManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
@@ -44,6 +45,11 @@ object AppModule {
     @Singleton
     fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager =
         context.getSystemService(NotificationManager::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUiModeManager(@ApplicationContext context: Context): UiModeManager? =
+        context.getSystemService(UiModeManager::class.java)
 
     /**
      * The facade for talking to all devices. Use [DeviceService.forDevice] for a single device.

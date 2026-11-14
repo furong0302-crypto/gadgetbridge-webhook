@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
@@ -33,9 +33,10 @@ public abstract class StressFragment<D extends ChartsData> extends AbstractChart
 
     @Override
     protected void init() {
-        BACKGROUND_COLOR = GBApplication.getBackgroundColor(requireContext());
-        LEGEND_TEXT_COLOR = DESCRIPTION_COLOR = TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = SUB_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        BACKGROUND_COLOR = chartTheme.getBackgroundColor();
+        LEGEND_TEXT_COLOR = DESCRIPTION_COLOR = TEXT_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = SUB_TEXT_COLOR = chartTheme.getSecondaryTextColor();
     }
 
     protected List<? extends StressSample> getStressSamples(DBHandler db, GBDevice device, int tsStart, int tsEnd) {

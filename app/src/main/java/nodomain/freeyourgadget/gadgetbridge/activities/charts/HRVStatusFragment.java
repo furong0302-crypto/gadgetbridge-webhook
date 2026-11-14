@@ -49,7 +49,6 @@ import java.util.Optional;
 
 import kotlin.jvm.functions.Function1;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.hrv.HrvChartData;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.ChartLegendView;
@@ -58,6 +57,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.DaySelecti
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.GbChartView;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSeries;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.widgets.impl.HrvWidget;
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.GaugeDrawer;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.SectionHeaderView;
@@ -302,7 +302,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
 
     @Override
     protected void init() {
-        TEXT_COLOR = GBApplication.getTextColor(requireContext());
+        TEXT_COLOR = ChartTheme.from(requireContext()).getTextColor();
         HRV_AVERAGE_COLOR = getResources().getColor(R.color.hrv_status_char_line_color);
         HRV_RANGE_COLOR = getResources().getColor(R.color.hrv_status_range_color);
         HRV_LAST_NIGHT_COLOR = getResources().getColor(R.color.hrv_status_last_night_color);

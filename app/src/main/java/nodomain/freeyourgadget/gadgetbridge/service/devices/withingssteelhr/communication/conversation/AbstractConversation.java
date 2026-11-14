@@ -22,6 +22,7 @@ import java.util.List;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructureType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 
 public abstract class AbstractConversation implements Conversation {
 
@@ -62,11 +63,21 @@ public abstract class AbstractConversation implements Conversation {
 
     @Override
     public void handleResponse(Message response) {
-        if (response.getType() == requestType) {
+        final boolean transferCompleteForEot = request.needsEOT() && response.getType() == WithingsMessageType.TRANSFER_COMPLETE;
+        final boolean transferCompleteForDelete = request.needsResponse()
+                && requestType == WithingsMessageType.DELETE_STORED_MEASURE_SIGNAL
+                && response.getType() == WithingsMessageType.TRANSFER_COMPLETE;
+        final boolean transferCompleteForMeasureStart = request.needsResponse()
+                && requestType == WithingsMessageType.MEASURE_START
+                && response.getType() == WithingsMessageType.TRANSFER_COMPLETE;
+        final boolean measureStopForMeasureStart = request.needsEOT()
+                && requestType == WithingsMessageType.MEASURE_START
+                && response.getType() == WithingsMessageType.MEASURE_STOP;
+        if (response.getType() == requestType || transferCompleteForEot || transferCompleteForDelete || transferCompleteForMeasureStart || measureStopForMeasureStart) {
             if (request.needsResponse()) {
-                complete = true;
+                complete = response.getType() == requestType || transferCompleteForDelete || transferCompleteForMeasureStart;
             } else if (request.needsEOT()) {
-                complete = hasEOT(response);
+                complete = transferCompleteForEot || measureStopForMeasureStart || hasEOT(response);
             }
 
             doHandleResponse(response);

@@ -637,6 +637,9 @@ import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.WearFitCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.devices.WearfitX9UltraCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.magic_touch.MagicTouchJj02Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.withingsscanwatch.WithingsScanwatch2DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.withingsscanwatch.WithingsScanwatchDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.withingsscanwatch.WithingsScanwatchLightDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand10ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watches.MiBand11ActiveCoordinator;
@@ -1271,6 +1274,9 @@ public enum DeviceType {
     NINEBOT_KICKSCOOTER(NinebotScooterCoordinator::new),
     XIAOMI_HIPEE_P1(XiaomiHipeeP1Coordinator::new),
     WITHINGS_STEEL_HR(WithingsSteelHRDeviceCoordinator::new),
+    WITHINGS_SCANWATCH(WithingsScanwatchDeviceCoordinator::new),
+    WITHINGS_SCANWATCH_2(WithingsScanwatch2DeviceCoordinator::new),
+    WITHINGS_SCANWATCH_LIGHT(WithingsScanwatchLightDeviceCoordinator::new),
     SONY_WENA_3(SonyWena3Coordinator::new),
     FEMOMETER_VINCA2(FemometerVinca2DeviceCoordinator::new),
     PIXOO(PixooCoordinator::new),

@@ -19,13 +19,13 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsBaseDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.BatteryValues;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 
 public class BatteryStateHandler extends AbstractResponseHandler {
 
-    public BatteryStateHandler(WithingsSteelHRDeviceSupport support) {
+    public BatteryStateHandler(WithingsBaseDeviceSupport support) {
         super(support);
     }
 

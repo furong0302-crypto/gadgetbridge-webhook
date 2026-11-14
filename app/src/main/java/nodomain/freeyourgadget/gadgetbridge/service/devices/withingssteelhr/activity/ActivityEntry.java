@@ -26,6 +26,7 @@ public class ActivityEntry {
     private int distance;
     private int rawIntensity;
     private boolean isHeartrate;
+    private boolean hasActivityData;
 
     public int getTimestamp() {
         return timestamp;
@@ -97,5 +98,13 @@ public class ActivityEntry {
 
     public void setIsHeartrate(boolean heartrate) {
         isHeartrate = heartrate;
+    }
+
+    public boolean hasActivityData() {
+        return hasActivityData;
+    }
+
+    public void setHasActivityData(final boolean hasActivityData) {
+        this.hasActivityData = hasActivityData;
     }
 }

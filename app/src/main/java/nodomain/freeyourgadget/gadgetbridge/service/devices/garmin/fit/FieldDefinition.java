@@ -107,6 +107,13 @@ public class FieldDefinition implements FieldInterface {
         return baseType.decode(byteBuffer, scale, offset);
     }
 
+    /**
+     * Decodes the value as its base type, even when a subclass converts it to a different type.
+     */
+    public Object decodeRaw(final ByteBuffer byteBuffer) {
+        return baseType.decode(byteBuffer, scale, offset);
+    }
+
     @Override
     public void encode(ByteBuffer byteBuffer, Object o) {
         baseType.encode(byteBuffer, o, scale, offset);

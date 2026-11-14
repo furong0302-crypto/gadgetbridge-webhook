@@ -195,7 +195,7 @@ object PaiWidget : MetricWidget<PaiWidget.Data>() {
             status = StatusLine.Text(context.getString(R.string.widget_status_increase_today, data.today)),
             chart = composition,
         )
-        val goalColor = GBApplication.getSecondaryTextColor(context)
+        val goalColor = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY)
         val bars = data.days?.let {
             dayBars(it, data.dayIncreases ?: FloatArray(it.size), data.target, colorWeekly, colorToday, goalColor, data.day.dayOfWeek.value)
         }

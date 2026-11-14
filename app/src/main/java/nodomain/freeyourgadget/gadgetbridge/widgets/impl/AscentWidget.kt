@@ -17,8 +17,9 @@
 package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.devices.GenericMetricSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
@@ -127,7 +128,7 @@ object AscentWidget : MetricWidget<AscentWidget.Data>() {
             xMax = (weeks.size - 1).toFloat(),
             yMin = yMin,
             yMax = yMax,
-            color = GBApplication.getTextColor(context),
+            color = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK),
         )
     }
 

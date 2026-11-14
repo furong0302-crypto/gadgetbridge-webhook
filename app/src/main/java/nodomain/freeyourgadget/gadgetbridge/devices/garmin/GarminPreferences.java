@@ -20,6 +20,7 @@ public class GarminPreferences {
     public static final String PREF_GARMIN_EXPLORE_SYNC = "garmin_exploresync";
     public static final String PREF_GARMIN_LEGACY_SYNC_FLUSH = "garmin_legacy_sync_flush";
     public static final String PREF_GARMIN_HYDRATION_SUPPORTED = "garmin_hydration_supported";
+    public static final String PREF_GARMIN_ECG_SUPPORTED = "garmin_ecg_supported";
 
     public static String agpsStatus(final String url) {
         return String.format(GarminPreferences.PREF_GARMIN_AGPS_STATUS, CheckSums.md5(url));

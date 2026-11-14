@@ -23,17 +23,19 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
-import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.AbstractWithingsActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsBaseDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.SleepActivitySampleHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveHeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
@@ -41,9 +43,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 
 public class LiveHeartrateHandler implements IncomingMessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(LiveHeartrateHandler.class);
-    private final WithingsSteelHRDeviceSupport support;
+    private final WithingsBaseDeviceSupport support;
 
-    public LiveHeartrateHandler(WithingsSteelHRDeviceSupport support) {
+    public LiveHeartrateHandler(WithingsBaseDeviceSupport support) {
         this.support = support;
     }
 
@@ -64,27 +66,30 @@ public class LiveHeartrateHandler implements IncomingMessageHandler {
         if (heartRate > 0) {
             saveHeartRateData(heartRate);
         }
-    
+
     }
-    
-    private void saveHeartRateData(int heartRate) {
-        WithingsSteelHRActivitySample sample = new WithingsSteelHRActivitySample();
-        sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
-        sample.setHeartRate(heartRate);
+
+    @SuppressWarnings("unchecked")
+    private <T extends AbstractWithingsActivitySample> void saveHeartRateData(final int heartRate) {
+        logger.debug("Received live heart rate {}", heartRate);
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
-            Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
-            Long deviceId = DBHelper.getDevice(support.getDevice(), dbHandler.getDaoSession()).getId();
-            WithingsSteelHRSampleProvider provider = new WithingsSteelHRSampleProvider(support.getDevice(), dbHandler.getDaoSession());
+            final Long userId = Objects.requireNonNull(DBHelper.getUser(dbHandler.getDaoSession()).getId());
+            final Long deviceId = Objects.requireNonNull(DBHelper.getDevice(support.getDevice(), dbHandler.getDaoSession()).getId());
+            final AbstractSampleProvider<T> provider =
+                    (AbstractSampleProvider<T>) support.createSampleProvider(support.getDevice(), dbHandler.getDaoSession());
+            T sample = provider.createActivitySample();
+            sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
+            sample.setHeartRate(heartRate);
             sample.setDeviceId(deviceId);
             sample.setUserId(userId);
             sample = SleepActivitySampleHelper.mergeIfNecessary(provider, sample);
             provider.addGBActivitySample(sample);
-        } catch (Exception ex) {
-            logger.warn("Error saving current heart rate: " + ex.getLocalizedMessage());
+            final Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
+                    .putExtra(GBDevice.EXTRA_DEVICE, support.getDevice())
+                    .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, (Serializable) sample);
+            LocalBroadcastManager.getInstance(support.getContext()).sendBroadcast(intent);
+        } catch (final Exception ex) {
+            logger.error("Error saving current heart rate", ex);
         }
-        Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
-                .putExtra(GBDevice.EXTRA_DEVICE, support.getDevice())
-                .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
-        LocalBroadcastManager.getInstance(support.getContext()).sendBroadcast(intent);
     }
 }

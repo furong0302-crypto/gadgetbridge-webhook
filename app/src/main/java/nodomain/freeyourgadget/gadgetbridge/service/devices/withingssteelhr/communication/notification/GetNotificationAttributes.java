@@ -54,17 +54,24 @@ public class GetNotificationAttributes {
 
     public void deserialize(byte[] rawData) {
         ByteBuffer buffer = ByteBuffer.wrap(rawData);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
         commandID = buffer.get();
         notificationUID = buffer.getInt();
         while (buffer.hasRemaining()) {
-            RequestedNotificationAttribute requestedNotificationAttribute = new RequestedNotificationAttribute();
+            byte attributeID = buffer.get();
             int length = 1;
-            if (buffer.remaining() >= 3) {
+            // Title (1), Subtitle (2), Message (3) require a 2-byte max length
+            if (attributeID == 1 || attributeID == 2 || attributeID == 3) {
                 length = 3;
             }
 
             byte[] rawAttributeData = new byte[length];
-            buffer.get(rawAttributeData);
+            rawAttributeData[0] = attributeID;
+            if (length == 3 && buffer.remaining() >= 2) {
+                buffer.get(rawAttributeData, 1, 2);
+            }
+
+            RequestedNotificationAttribute requestedNotificationAttribute = new RequestedNotificationAttribute();
             requestedNotificationAttribute.deserialize(rawAttributeData);
             attributes.add(requestedNotificationAttribute);
         }

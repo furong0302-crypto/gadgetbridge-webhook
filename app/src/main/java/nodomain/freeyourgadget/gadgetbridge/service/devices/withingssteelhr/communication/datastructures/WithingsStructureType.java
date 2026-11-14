@@ -60,6 +60,16 @@ public class WithingsStructureType {
     public static final short ACTIVITY_SAMPLE_CALORIES_2 = 1546;
     // No idea what this is, however it is in the response to requesting activities:
     public static final short ACTIVITY_SAMPLE_UNKNOWN = 1547;
+    public static final short STORED_MEASURE_META = 278;
+    public static final short STORED_MEASURE_DATA = 279;
+    public static final short STORED_MEASURE_DATA_EXTEND = 329;
+    public static final short STORED_SIGNAL_META = 323;
+    public static final short STORED_SIGNAL_DATA = 324;
+    public static final short VASISTAS_TYPE = 1301;
+    public static final short STORED_SIGNAL_META_EXTEND = 326;
+    public static final short VASISTAS_SPO2 = (short) 0x0995;
+    public static final short VASISTAS_AHI = (short) 0x09A0;
+    public static final short VASISTAS_RESPIRATORY_RATE = (short) 0x09D9;
     public static final short WORKOUT_TYPE = 2409;
     public static final short LIVE_WORKOUT_START = 2418;
     public static final short LIVE_WORKOUT_END = 2419;
@@ -67,6 +77,42 @@ public class WithingsStructureType {
     public static final short WORKOUT_GPS_STATE = 321;
     public static final short WORKOUT_SCREEN_LIST = 316;
     public static final short WORKOUT_SCREEN_DATA = 317;
+
+    /** Long-press crown shortcut action (type 0x09A1 = 2465). */
+    public static final short SHORTCUT_ACTION = (short) 0x09A1;  // 2465
+
+    /** One entry in the feature-tags-deprecated list (type 0x099C = 2460). */
+    public static final short FEATURE_TAG_DEPRECATED = (short) 0x099C;  // 2460
+
+    /** User-ID header preceding feature-tag lists in CMD_FEATURE_TAGS_SET_DEPRECATED_V2 (type 0x0145 = 325). */
+    public static final short FEATURE_TAGS_USER_ID = 0x0145;  // 325
+
+    /** Local (on-watch) notification slot configuration (type 0x09A8 = 2472). */
+    public static final short LOCAL_NOTIFICATION = (short) 0x09A8;  // 2472
+
+    /**
+     * Heart-rate alert threshold entry (type 0x09A5 = 2469), 8-byte payload:
+     * <pre>
+     *   pad       (uint8)   - always 0x00
+     *   direction (uint8)   - 0x01 = HIGH, 0x02 = LOW
+     *   enabled   (uint8)   - 0x01 = enabled, 0x00 = disabled
+     *   pad       (uint32)  - always 0x00000000
+     *   threshold (uint8)   - BPM value
+     * </pre>
+     */
+    public static final short HR_ALERT_THRESHOLD = (short) 0x09A5;  // 2469
+
+    /** Quicklook / glance (raise-to-wake) status (type 0x097A = 2426). */
+    public static final short GLANCE_STATUS = (short) 0x097A;  // 2426
+
+    /** Screen luminosity mode + level (type 0x0937 = 2359), 2-byte payload: [mode][level]. */
+    public static final short LUMINOSITY_LEVEL = (short) 0x0937;  // 2359
+
+    /** Tracker move-hands status (type 0x09BB = 2491), 1-byte payload: 0=off, 1=on. */
+    public static final short TRACKER_MOVE_HANDS = (short) 0x09BB;  // 2491
+
+    /** Tracker wear position (type 0x012F = 303), 1-byte payload: 2=left wrist, 3=right wrist. */
+    public static final short TRACKER_WEAR_POS = 303;  // 0x012F
 
     private WithingsStructureType() {}
 }

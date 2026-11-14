@@ -13,6 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs
+import nodomain.freeyourgadget.gadgetbridge.util.ui.data.ThemeSettingsDataSource
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -100,10 +101,10 @@ open class LauncherWidgetUpdateTriggers @Inject constructor(
         private val PREF_KEYS = setOf(
             "dashboard_devices_all",
             "dashboard_devices_multiselect",
-            "pref_key_theme",
-            "pref_key_theme_amoled_black",
-            GBApplication.PREF_ACCENT_COLOR,
-            GBApplication.PREF_CONTRASTING_SURFACES,
+            ThemeSettingsDataSource.PREF_THEME,
+            ThemeSettingsDataSource.PREF_AMOLED_BLACK,
+            ThemeSettingsDataSource.PREF_ACCENT_COLOR,
+            ThemeSettingsDataSource.PREF_CONTRASTING_SURFACES,
         )
     }
 }

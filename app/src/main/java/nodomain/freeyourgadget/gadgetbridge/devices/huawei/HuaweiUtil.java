@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -106,6 +107,19 @@ public class HuaweiUtil {
     }
 
     public static double convBytes2Double(byte[] b) {
-        return ByteBuffer.wrap(b).getDouble();
+        if (b == null) {
+            return 0.0;
+        }
+
+        ByteBuffer buffer = ByteBuffer.wrap(b).order(ByteOrder.BIG_ENDIAN);
+
+        if (b.length == 8) {
+            return buffer.getDouble();
+        }
+        if (b.length == 4) {
+            return buffer.getFloat();
+        }
+
+        return 0.0;
     }
 }

@@ -670,6 +670,28 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
     }
 
     /**
+     * Add a file that the watch sent without a corresponding download request to the list of pending files.
+     */
+    public void onPushedFileReceived(final File file) {
+        LOG.debug("Got pushed file {}", file);
+
+        try (DBHandler handler = GBApplication.acquireDB()) {
+            final PendingFileProvider pendingFileProvider = new PendingFileProvider(gbDevice, handler.getDaoSession());
+            pendingFileProvider.addPendingFile(file.getAbsolutePath());
+        } catch (final Exception e) {
+            GB.toast(getContext(), "Error saving pending file", Toast.LENGTH_LONG, GB.ERROR, e);
+            return;
+        }
+
+        // processDownloadQueue will run after this message, but only processes pending files during a fetch
+        if (!isBusyFetching) {
+            isBusyFetching = true;
+            getDevice().setBusyTask(R.string.busy_task_fetch_activity_data, getContext());
+            getDevice().sendDeviceUpdateIntent(getContext());
+        }
+    }
+
+    /**
      * @noinspection BooleanMethodIsAlwaysInverted
      */
     private boolean getKeepActivityDataOnDevice() {

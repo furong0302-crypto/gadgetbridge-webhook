@@ -25,7 +25,6 @@ import android.app.Activity
 import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
-import android.app.UiModeManager
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
@@ -37,9 +36,7 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
-import android.util.TypedValue
 import android.view.WindowManager
-import androidx.annotation.StyleRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -52,6 +49,9 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper
 import nodomain.freeyourgadget.gadgetbridge.database.PeriodicDbExporter
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import nodomain.freeyourgadget.gadgetbridge.di.ApplicationScope
 import nodomain.freeyourgadget.gadgetbridge.di.DefaultPrefs
 import nodomain.freeyourgadget.gadgetbridge.externalevents.BluetoothStateChangeReceiver
 import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.apps.NotificationAppRepository
@@ -76,6 +76,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.backup.PeriodicZipExporter
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectPermissionManager
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.ScopedPrefsProvider
+import nodomain.freeyourgadget.gadgetbridge.util.ui.data.ThemeRepository
 import nodomain.freeyourgadget.gadgetbridge.widgets.launcher.LauncherWidgetUpdateTriggers
 import org.slf4j.LoggerFactory
 import java.util.Locale
@@ -122,11 +123,12 @@ open class GBApplication : Application() {
     @Inject
     lateinit var weatherRepository: WeatherRepository
 
-    private val themePreferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if ("pref_key_theme" == key) {
-            updateApplicationNightMode()
-        }
-    }
+    @Inject
+    lateinit var themeRepository: ThemeRepository
+
+    @Inject
+    @ApplicationScope
+    lateinit var applicationScope: CoroutineScope
 
     private val lifecycleObserver = AppLifecycleObserver()
 
@@ -214,8 +216,8 @@ open class GBApplication : Application() {
         }
 
         migratePrefsIfNeeded()
-        updateApplicationNightMode()
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(themePreferenceListener)
+        themeRepository.updateApplicationNightMode()
+        themeRepository.register()
 
         setupExceptionHandler(gbPrefs.getBoolean("crash_notification", isDebug()))
 
@@ -329,7 +331,9 @@ open class GBApplication : Application() {
      */
     override fun onTerminate() {
         ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleObserver)
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(themePreferenceListener)
+        themeRepository.unregister()
+        // Stops the work of the application's singletons, e.g. the flows that listen to the preferences
+        applicationScope.cancel()
         launcherWidgetUpdateTriggers.unregister()
         deviceManagerInstance.shutdown()
         databaseManager.closeDatabase()
@@ -429,14 +433,9 @@ open class GBApplication : Application() {
 
         const val ACTION_QUIT = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.quit"
         const val ACTION_LANGUAGE_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.language_change"
-        const val ACTION_THEME_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.theme_change"
         const val ACTION_NEW_DATA = "nodomain.freeyourgadget.gadgetbridge.action.new_data"
         const val ACTION_APP_IS_IN_FOREGROUND = "nodomain.freeyourgadget.gadgetbridge.action.app_foreground"
         const val ACTION_APP_IS_IN_BACKGROUND = "nodomain.freeyourgadget.gadgetbridge.action.app_background"
-
-        const val PREF_ACCENT_COLOR = "pref_key_accent_color"
-        const val PREF_ACCENT_COLOR_DEFAULT = "red"
-        const val PREF_CONTRASTING_SURFACES = "pref_key_contrasting_surfaces"
 
         @JvmStatic
         fun quit() {
@@ -640,146 +639,6 @@ open class GBApplication : Application() {
         @JvmStatic
         fun getIDSenderLookup(): LimitedQueue<Int, String> {
             return idSenderLookup
-        }
-
-        @JvmStatic
-        fun isDarkThemeEnabled(): Boolean {
-            val selectedTheme = app().gbPrefs.getString(
-                "pref_key_theme",
-                appContext.getString(R.string.pref_theme_value_system),
-            )
-            val resources = appContext.resources
-
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                (selectedTheme == appContext.getString(R.string.pref_theme_value_system) ||
-                    selectedTheme == appContext.getString(R.string.pref_theme_value_dynamic))
-            ) {
-                (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-            } else {
-                selectedTheme == appContext.getString(R.string.pref_theme_value_dark)
-            }
-        }
-
-        /**
-         * Ensures the splash screen follows the theme preference, if manually set to light or dark.
-         */
-        private fun updateApplicationNightMode() {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                return
-            }
-            val selectedTheme = app().gbPrefs.getString(
-                "pref_key_theme",
-                appContext.getString(R.string.pref_theme_value_system),
-            )
-            val nightMode = when (selectedTheme) {
-                appContext.getString(R.string.pref_theme_value_light) -> UiModeManager.MODE_NIGHT_NO
-                appContext.getString(R.string.pref_theme_value_dark) -> UiModeManager.MODE_NIGHT_YES
-                else -> UiModeManager.MODE_NIGHT_AUTO
-            }
-            appContext.getSystemService(UiModeManager::class.java)?.setApplicationNightMode(nightMode)
-        }
-
-        @JvmStatic
-        fun isAmoledBlackEnabled(): Boolean {
-            return app().gbPrefs.getBoolean("pref_key_theme_amoled_black", false)
-        }
-
-        @JvmStatic
-        fun areDynamicColorsEnabled(): Boolean {
-            val selectedTheme = app().gbPrefs.getString(
-                "pref_key_theme",
-                appContext.getString(R.string.pref_theme_value_system),
-            )
-            return selectedTheme == appContext.getString(R.string.pref_theme_value_dynamic)
-        }
-
-        /**
-         * The ThemeOverlay for the user's chosen accent color preset (Settings > User interface).
-         * Not meaningful when [areDynamicColorsEnabled] is true - callers should skip
-         * applying it in that case, since Dynamic Color already ties these colors to the wallpaper.
-         */
-        @JvmStatic
-        @StyleRes
-        fun getAccentColorOverlay(dark: Boolean): Int {
-            val accent = app().gbPrefs.getString(PREF_ACCENT_COLOR, PREF_ACCENT_COLOR_DEFAULT)
-            return when (accent) {
-                "coral" -> if (dark) R.style.ThemeOverlay_App_Accent_Coral_Dark else R.style.ThemeOverlay_App_Accent_Coral_Light
-                "orange" -> if (dark) R.style.ThemeOverlay_App_Accent_Orange_Dark else R.style.ThemeOverlay_App_Accent_Orange_Light
-                "amber" -> if (dark) R.style.ThemeOverlay_App_Accent_Amber_Dark else R.style.ThemeOverlay_App_Accent_Amber_Light
-                "lime" -> if (dark) R.style.ThemeOverlay_App_Accent_Lime_Dark else R.style.ThemeOverlay_App_Accent_Lime_Light
-                "green" -> if (dark) R.style.ThemeOverlay_App_Accent_Green_Dark else R.style.ThemeOverlay_App_Accent_Green_Light
-                "teal" -> if (dark) R.style.ThemeOverlay_App_Accent_Teal_Dark else R.style.ThemeOverlay_App_Accent_Teal_Light
-                "cyan" -> if (dark) R.style.ThemeOverlay_App_Accent_Cyan_Dark else R.style.ThemeOverlay_App_Accent_Cyan_Light
-                "blue" -> if (dark) R.style.ThemeOverlay_App_Accent_Blue_Dark else R.style.ThemeOverlay_App_Accent_Blue_Light
-                "indigo" -> if (dark) R.style.ThemeOverlay_App_Accent_Indigo_Dark else R.style.ThemeOverlay_App_Accent_Indigo_Light
-                "violet" -> if (dark) R.style.ThemeOverlay_App_Accent_Violet_Dark else R.style.ThemeOverlay_App_Accent_Violet_Light
-                "pink" -> if (dark) R.style.ThemeOverlay_App_Accent_Pink_Dark else R.style.ThemeOverlay_App_Accent_Pink_Light
-                "white" -> if (dark) R.style.ThemeOverlay_App_Accent_White_Dark else R.style.ThemeOverlay_App_Accent_White_Light
-                "red", null -> if (dark) R.style.ThemeOverlay_App_Accent_Red_Dark else R.style.ThemeOverlay_App_Accent_Red_Light
-                else -> if (dark) R.style.ThemeOverlay_App_Accent_Red_Dark else R.style.ThemeOverlay_App_Accent_Red_Light
-            }
-        }
-
-        @JvmStatic
-        fun areContrastingSurfacesEnabled(dark: Boolean): Boolean {
-            return app().gbPrefs.getBoolean(PREF_CONTRASTING_SURFACES, dark)
-        }
-
-        @JvmStatic
-        @StyleRes
-        fun getContrastingSurfacesOverlay(dark: Boolean): Int {
-            if (areDynamicColorsEnabled()) {
-                if (dark && isAmoledBlackEnabled()) {
-                    return R.style.ThemeOverlay_App_ContrastingSurfaces_Dynamic_Black
-                }
-                return R.style.ThemeOverlay_App_ContrastingSurfaces_Dynamic
-            }
-            if (!dark) {
-                return R.style.ThemeOverlay_App_ContrastingSurfaces_Light
-            }
-            return if (isAmoledBlackEnabled()) {
-                R.style.ThemeOverlay_App_ContrastingSurfaces_Black
-            } else {
-                R.style.ThemeOverlay_App_ContrastingSurfaces_Dark
-            }
-        }
-
-        @JvmStatic
-        fun getTextColor(context: Context): Int {
-            return if (AndroidUtils.isDynamicColorActive()) {
-                AndroidUtils.getDynamicColor(context, com.google.android.material.R.attr.colorOnSurface)
-            } else if (isDarkThemeEnabled()) {
-                context.resources.getColor(R.color.primarytext_dark)
-            } else {
-                context.resources.getColor(R.color.primarytext_light)
-            }
-        }
-
-        @JvmStatic
-        fun getSecondaryTextColor(context: Context): Int {
-            return if (AndroidUtils.isDynamicColorActive()) {
-                AndroidUtils.getDynamicColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant)
-            } else if (isDarkThemeEnabled()) {
-                context.resources.getColor(R.color.on_surface_variant_dark)
-            } else {
-                context.resources.getColor(R.color.on_surface_variant_light)
-            }
-        }
-
-        @JvmStatic
-        fun getBackgroundColor(context: Context): Int {
-            val typedValue = TypedValue()
-            val theme = context.theme
-            theme.resolveAttribute(android.R.attr.background, typedValue, true)
-            return typedValue.data
-        }
-
-        @JvmStatic
-        fun getWindowBackgroundColor(context: Context): Int {
-            val typedValue = TypedValue()
-            val theme = context.theme
-            theme.resolveAttribute(android.R.attr.windowBackground, typedValue, true)
-            return typedValue.data
         }
 
         @JvmStatic

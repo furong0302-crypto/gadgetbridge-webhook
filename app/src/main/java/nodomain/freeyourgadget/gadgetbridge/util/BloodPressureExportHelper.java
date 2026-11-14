@@ -19,15 +19,11 @@
 package nodomain.freeyourgadget.gadgetbridge.util;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.pdf.PdfDocument;
-import android.net.Uri;
-
-import androidx.core.content.FileProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +96,7 @@ public class BloodPressureExportHelper {
             writer.flush();
             writer.close();
 
-            shareFile(context, file, "text/csv");
+            AndroidUtils.shareFile(context, file, "text/csv");
         } catch (IOException e) {
             LOG.error("Error exporting CSV", e);
         }
@@ -330,7 +326,7 @@ public class BloodPressureExportHelper {
             document.close();
             fos.close();
 
-            shareFile(context, file, "application/pdf");
+            AndroidUtils.shareFile(context, file, "application/pdf");
         } catch (IOException e) {
             LOG.error("Error exporting PDF", e);
         }
@@ -340,17 +336,5 @@ public class BloodPressureExportHelper {
         String pageNum = current + " / " + total;
         float pageNumWidth = paint.measureText(pageNum);
         canvas.drawText(pageNum, pageWidth - margin - pageNumWidth, pageHeight - margin + 10, paint);
-    }
-
-    private static void shareFile(Context context, File file, String mimeType) {
-        Uri uri = FileProvider.getUriForFile(context,
-                context.getApplicationContext().getPackageName() + ".screenshot_provider",
-                file);
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType(mimeType);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        context.startActivity(Intent.createChooser(shareIntent, null));
     }
 }

@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.charts;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -26,12 +27,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.data.Entry;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.model.heartratezones.DefaultHeartRateZones;
 import nodomain.freeyourgadget.gadgetbridge.model.heartratezones.HeartRateZones;
@@ -113,7 +114,7 @@ public final class HeartRateZoneChartUtils {
             return;
         }
 
-        final int textColor = GBApplication.getTextColor(ctx);
+        final int textColor = MaterialColors.getColor(ctx, R.attr.textColorPrimary, Color.BLACK);
         final int marginPx = dpToPx(ctx, 8);
 
         final TextView title = new TextView(ctx);

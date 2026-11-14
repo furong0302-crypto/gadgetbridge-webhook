@@ -42,6 +42,8 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.gridlayout.widget.GridLayout;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -370,7 +372,7 @@ public class DashboardCalendarActivity extends AbstractGBActivity {
             GradientDrawable borderDrawable = new GradientDrawable();
             borderDrawable.setShape(GradientDrawable.OVAL);
             borderDrawable.setColor(Color.TRANSPARENT);
-            borderDrawable.setStroke(5, GBApplication.getTextColor(getApplicationContext()));
+            borderDrawable.setStroke(5, MaterialColors.getColor(text, R.attr.textColorPrimary));
             LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{backgroundDrawable, borderDrawable});
             text.setBackground(layerDrawable);
         } else {

@@ -24,7 +24,6 @@ import androidx.core.text.toSpannable
 import androidx.core.view.doOnLayout
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.widgets.GaugeSpec
 import nodomain.freeyourgadget.gadgetbridge.widgets.LegendRow
@@ -298,7 +297,7 @@ private fun renderValue(view: View, model: TileModel) {
 }
 
 private fun valueColor(view: TextView, dimmed: Boolean): Int = if (dimmed) {
-    GBApplication.getSecondaryTextColor(view.context)
+    MaterialColors.getColor(view, R.attr.textColorSecondary)
 } else {
     MaterialColors.getColor(view, com.google.android.material.R.attr.colorOnSurface)
 }
@@ -321,7 +320,7 @@ private fun renderStatus(view: View, line: StatusLine?, trailing: CharSequence?)
             status.visibility = View.VISIBLE
             dot.visibility = View.GONE
             statusText.text = line.text
-            statusText.setTextColor(GBApplication.getSecondaryTextColor(statusText.context))
+            statusText.setTextColor(MaterialColors.getColor(statusText, R.attr.textColorSecondary))
         }
         is StatusLine.Chip -> {
             status.visibility = View.VISIBLE

@@ -50,6 +50,7 @@ import lineageos.weather.util.TemperatureUtils;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.ChartDataBuilder;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
@@ -71,9 +72,10 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
 
     @Override
     protected void init() {
-        BACKGROUND_COLOR = GBApplication.getBackgroundColor(requireContext());
-        DESCRIPTION_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        BACKGROUND_COLOR = chartTheme.getBackgroundColor();
+        DESCRIPTION_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = chartTheme.getSecondaryTextColor();
 
     }
     private int getRangeDays() {

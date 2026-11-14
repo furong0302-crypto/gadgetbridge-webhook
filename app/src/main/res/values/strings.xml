@@ -984,9 +984,11 @@
     <string name="interval_twenty_minutes">every 20 minutes</string>
     <string name="interval_thirty_minutes">every 30 minutes</string>
     <string name="interval_forty_five_minutes">every 45 minutes</string>
+    <string name="heartrate_bpm_35">35 bpm</string>
     <string name="heartrate_bpm_40">40 bpm</string>
     <string name="heartrate_bpm_45">45 bpm</string>
     <string name="heartrate_bpm_50">50 bpm</string>
+    <string name="heartrate_bpm_55">55 bpm</string>
     <string name="heartrate_bpm_100">100 bpm</string>
     <string name="heartrate_bpm_105">105 bpm</string>
     <string name="heartrate_bpm_110">110 bpm</string>
@@ -1243,6 +1245,13 @@
     <string name="blood_pressure_unknown_user">Unknown user</string>
     <string name="getting_heart_rate">Measuring</string>
     <string name="heart_rate_result">Measurement results</string>
+    <string name="ecg_sample_rate">Sample rate</string>
+    <string name="ecg_sample_rate_value">%1$.0f Hz</string>
+    <string name="ecg_disclaimer_title">Not for medical use.</string>
+    <string name="ecg_disclaimer">This data may be wrong or incomplete, and the interpretation may be different from the manufacturer\'s app.\n\nThis is intended for informational use only. Do not use this data to take any medical action.\n\nIf you do not feel well, contact a medical professional. For chest pain, fainting or acute shortness of breath, call emergency services immediately.</string>
+    <string name="ecg_classification_sinus_rhythm">Sinus rhythm</string>
+    <string name="ecg_classification_inconclusive_hr_under_50">Inconclusive: heart rate under 50</string>
+    <string name="ecg_wrist">Wrist</string>
     <string name="movement_intensity">Movement intensity</string>
     <string name="battery">Battery</string>
     <string name="no_limit">No limit</string>
@@ -4447,6 +4456,9 @@
     <string name="devicetype_onemore_sonoflow_se" translatable="false">1MORE SonoFlow SE</string>
     <string name="devicetype_sony_wena3" translatable="false">Sony Wena 3</string>
     <string name="devicetype_withings_steel_hr" translatable="false">Withings Steel HR</string>
+    <string name="devicetype_withings_scanwatch" translatable="false">Withings ScanWatch</string>
+    <string name="devicetype_withings_scanwatch_2" translatable="false">Withings ScanWatch 2</string>
+    <string name="devicetype_withings_scanwatch_light" translatable="false">Withings ScanWatch Light</string>
     <string name="pref_button_action_disabled">Disabled</string>
     <string name="pref_media_play">Media Play</string>
     <string name="pref_media_pause">Media Pause</string>
@@ -4815,9 +4827,68 @@
     <string name="loyalty_cards_syncing">Syncing %d loyalty cards to device</string>
     <string name="withings_calibration_text_hours">Please use the dial below to align the hour hand to the 12.</string>
     <string name="withings_calibration_text_minutes">Now use the dial to align the minute hand to the 12.</string>
-    <string name="withings_calibration_text_activity_target">Finally align the activity hand to 100%. Please be aware that this hand only moves clockwise.</string>
+    <string name="withings_calibration_text_activity_target">Finally, align the activity hand to 100%.</string>
+    <string name="withings_calibration_crown_text_hours">Use the crown on your watch to move the hour hand to the 12.</string>
+    <string name="withings_calibration_crown_text_minutes">Now use the crown to move the minute hand to the 12.</string>
+    <string name="withings_calibration_crown_text_activity_target">Finally, use the crown to move the activity hand to 100%.</string>
+    <string name="withings_calibration_mode_app">App dial</string>
+    <string name="withings_calibration_mode_crown">Watch crown</string>
+    <string name="withings_calibration_confirm">Confirm</string>
     <string name="withings_bt_calibration_previous">Previous</string>
     <string name="withings_bt_calibration_next">Next</string>
+    <string name="withings_scanwatch_pref_screens_title">Watch screens</string>
+    <string name="withings_scanwatch_pref_screens_summary">Choose which screens appear on the watch and drag to reorder them</string>
+
+    <!-- SpO2/respiratory/AFib health feature settings -->
+    <string name="withings_scanwatch_pref_ecg_enable_title">Enable ECG</string>
+    <string name="withings_scanwatch_pref_ecg_enable_summary">Activate ECG once on the watch. This cannot be disabled afterward.</string>
+    <string name="withings_scanwatch_pref_spo2_enable_title">Enable SpO2</string>
+    <string name="withings_scanwatch_pref_spo2_enable_summary">Activate SpO2 once on the watch. This cannot be disabled afterward.</string>
+    <string name="withings_scanwatch_pref_enable_once_locked_summary">Enabled permanently after first activation</string>
+    <string name="withings_scanwatch_pref_spo2_mode_title">Oxygen Saturation (SpO2)</string>
+    <string name="withings_scanwatch_pref_spo2_mode_on_demand">On demand</string>
+    <string name="withings_scanwatch_pref_spo2_mode_sleep">Monitor during sleep</string>
+    <string name="withings_scanwatch_pref_spo2_mode_sleep_summary">Allow automatic measurements during sleep. Please note that this will decrease battery life.
+
+Measures every 30 minutes during sleep.
+The result is the average of all the measurements.</string>
+    <string name="withings_scanwatch_pref_respiratory_scan_title">Respiratory Scan</string>
+    <string name="withings_scanwatch_pref_respiratory_scan_automatic">Automatic (scans some nights, minimal battery impact)</string>
+    <string name="withings_scanwatch_pref_respiratory_scan_always">Always (scans every night, higher battery usage)</string>
+    <string name="withings_scanwatch_pref_afib_day_title">AFib Detection (Daytime)</string>
+    <string name="withings_scanwatch_pref_afib_day_summary">Enable daytime atrial fibrillation detection</string>
+    <string name="withings_scanwatch_pref_afib_night_title">AFib Detection (Night)</string>
+    <string name="withings_scanwatch_pref_afib_night_summary">Enable night-time atrial fibrillation detection</string>
+    <string name="withings_scanwatch_alarm_smart_wakeup_description">The watch will find the best moment to wake you up between the smart wakeup window start and your alarm time, based on your sleep cycle. Set the window to 0 to wake up exactly at the alarm time.</string>
+
+    <!-- Quicklook / glance (raise-to-wake) -->
+    <string name="withings_scanwatch_pref_quicklook_title">Quick look</string>
+    <string name="withings_scanwatch_pref_quicklook_summary">Show time when you raise your wrist</string>
+
+    <!-- Brightness / luminosity -->
+    <string name="withings_scanwatch_pref_auto_brightness_summary">Automatically adjust screen brightness</string>
+    <string name="withings_scanwatch_pref_brightness_level_title">Brightness level</string>
+    <string name="withings_scanwatch_pref_brightness_level_summary">Manual brightness level (0-100)</string>
+
+    <!-- Move hands (move hands to 10:10 when screen turns on) -->
+    <string name="withings_scanwatch_pref_move_hands_summary">Move watch hands to 10:10 when the screen turns on to avoid blocking the display</string>
+
+    <string name="withings_scanwatch_pref_activity_reminder_title">Activity reminder</string>
+    <string name="withings_scanwatch_pref_activity_reminder_summary">The watch can vibrate when it detects long periods of inactivity, to help you stay active</string>
+
+    <!-- Shortcut (long-press crown) settings -->
+    <string name="withings_scanwatch_pref_shortcut_title">Long-press crown shortcut</string>
+    <string name="withings_scanwatch_shortcut_ecg">ECG measurement</string>
+    <string name="withings_scanwatch_shortcut_spo2">SpO2 / Blood oxygen measurement</string>
+    <string name="withings_scanwatch_shortcut_workout_start">Start workout</string>
+    <string name="withings_scanwatch_shortcut_workout_selection">Workout selection</string>
+    <string name="withings_scanwatch_pref_hr_alert_title">High/low resting heart rate alerts</string>
+    <string name="withings_scanwatch_pref_hr_alert_automatic">Automatic (recommended)</string>
+    <string name="withings_scanwatch_pref_hr_alert_custom">Custom threshold</string>
+    <string name="withings_scanwatch_pref_hr_alert_low_title">Low heart rate threshold</string>
+    <string name="withings_scanwatch_pref_hr_alert_low_summary">Alert when resting heart rate drops below this value (bpm)</string>
+    <string name="withings_scanwatch_pref_hr_alert_high_title">High heart rate threshold</string>
+    <string name="withings_scanwatch_pref_hr_alert_high_summary">Alert when resting heart rate exceeds this value (bpm)</string>
     <string name="drag_handle">drag handle</string>
     <string name="find_my_phone_found_it">FOUND IT</string>
     <string name="pref_activity_full_sync_trigger_summary">Trigger a full sync of all activity data</string>

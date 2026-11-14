@@ -12,7 +12,6 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.google.android.material.color.MaterialColors
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetColors
 import kotlin.math.cos
@@ -98,7 +97,7 @@ class DayClockView @JvmOverloads constructor(
     private val oval = RectF()
 
     private val futureColor = colorOf(context, null)
-    private val innerLabelColor = GBApplication.getSecondaryTextColor(context)
+    private val innerLabelColor = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY)
     private val outerLabelColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant)
     private val markerColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
     private val markerRingColor = MaterialColors.getColor(this, R.attr.stat_tile_bg, Color.BLACK)
@@ -276,7 +275,7 @@ class DayClockView @JvmOverloads constructor(
                 Kind.DEEP_SLEEP -> WidgetColors.deepSleep(context)
                 Kind.REM_SLEEP -> WidgetColors.remSleep(context)
                 Kind.AWAKE_SLEEP -> WidgetColors.awakeSleep(context)
-                Kind.WORN -> ColorUtils.blendARGB(track, GBApplication.getSecondaryTextColor(context), WORN_BLEND)
+                Kind.WORN -> ColorUtils.blendARGB(track, MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY), WORN_BLEND)
                 Kind.NOT_WORN -> track
                 null -> ColorUtils.setAlphaComponent(track, FUTURE_ALPHA)
             }

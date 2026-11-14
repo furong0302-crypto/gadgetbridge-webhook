@@ -44,6 +44,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.ZeppOsM
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.ZeppOsSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.AbstractZeppOsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.ZeppOsTransactionBuilder;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.MapUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
@@ -80,6 +81,16 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
     @Override
     public void handlePayload(final byte[] payload) {
         switch (payload[0]) {
+            case CMD_CAPABILITIES_RESPONSE:
+                LOG.debug("Got display items capabilities response: {}", GB.hexdump(payload));
+                final ZeppOsTransactionBuilder builder = createTransactionBuilder("request display items");
+                requestItems(builder, DISPLAY_ITEMS_MENU);
+                requestItems(builder, DISPLAY_ITEMS_SHORTCUTS);
+                if (getCoordinator().supportsControlCenter()) {
+                    requestItems(builder, DISPLAY_ITEMS_CONTROL_CENTER);
+                }
+                builder.queue();
+                break;
             case CMD_RESPONSE:
                 decodeAndUpdateDisplayItems(payload);
                 break;
@@ -124,11 +135,11 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
 
     @Override
     public void initialize(final ZeppOsTransactionBuilder builder) {
-        requestItems(builder, DISPLAY_ITEMS_MENU);
-        requestItems(builder, DISPLAY_ITEMS_SHORTCUTS);
-        if (getCoordinator().supportsControlCenter()) {
-            requestItems(builder, DISPLAY_ITEMS_CONTROL_CENTER);
-        }
+        requestCapabilities(builder);
+    }
+
+    public void requestCapabilities(final ZeppOsTransactionBuilder builder) {
+        write(builder, CMD_CAPABILITIES_REQUEST);
     }
 
     public void requestItems(final ZeppOsTransactionBuilder builder, final byte type) {

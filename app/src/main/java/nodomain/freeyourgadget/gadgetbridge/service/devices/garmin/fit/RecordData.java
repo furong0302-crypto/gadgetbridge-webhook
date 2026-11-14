@@ -1,6 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
@@ -191,6 +192,23 @@ public class RecordData {
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Returns the value of a native field, as its base type.
+     * An enum field returns its number, even if there's no enum constant for it.
+     */
+    @Nullable
+    public Object getRawFieldByNumber(final int number) {
+        final int regularFieldCount = recordDefinition.getFieldDefinitions() != null ?
+                recordDefinition.getFieldDefinitions().size() : 0;
+        for (int i = 0; i < regularFieldCount; i++) {
+            final FieldData fieldData = fieldDataList.get(i);
+            if (fieldData.getNumber() == number && fieldData.size == fieldData.baseSize) {
+                return fieldData.decodeRaw();
+            }
+        }
         return null;
     }
 
@@ -421,6 +439,11 @@ public class RecordData {
                 return arr;
             }
             return fieldDefinition.decode(valueHolder);
+        }
+
+        private Object decodeRaw() {
+            goToPosition();
+            return fieldDefinition.decodeRaw(valueHolder);
         }
 
         @NonNull

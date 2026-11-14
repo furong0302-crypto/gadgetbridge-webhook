@@ -1,9 +1,11 @@
 package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.load.LoadChartData
@@ -266,7 +268,7 @@ object TrainingLoadWidget : MetricWidget<TrainingLoadWidget.Data>() {
     }
 
     internal class Colors(context: Context) {
-        val acute = GBApplication.getTextColor(context)
+        val acute = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK)
         val chronic = ContextCompat.getColor(context, R.color.training_chronic_load)
         val optimal = ContextCompat.getColor(context, R.color.training_load_optimal)
         val low = ContextCompat.getColor(context, R.color.training_load_low)

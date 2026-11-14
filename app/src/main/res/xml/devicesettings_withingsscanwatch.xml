@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.mobeta.android.dslv.DragSortListPreference
+        android:icon="@drawable/ic_widgets"
+        android:defaultValue="@array/pref_withings_steel_activity_types_default"
+        android:dialogTitle="@string/mi5_prefs_workout_activity_types"
+        android:entries="@array/pref_withings_steel_activity_types"
+        android:entryValues="@array/pref_withings_steel_activity_types_values"
+        android:key="workout_activity_types_sortable"
+        android:persistent="true"
+        android:summary="@string/mi5_prefs_workout_activity_types_summary"
+        android:title="@string/mi5_prefs_workout_activity_types" />
+    <Preference
+        android:title="@string/qhybrid_title_calibration"
+        android:icon="@drawable/ic_sensor_calibration"
+        android:summary="@string/qhybrid_summary_calibration"
+        android:key="hands_calibration">
+        <intent
+            android:targetPackage="@string/applicationId"
+            android:targetClass="nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsCalibrationActivity" />
+    </Preference>
+
+    <!-- Watch screen configuration: drag to reorder, uncheck to disable -->
+    <com.mobeta.android.dslv.DragSortListPreference
+        android:icon="@drawable/ic_widgets"
+        android:defaultValue="@array/pref_withings_scanwatch_screens_default"
+        android:dialogTitle="@string/withings_scanwatch_pref_screens_title"
+        android:entries="@array/pref_withings_scanwatch_screens"
+        android:entryValues="@array/pref_withings_scanwatch_screens_values"
+        android:key="withings_scanwatch_screens_sortable"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_screens_summary"
+        android:title="@string/withings_scanwatch_pref_screens_title" />
+
+    <!-- Long-press crown shortcut -->
+    <ListPreference
+        android:icon="@drawable/ic_touch_long_left"
+        android:defaultValue="0"
+        android:entries="@array/pref_withings_scanwatch_shortcut_entries"
+        android:entryValues="@array/pref_withings_scanwatch_shortcut_values"
+        android:key="withings_scanwatch_shortcut_action"
+        android:persistent="true"
+        android:title="@string/withings_scanwatch_pref_shortcut_title" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_notifications"
+        android:defaultValue="false"
+        android:key="notification_enable"
+        android:layout="@layout/preference_checkbox"
+        android:persistent="true"
+        android:summary="@string/enable_notifications_summary"
+        android:title="@string/prefs_notifications_enable" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_ecg"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_ecg_enable"
+        android:layout="@layout/preference_checkbox"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_ecg_enable_summary"
+        android:title="@string/withings_scanwatch_pref_ecg_enable_title" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_spo2"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_spo2_enable"
+        android:layout="@layout/preference_checkbox"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_spo2_enable_summary"
+        android:title="@string/withings_scanwatch_pref_spo2_enable_title" />
+
+    <!-- SpO2 mode -->
+    <ListPreference
+        android:icon="@drawable/ic_spo2"
+        android:defaultValue="on_demand"
+        android:entries="@array/pref_withings_scanwatch_spo2_mode_entries"
+        android:entryValues="@array/pref_withings_scanwatch_spo2_mode_values"
+        android:key="withings_scanwatch_spo2_mode"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_spo2_mode_sleep_summary"
+        android:title="@string/withings_scanwatch_pref_spo2_mode_title" />
+
+    <!-- Respiratory scan (SpO2 during sleep) -->
+    <ListPreference
+        android:icon="@drawable/ic_pulmonology"
+        android:defaultValue="off"
+        android:entries="@array/pref_withings_scanwatch_respiratory_scan_entries"
+        android:entryValues="@array/pref_withings_scanwatch_respiratory_scan_values"
+        android:key="withings_scanwatch_respiratory_scan"
+        android:persistent="true"
+        android:title="@string/withings_scanwatch_pref_respiratory_scan_title" />
+
+    <!-- AFib daytime detection -->
+    <SwitchPreference
+        android:icon="@drawable/ic_health"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_afib_day_enabled"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_afib_day_summary"
+        android:title="@string/withings_scanwatch_pref_afib_day_title" />
+
+    <!-- AFib night detection -->
+    <SwitchPreference
+        android:icon="@drawable/ic_health"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_afib_night_enabled"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_afib_night_summary"
+        android:title="@string/withings_scanwatch_pref_afib_night_title" />
+
+    <!-- High/low resting heart rate alerts -->
+    <ListPreference
+        android:icon="@drawable/ic_heartrate"
+        android:defaultValue="off"
+        android:entries="@array/pref_withings_scanwatch_hr_alert_mode_entries"
+        android:entryValues="@array/pref_withings_scanwatch_hr_alert_mode_values"
+        android:key="withings_scanwatch_hr_alert_mode"
+        android:persistent="true"
+        android:title="@string/withings_scanwatch_pref_hr_alert_title" />
+
+    <!-- Custom low HR threshold (only meaningful when mode = custom) -->
+    <ListPreference
+        android:icon="@drawable/ic_arrow_downward"
+        android:defaultValue="40"
+        android:entries="@array/pref_withings_scanwatch_hr_alert_low_entries"
+        android:entryValues="@array/pref_withings_scanwatch_hr_alert_low_values"
+        android:key="withings_scanwatch_hr_alert_low"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_hr_alert_low_summary"
+        android:title="@string/withings_scanwatch_pref_hr_alert_low_title" />
+
+    <!-- Custom high HR threshold (only meaningful when mode = custom) -->
+    <ListPreference
+        android:icon="@drawable/ic_arrow_upward"
+        android:defaultValue="100"
+        android:entries="@array/pref_withings_scanwatch_hr_alert_high_entries"
+        android:entryValues="@array/pref_withings_scanwatch_hr_alert_high_values"
+        android:key="withings_scanwatch_hr_alert_high"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_hr_alert_high_summary"
+        android:title="@string/withings_scanwatch_pref_hr_alert_high_title" />
+
+    <!-- Quicklook / glance (raise-to-wake) -->
+    <SwitchPreference
+        android:icon="@drawable/ic_pageview"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_quicklook"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_quicklook_summary"
+        android:title="@string/withings_scanwatch_pref_quicklook_title" />
+
+    <!-- Auto brightness toggle -->
+    <SwitchPreference
+        android:icon="@drawable/ic_wb_sunny"
+        android:defaultValue="true"
+        android:key="withings_scanwatch_auto_brightness"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_auto_brightness_summary"
+        android:title="@string/pref_screen_auto_brightness_title" />
+
+    <!-- Manual brightness level (only meaningful when auto brightness is OFF) -->
+    <EditTextPreference
+        android:icon="@drawable/ic_brightness_2"
+        android:defaultValue="100"
+        android:inputType="number"
+        android:key="withings_scanwatch_brightness_level"
+        android:maxLength="3"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_brightness_level_summary"
+        android:title="@string/withings_scanwatch_pref_brightness_level_title" />
+
+    <!-- Move hands to 10:10 when screen turns on -->
+    <SwitchPreference
+        android:icon="@drawable/ic_rotate_left"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_move_hands"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_move_hands_summary"
+        android:title="@string/watchface_setting_button_move_hands" />
+
+    <SwitchPreference
+        android:icon="@drawable/ic_chair"
+        android:defaultValue="false"
+        android:key="withings_scanwatch_activity_reminder"
+        android:persistent="true"
+        android:summary="@string/withings_scanwatch_pref_activity_reminder_summary"
+        android:title="@string/withings_scanwatch_pref_activity_reminder_title" />
+
+</androidx.preference.PreferenceScreen>

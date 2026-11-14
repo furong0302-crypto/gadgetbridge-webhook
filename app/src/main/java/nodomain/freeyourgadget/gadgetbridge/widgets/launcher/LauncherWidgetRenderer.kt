@@ -19,11 +19,12 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.graphics.createBitmap
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
-import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.LauncherWidgetClickActivity
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.applyCardStyle
+import nodomain.freeyourgadget.gadgetbridge.util.ui.applyOverlays
+import nodomain.freeyourgadget.gadgetbridge.util.ui.data.ThemeEntryPoint
+import nodomain.freeyourgadget.gadgetbridge.util.ui.themeStyle
 import nodomain.freeyourgadget.gadgetbridge.widgets.GBWidget
 import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetConfig
 import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetGrid
@@ -66,23 +67,21 @@ object LauncherWidgetRenderer {
      * The application context with the app theme, in the dark or light version from [KEY_THEME] in [config].
      */
     private fun themedContext(context: Context, config: WidgetConfig): Context {
+        val themeSettings = ThemeEntryPoint.themeRepository(context).themeSettings.value
         val dark = when (config.prefs.getString(KEY_THEME, THEME_APP)) {
             THEME_SYSTEM -> (Resources.getSystem().configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
                 Configuration.UI_MODE_NIGHT_YES
 
             THEME_LIGHT -> false
             THEME_DARK -> true
-            else -> GBApplication.isDarkThemeEnabled()
+            else -> themeSettings.isDark(context.applicationContext.resources.configuration)
         }
-        val themed = ContextThemeWrapper(
-            context.applicationContext,
-            AbstractGBActivity.getThemeResource(AbstractGBActivity.NONE, dark),
-        )
+        val themed = ContextThemeWrapper(context.applicationContext, themeSettings.themeStyle(dark, noActionBar = false))
         val configuration = Configuration(context.resources.configuration)
         configuration.uiMode = (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
             if (dark) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
         themed.applyOverrideConfiguration(configuration)
-        AbstractGBActivity.applyThemeOverlays(themed.theme, dark)
+        themeSettings.applyOverlays(themed.theme, dark)
         return themed
     }
 

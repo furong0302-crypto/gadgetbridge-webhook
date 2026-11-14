@@ -102,7 +102,7 @@ public class ControlCenterv2 extends AppCompatActivity
     public static final long REALTIME_HR_SAMPLE_TTL_MS = 5_000L;
     public static final int MENU_REFRESH_CODE = 1;
     private boolean isLanguageInvalid = false;
-    private boolean isThemeInvalid = false;
+    private boolean isLayoutInvalid = false;
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
     private SwipeRefreshLayout swipeLayout;
@@ -140,6 +140,8 @@ public class ControlCenterv2 extends AppCompatActivity
             if (rebuildBottomNav()) {
                 updateBottomNavigationVisibility();
             }
+        } else if ("display_add_device_fab".equals(key) || "display_bottom_navigation_bar".equals(key)) {
+            isLayoutInvalid = true;
         }
     };
 
@@ -150,9 +152,6 @@ public class ControlCenterv2 extends AppCompatActivity
             switch (Objects.requireNonNull(action)) {
                 case GBApplication.ACTION_LANGUAGE_CHANGE:
                     setLanguage(GBApplication.getLanguage(), true);
-                    break;
-                case GBApplication.ACTION_THEME_CHANGE:
-                    isThemeInvalid = true;
                     break;
                 case GBApplication.ACTION_QUIT:
                     finish();
@@ -500,7 +499,6 @@ public class ControlCenterv2 extends AppCompatActivity
         // Set up local intent listener
         IntentFilter filterLocal = new IntentFilter();
         filterLocal.addAction(GBApplication.ACTION_LANGUAGE_CHANGE);
-        filterLocal.addAction(GBApplication.ACTION_THEME_CHANGE);
         filterLocal.addAction(GBApplication.ACTION_QUIT);
         filterLocal.addAction(DeviceService.ACTION_REALTIME_SAMPLES);
         filterLocal.addAction(GBDevice.ACTION_DEVICE_CHANGED);
@@ -591,9 +589,9 @@ public class ControlCenterv2 extends AppCompatActivity
             // onResume only runs for the current page, DashboardFragment consumes this
             selectTab(NavTab.DASHBOARD);
         }
-        if (isLanguageInvalid || isThemeInvalid) {
+        if (isLanguageInvalid || isLayoutInvalid) {
             isLanguageInvalid = false;
-            isThemeInvalid = false;
+            isLayoutInvalid = false;
             recreate();
         }
     }

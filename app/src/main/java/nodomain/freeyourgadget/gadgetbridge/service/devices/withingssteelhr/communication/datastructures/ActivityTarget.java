@@ -20,18 +20,24 @@ import java.nio.ByteBuffer;
 
 public class ActivityTarget extends WithingsStructure {
 
-    private long targetCount;
+    public static final int GOAL_TYPE_STEPS = 0;
+    public static final int GOAL_TYPE_SLEEP = 1;
+    public static final int GOAL_TYPE_SWIM = 2;
 
-    public ActivityTarget(long targetCount) {
-        this.targetCount = targetCount;
+    private int goalType;
+    private int value;
+
+    public ActivityTarget(int goalType, int value) {
+        this.goalType = goalType;
+        this.value = value;
     }
 
-    public long getTargetCount() {
-        return targetCount;
+    public int getGoalType() {
+        return goalType;
     }
 
-    public void setTargetCount(long targetCount) {
-        this.targetCount = targetCount;
+    public int getValue() {
+        return value;
     }
 
     @Override
@@ -41,7 +47,8 @@ public class ActivityTarget extends WithingsStructure {
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
-        rawDataBuffer.putLong(targetCount);
+        rawDataBuffer.putInt(goalType);
+        rawDataBuffer.putInt(value);
     }
 
     @Override

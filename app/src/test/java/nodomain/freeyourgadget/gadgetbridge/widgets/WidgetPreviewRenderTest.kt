@@ -11,11 +11,12 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.graphics.createBitmap
 import com.google.android.material.card.MaterialCardView
 import nodomain.freeyourgadget.gadgetbridge.R
-import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.applyCardStyle
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType
 import nodomain.freeyourgadget.gadgetbridge.test.TestBase
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs
+import nodomain.freeyourgadget.gadgetbridge.util.ui.applyOverlays
+import nodomain.freeyourgadget.gadgetbridge.util.ui.themeStyle
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -77,12 +78,13 @@ class WidgetPreviewRenderTest : TestBase() {
     }
 
     private fun themedContext(dark: Boolean): Context {
-        val themed = ContextThemeWrapper(app, AbstractGBActivity.getThemeResource(AbstractGBActivity.NONE, dark))
+        val themeSettings = app.themeRepository.themeSettings.value
+        val themed = ContextThemeWrapper(app, themeSettings.themeStyle(dark, noActionBar = false))
         val configuration = Configuration(app.resources.configuration)
         configuration.uiMode = (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
             if (dark) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
         themed.applyOverrideConfiguration(configuration)
-        AbstractGBActivity.applyThemeOverlays(themed.theme, dark)
+        themeSettings.applyOverlays(themed.theme, dark)
         return themed
     }
 

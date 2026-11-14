@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 
 /**
@@ -35,13 +35,13 @@ private fun buildDetailRow(context: Context, label: String, formattedValue: Stri
         addView(TextView(context).apply {
             text = label
             textSize = 14f
-            setTextColor(GBApplication.getSecondaryTextColor(context))
+            setTextColor(MaterialColors.getColor(this, R.attr.textColorSecondary))
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         addView(TextView(context).apply {
             text = formattedValue
             textSize = 16f
-            setTextColor(GBApplication.getTextColor(context))
+            setTextColor(MaterialColors.getColor(this, R.attr.textColorPrimary))
             gravity = Gravity.END
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,

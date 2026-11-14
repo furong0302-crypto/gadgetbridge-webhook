@@ -1,12 +1,13 @@
 package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.GaugeTileRenderer
 import nodomain.freeyourgadget.gadgetbridge.activities.dashboard.LargeTileRenderer
@@ -177,7 +178,7 @@ abstract class MetricWidget<D> : GBWidget<D> {
             color,
             fill = true,
             reference = goal.takeIf { it > 0f },
-            referenceColor = GBApplication.getSecondaryTextColor(context),
+            referenceColor = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY),
         )
     }
 

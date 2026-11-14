@@ -206,7 +206,7 @@ object LastActivityWidget : GBWidget<LastActivityWidget.Data> {
 
         val workout = data.workout
         if (workout == null) {
-            val secondary = GBApplication.getSecondaryTextColor(context)
+            val secondary = MaterialColors.getColor(view, R.attr.textColorSecondary)
             renderBadge(view, MaterialColors.getColor(view, R.attr.gauge_track), R.drawable.ic_activity_running, secondary)
             name.text = context.getString(R.string.widget_last_activity_none)
             name.setTextColor(secondary)
@@ -405,7 +405,7 @@ object LastActivityWidget : GBWidget<LastActivityWidget.Data> {
         val inflater = LayoutInflater.from(container.context)
         val density = container.resources.displayMetrics.density
         val gap = (sizes.gapDp * density).roundToInt()
-        val secondary = GBApplication.getSecondaryTextColor(container.context)
+        val secondary = MaterialColors.getColor(container, R.attr.textColorSecondary)
         val primary = MaterialColors.getColor(container, com.google.android.material.R.attr.colorOnSurface)
         for ((index, stat) in stats.withIndex()) {
             val item = inflater.inflate(R.layout.dashboard_widget_stat, container, false)

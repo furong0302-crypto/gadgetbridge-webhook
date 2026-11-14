@@ -17,13 +17,13 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsBaseDeviceSupport;
 
 public abstract class AbstractResponseHandler implements ResponseHandler {
     protected GBDevice device;
-    protected WithingsSteelHRDeviceSupport support;
+    protected WithingsBaseDeviceSupport support;
 
-    public AbstractResponseHandler(WithingsSteelHRDeviceSupport support) {
+    public AbstractResponseHandler(WithingsBaseDeviceSupport support) {
         this.support = support;
         this.device = support.getDevice();
     }

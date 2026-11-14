@@ -125,6 +125,9 @@ open class DefaultChartsProvider : DeviceChartsProvider {
         if (coordinator.supportsRespiratoryRate(device)) {
             supportedCharts.add("respiratoryrate")
         }
+        if (coordinator.supportsEcgMeasurement(device)) {
+            supportedCharts.add("ecg")
+        }
 
         if (supportedCharts.size > 3) {
             supportedCharts.add(0, OVERVIEW)
@@ -178,6 +181,7 @@ open class DefaultChartsProvider : DeviceChartsProvider {
             "calories" -> context.getString(R.string.calories)
             "hydration" -> context.getString(R.string.pref_header_hydration)
             "respiratoryrate" -> context.getString(R.string.respiratoryrate)
+            "ecg" -> context.getString(R.string.pref_screen_ecg)
             "load" -> context.getString(R.string.pref_header_training_load)
             "raceprediction" -> context.getString(R.string.menuitem_race_predictor)
             "trainingreadiness" -> context.getString(R.string.metric_garmin_training_readiness)
@@ -222,6 +226,7 @@ open class DefaultChartsProvider : DeviceChartsProvider {
             "calories" -> CaloriesCollectionFragment.newInstance(allowSwipe)
             "hydration" -> HydrationCollectionFragment.newInstance(allowSwipe)
             "respiratoryrate" -> RespiratoryRateCollectionFragment.newInstance(allowSwipe)
+            "ecg" -> EcgListFragment()
             else -> UnknownFragment()
         }
     }
@@ -250,6 +255,7 @@ open class DefaultChartsProvider : DeviceChartsProvider {
             "calories" -> R.drawable.ic_calories
             "hydration" -> R.drawable.ic_drink
             "respiratoryrate" -> R.drawable.ic_activity_meditation
+            "ecg" -> R.drawable.ic_ecg
             "load" -> R.drawable.ic_show_chart
             "raceprediction" -> R.drawable.ic_timer
             "trainingreadiness" -> R.drawable.ic_insights

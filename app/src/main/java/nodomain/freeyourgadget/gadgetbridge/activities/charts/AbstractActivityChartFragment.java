@@ -20,10 +20,8 @@ import static nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryEntries.
 
 import android.graphics.Color;
 import android.text.format.DateFormat;
-import android.util.TypedValue;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -45,13 +43,13 @@ import java.util.concurrent.TimeUnit;
 import de.greenrobot.dao.query.QueryBuilder;
 import kotlin.jvm.functions.Function1;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.HeartRateUtils;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.ChartDataBuilder;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.mpchart.ChartSelection;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.sleep.SleepStagesChartData;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartSpec;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.WorkoutValueFormatter;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
@@ -123,25 +121,18 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
 
     @Override
     protected void init() {
-        TypedValue runningColor = new TypedValue();
-        BACKGROUND_COLOR = GBApplication.getBackgroundColor(getContext());
-        DESCRIPTION_COLOR = GBApplication.getTextColor(getContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(getContext());
-        HEARTRATE_COLOR = ContextCompat.getColor(getContext(), GBApplication.getPrefs().getChartsHeartRateColor().getColorRes());
-        HEARTRATE_FILL_COLOR = ContextCompat.getColor(getContext(), R.color.chart_heartrate_fill);
-
-        getContext().getTheme().resolveAttribute(R.attr.chart_activity, runningColor, true);
-        AK_ACTIVITY_COLOR = runningColor.data;
-        getContext().getTheme().resolveAttribute(R.attr.chart_deep_sleep, runningColor, true);
-        AK_DEEP_SLEEP_COLOR = runningColor.data;
-        getContext().getTheme().resolveAttribute(R.attr.chart_light_sleep, runningColor, true);
-        AK_LIGHT_SLEEP_COLOR = runningColor.data;
-        getContext().getTheme().resolveAttribute(R.attr.chart_rem_sleep, runningColor, true);
-        AK_REM_SLEEP_COLOR = runningColor.data;
-        getContext().getTheme().resolveAttribute(R.attr.chart_awake_sleep, runningColor, true);
-        AK_AWAKE_SLEEP_COLOR = runningColor.data;
-        getContext().getTheme().resolveAttribute(R.attr.chart_not_worn, runningColor, true);
-        AK_NOT_WORN_COLOR = runningColor.data;
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        BACKGROUND_COLOR = chartTheme.getBackgroundColor();
+        DESCRIPTION_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = chartTheme.getSecondaryTextColor();
+        HEARTRATE_COLOR = chartTheme.getHeartRateColor();
+        HEARTRATE_FILL_COLOR = chartTheme.getHeartRateFillColor();
+        AK_ACTIVITY_COLOR = chartTheme.getActivityColor();
+        AK_DEEP_SLEEP_COLOR = chartTheme.getDeepSleepColor();
+        AK_LIGHT_SLEEP_COLOR = chartTheme.getLightSleepColor();
+        AK_REM_SLEEP_COLOR = chartTheme.getRemSleepColor();
+        AK_AWAKE_SLEEP_COLOR = chartTheme.getAwakeSleepColor();
+        AK_NOT_WORN_COLOR = chartTheme.getNotWornColor();
 
         HEARTRATE_LABEL = getContext().getString(R.string.charts_legend_heartrate);
         HEARTRATE_AVERAGE_LABEL = getContext().getString(R.string.charts_legend_heartrate_average);

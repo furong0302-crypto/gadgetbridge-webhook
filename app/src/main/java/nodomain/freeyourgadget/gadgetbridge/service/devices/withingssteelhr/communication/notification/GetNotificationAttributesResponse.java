@@ -36,10 +36,11 @@ public class GetNotificationAttributesResponse {
 
     public byte[] serialize() {
         ByteBuffer buffer = ByteBuffer.allocate(getLength());
-        buffer.put(commandID);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(commandID);
         buffer.putInt(notificationUID);
-        buffer.order(ByteOrder.BIG_ENDIAN);
+        // Attributes might need to be LITTLE_ENDIAN according to ANCS (especially lengths).
+        // Let's check NotificationAttribute.serialize().
         for (NotificationAttribute attribute : attributes) {
             buffer.put(attribute.serialize());
         }

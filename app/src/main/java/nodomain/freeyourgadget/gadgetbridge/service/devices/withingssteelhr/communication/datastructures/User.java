@@ -96,6 +96,15 @@ public class User extends WithingsStructure {
     }
 
     @Override
+    protected void fillFromRawDataAsBuffer(ByteBuffer buffer) {
+        // Parse the GET_USER (0x0503) response from the watch.
+        // The first 4 bytes are the Withings account userId; remaining fields are not needed.
+        if (buffer.remaining() >= 4) {
+            userID = buffer.getInt();
+        }
+    }
+
+    @Override
     public short getType() {
         return WithingsStructureType.USER;
     }

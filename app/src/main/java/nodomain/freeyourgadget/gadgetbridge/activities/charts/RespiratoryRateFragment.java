@@ -26,8 +26,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.spec.ChartTheme;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.model.RespiratoryRateSample;
@@ -53,11 +53,10 @@ abstract class RespiratoryRateFragment<T extends ChartsData> extends AbstractCha
 
     @Override
     protected void init() {
-        TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
-        BACKGROUND_COLOR = GBApplication.getBackgroundColor(requireContext());
-        LEGEND_TEXT_COLOR = DESCRIPTION_COLOR = GBApplication.getTextColor(requireContext());
-        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
+        final ChartTheme chartTheme = ChartTheme.from(requireContext());
+        TEXT_COLOR = LEGEND_TEXT_COLOR = DESCRIPTION_COLOR = chartTheme.getTextColor();
+        CHART_TEXT_COLOR = chartTheme.getSecondaryTextColor();
+        BACKGROUND_COLOR = chartTheme.getBackgroundColor();
     }
 
     protected List<RespiratoryRateFragment.RespiratoryRateDay> getMyRespiratoryRateDaysData(DBHandler db, Calendar day, GBDevice device) {

@@ -40,6 +40,7 @@ import java.util.TreeMap;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.BaseActivitySummaryProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.BatteryLevelProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.GarminBodyEnergySampleProvider;
@@ -62,12 +63,17 @@ import nodomain.freeyourgadget.gadgetbridge.devices.GenericTrainingLoadChronicSa
 import nodomain.freeyourgadget.gadgetbridge.devices.PersistenceProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminActivitySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminEventSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminPreferences;
 import nodomain.freeyourgadget.gadgetbridge.devices.garmin.GarminWorkoutParser;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
 import nodomain.freeyourgadget.gadgetbridge.entities.BatteryLevel;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.GarminActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.GarminBodyEnergySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.GarminEcgDataSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.GarminEcgDataSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.GarminEcgSummarySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.GarminEcgSummarySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.GarminSolarChargeSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.GarminEventSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.GarminHeartRateRestingSample;
@@ -98,11 +104,15 @@ import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.model.TrainingStatus;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.FileType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminUtils;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.Side;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.HrvStatus;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.enums.SleepLevel;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.exception.FitParseException;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitBattery;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitDiveReadiness;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitEcgRawSample;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitEcgSmoothSample;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitEcgSummary;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitEnduranceScore;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitEvent;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.messages.FitFileId;
@@ -141,6 +151,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class FitImporter {
     private static final Logger LOG = LoggerFactory.getLogger(FitImporter.class);
+    private static final int ECG_SUMMARY_CATEGORIZATION_FIELD = 1;
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.ROOT);
 
     private final Context context;
@@ -171,6 +182,9 @@ public class FitImporter {
     @Nullable
     private FitFileId fileId = null;
     private final List<GenericMetricSample> genericMetricSamples = new ArrayList<>();
+    @Nullable
+    private FitEcgSummary ecgSummary = null;
+    private final List<Float> ecgSmoothSamples = new ArrayList<>();
     private boolean reportsTrainingStatus;
 
     private final GarminWorkoutParser workoutParser;
@@ -504,6 +518,16 @@ public class FitImporter {
             } else if (record instanceof FitDiveReadiness fitDiveReadiness) {
                 final Integer diveReadiness = fitDiveReadiness.getDiveReadiness();
                 addMetric(ts, diveReadiness, MetricSample.Metric.GARMIN_DIVE_READINESS);
+            } else if (record instanceof FitEcgSummary newEcgSummary) {
+                LOG.debug("ECG summary: {}", newEcgSummary);
+                ecgSummary = newEcgSummary;
+            } else if (record instanceof FitEcgSmoothSample ecgSmoothSample) {
+                final Float value = ecgSmoothSample.getValue();
+                if (value != null) {
+                    ecgSmoothSamples.add(value);
+                }
+            } else if (record instanceof FitEcgRawSample) {
+                // nothing to do - we only use the smooth samples
             } else if (record instanceof FitPad) {
                 // nothing to do - this is just a spacer
             } else {
@@ -583,6 +607,9 @@ public class FitImporter {
                     break;
                 case HRV_STATUS:
                     break;
+                case ECG:
+                    persistEcg(session);
+                    break;
                 default:
                     LOG.warn("No specific rules for FIT files of type {}", fileId.getType());
             }
@@ -617,6 +644,74 @@ public class FitImporter {
                 LOG.warn("Unknown FIT record of native number {} seen {} times", NativeMessageNumber, e.getValue());
             }
         }
+    }
+
+    private void persistEcg(final DaoSession session) {
+        if (ecgSummary == null) {
+            LOG.warn("ECG file has no summary");
+            return;
+        } else if (ecgSmoothSamples.isEmpty()) {
+            LOG.warn("ECG file has no samples");
+            return;
+        }
+
+        final Long startSeconds = ecgSummary.getEcgTimestamp();
+        final Float sampleRate = ecgSummary.getSmoothSampleRate();
+        if (startSeconds == null) {
+            LOG.warn("ECG summary has no timestamp: {}", ecgSummary);
+            return;
+        }
+        if (sampleRate == null || sampleRate <= 0) {
+            LOG.warn("ECG summary has no sample rate: {}", ecgSummary);
+            return;
+        }
+
+        final long deviceId = DBHelper.getDevice(gbDevice, session).getId();
+        final long start = startSeconds * 1000L;
+        final Float averageHeartRate = ecgSummary.getAverageHeartRate();
+        final Object categorization = ecgSummary.getRawFieldByNumber(ECG_SUMMARY_CATEGORIZATION_FIELD);
+        final Side mountingSide = ecgSummary.getMountingSide();
+
+        final List<GarminEcgSummarySample> existing = session.getGarminEcgSummarySampleDao().queryBuilder()
+            .where(
+                GarminEcgSummarySampleDao.Properties.DeviceId.eq(deviceId),
+                GarminEcgSummarySampleDao.Properties.StartTimestamp.eq(start)
+            )
+            .build()
+            .list();
+
+        final GarminEcgSummarySample summary = new GarminEcgSummarySample(
+            existing.isEmpty() ? null : existing.get(0).getEcgId(),
+            deviceId,
+            DBHelper.getUser(session).getId(),
+            start,
+            start + Math.round(ecgSmoothSamples.size() * 1000f / sampleRate),
+            sampleRate,
+            averageHeartRate != null ? Math.round(averageHeartRate) : null,
+            categorization instanceof Number number ? number.intValue() : null,
+            ecgSummary.getRmssdHrv(),
+            mountingSide != null ? mountingSide.num : null
+        );
+
+        LOG.debug("Persisting ECG at {} with {} samples", start, ecgSmoothSamples.size());
+        session.runInTx(() -> {
+            session.getGarminEcgSummarySampleDao().insertOrReplace(summary);
+
+            session.getGarminEcgDataSampleDao().queryBuilder()
+                .where(GarminEcgDataSampleDao.Properties.EcgId.eq(summary.getEcgId()))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
+
+            final List<GarminEcgDataSample> samples = new ArrayList<>(ecgSmoothSamples.size());
+            for (int i = 0; i < ecgSmoothSamples.size(); i++) {
+                samples.add(new GarminEcgDataSample(summary.getEcgId(), i, ecgSmoothSamples.get(i)));
+            }
+            session.getGarminEcgDataSampleDao().insertInTx(samples);
+        });
+
+        GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).edit()
+            .putBoolean(GarminPreferences.PREF_GARMIN_ECG_SUPPORTED, true)
+            .apply();
     }
 
     void addMetric(@Nullable final Long ts, @Nullable final Number value, @NonNull final MetricSample.Metric metric) {
@@ -784,6 +879,8 @@ public class FitImporter {
         trainingLoadAcuteSamples.clear();
         trainingLoadChronicSamples.clear();
         unknownRecords.clear();
+        ecgSummary = null;
+        ecgSmoothSamples.clear();
         fitSleepDataInfo = null;
         rawSleepStream = new RawSleepStream();
         sleepRestlessMomentsSamples.clear();

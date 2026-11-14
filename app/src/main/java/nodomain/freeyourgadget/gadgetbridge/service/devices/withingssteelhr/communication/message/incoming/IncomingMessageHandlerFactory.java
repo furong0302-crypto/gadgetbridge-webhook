@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsBaseDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.GlyphRequestHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
@@ -30,20 +30,11 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 public class IncomingMessageHandlerFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(IncomingMessageHandlerFactory.class);
-    private static IncomingMessageHandlerFactory instance;
-    private final WithingsSteelHRDeviceSupport support;
+    private final WithingsBaseDeviceSupport support;
     private Map<Short, IncomingMessageHandler> handlers = new HashMap<>();
 
-    private IncomingMessageHandlerFactory(WithingsSteelHRDeviceSupport support) {
+    public IncomingMessageHandlerFactory(WithingsBaseDeviceSupport support) {
         this.support = support;
-    }
-
-    public static IncomingMessageHandlerFactory getInstance(WithingsSteelHRDeviceSupport support) {
-        if (instance == null) {
-            instance = new IncomingMessageHandlerFactory(support);
-        }
-
-        return instance;
     }
 
     public IncomingMessageHandler getHandler(Message message) {
@@ -53,7 +44,12 @@ public class IncomingMessageHandlerFactory {
             case WithingsMessageType.STOP_LIVE_WORKOUT:
             case WithingsMessageType.GET_WORKOUT_GPS_STATUS:
                 if (handler == null) {
-                    handlers.put(message.getType(), new LiveWorkoutHandler(support));
+                    // Use a single shared handler for all live workout messages to preserve state
+                    LiveWorkoutHandler sharedHandler = new LiveWorkoutHandler(support);
+                    handlers.put(WithingsMessageType.START_LIVE_WORKOUT, sharedHandler);
+                    handlers.put(WithingsMessageType.STOP_LIVE_WORKOUT, sharedHandler);
+                    handlers.put(WithingsMessageType.GET_WORKOUT_GPS_STATUS, sharedHandler);
+                    handler = sharedHandler;
                 }
                 break;
             case WithingsMessageType.LIVE_WORKOUT_DATA:
@@ -74,6 +70,14 @@ public class IncomingMessageHandlerFactory {
             case WithingsMessageType.SYNC:
                 if (handler == null) {
                     handlers.put(message.getType(), new SyncRequestHandler(support));
+                }
+                break;
+            case WithingsMessageType.MEASURE_START:
+            case WithingsMessageType.MEASURE_STOP:
+                if (handler == null) {
+                    final MeasurementRequestHandler measurementHandler = new MeasurementRequestHandler(support);
+                    handlers.put(WithingsMessageType.MEASURE_START, measurementHandler);
+                    handlers.put(WithingsMessageType.MEASURE_STOP, measurementHandler);
                 }
                 break;
             default:

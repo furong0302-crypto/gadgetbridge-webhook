@@ -130,4 +130,56 @@ public class DataStructureFactoryTest {
         assertTrue(result.get(11) instanceof ActivitySampleUnknown);
     }
 
+    @Test
+    public void testVasistasSpo2Structure() {
+        // arrange
+        String dataString = "0995000603d7003a0003";
+        byte[] data = Hex.decode(dataString);
+
+        // act
+        List<WithingsStructure> result = factory2Test.createStructuresFromRawData(data);
+
+        // assert
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof VasistasSpo2);
+
+        final VasistasSpo2 vasistasSpo2 = (VasistasSpo2) result.get(0);
+        assertEquals(983, vasistasSpo2.getSpo2DeciPercent());
+        assertEquals(58, vasistasSpo2.getPulseRate());
+        assertEquals(3, vasistasSpo2.getStatus());
+        assertEquals(98, vasistasSpo2.getSpo2Percent());
+    }
+
+    @Test
+    public void testVasistasAhiStructure() {
+        final List<WithingsStructure> result = factory2Test.createStructuresFromRawData(
+                Hex.decode("09a0000400000032"));
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof VasistasAhi);
+        final VasistasAhi sample = (VasistasAhi) result.get(0);
+        assertEquals(0, sample.getApneaHypopneaIndex());
+        assertEquals(50, sample.getBreathingEventProbability());
+        assertTrue(sample.isValid());
+    }
+
+    @Test
+    public void testVasistasAhiPreservesInvalidSignedMarker() {
+        final VasistasAhi sample = (VasistasAhi) factory2Test.createStructuresFromRawData(
+                Hex.decode("09a000040000fff8")).get(0);
+
+        assertEquals(-8, sample.getBreathingEventProbability());
+        assertFalse(sample.isValid());
+    }
+
+    @Test
+    public void testVasistasRespiratoryRateStructure() {
+        final List<WithingsStructure> result = factory2Test.createStructuresFromRawData(
+                Hex.decode("09d9000400000010"));
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0) instanceof VasistasRespiratoryRate);
+        assertEquals(16, ((VasistasRespiratoryRate) result.get(0)).getRespiratoryRate());
+    }
+
 }

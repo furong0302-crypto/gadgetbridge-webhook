@@ -8,6 +8,9 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.compon
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.deviceSettings
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLClassicDeviceCoordinator
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
+import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControl
+import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControlOption
+import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControlToggleGroup
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport
@@ -85,6 +88,34 @@ open class OneMoreSonoFlowCoordinator : AbstractBLClassicDeviceCoordinator() {
         xmlScreen(
             DeviceSpecificSettingsScreen.CALLS_AND_NOTIFICATIONS,
             R.xml.devicesettings_headphones,
+        )
+    }
+
+    override fun getQuickControls(device: GBDevice): List<QuickControl?>? {
+        return listOf(
+            QuickControlToggleGroup.forPreference(
+                key = DeviceSettingsPreferenceConst.PREF_NOISE_CONTROL_SELECTOR,
+                title = R.string.prefs_noise_control,
+                icon = R.drawable.ic_surround,
+                defaultValue = OneMoreNoiseControlMode.OFF.name.lowercase(),
+                options = listOf(
+                    QuickControlOption(
+                        OneMoreNoiseControlMode.OFF.name.lowercase(),
+                        R.string.sony_ambient_sound_off,
+                        R.drawable.ic_hearing_disabled
+                    ),
+                    QuickControlOption(
+                        OneMoreNoiseControlMode.ANC.name.lowercase(),
+                        R.string.sony_ambient_sound_noise_cancelling_short,
+                        R.drawable.ic_noise_control_on
+                    ),
+                    QuickControlOption(
+                        OneMoreNoiseControlMode.TRANSPARENCY.name.lowercase(),
+                        R.string.sony_ambient_sound_ambient_sound_short,
+                        R.drawable.ic_hearing
+                    )
+                )
+            )
         )
     }
 

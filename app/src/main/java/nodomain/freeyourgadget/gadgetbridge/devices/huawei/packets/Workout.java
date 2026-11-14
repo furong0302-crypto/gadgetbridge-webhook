@@ -102,10 +102,16 @@ public class Workout {
 
                 List<HuaweiTLV> subContainers = container.getObjects(0x85);
                 for (HuaweiTLV subContainerTlv : subContainers) {
+                    final short number = subContainerTlv.getShort(0x06);
+                    final short dataCount = subContainerTlv.getShort(0x07);
+                    // #7305 - some devices send an empty entry after the last workout, ignore it
+                    if (number == 0 && dataCount == 0)
+                        continue;
+
                     WorkoutNumbers workoutNumber = new WorkoutNumbers();
                     workoutNumber.rawData = subContainerTlv.serialize();
-                    workoutNumber.workoutNumber = subContainerTlv.getShort(0x06);
-                    workoutNumber.dataCount = subContainerTlv.getShort(0x07);
+                    workoutNumber.workoutNumber = number;
+                    workoutNumber.dataCount = dataCount;
                     workoutNumber.paceCount = subContainerTlv.getShort(0x08);
                     if (subContainerTlv.contains(0x09)) {
                         workoutNumber.segmentsCount = subContainerTlv.getShort(0x09);

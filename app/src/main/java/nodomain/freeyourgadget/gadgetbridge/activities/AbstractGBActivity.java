@@ -23,13 +23,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,12 +36,23 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.Locale;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BarShade;
 
-
+/**
+ * The base of Gadgetbridge's activities. It applies the theme and the language, finishes on quit, and pads
+ * the content for edge-to-edge.
+ * <p>
+ * It is a Hilt activity, so every subclass can host {@code @AndroidEntryPoint} fragments. Hilt injects by
+ * the annotated class, though: a subclass that declares its own {@code @Inject} fields needs its own
+ * {@code @AndroidEntryPoint}. Injected fields are set during {@code super.onCreate}, so code that runs
+ * before it, like {@link #init(GBActivity, int)}, can't use them: the theme and the language applied there
+ * keep looking up what they need themselves.
+ */
+@AndroidEntryPoint
 public abstract class AbstractGBActivity extends AppCompatActivity implements GBActivity {
     private boolean isLanguageInvalid = false;
     private BarShade.ScrollListener barShades;
@@ -62,9 +71,6 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
             switch (action) {
                 case GBApplication.ACTION_LANGUAGE_CHANGE:
                     setLanguage(GBApplication.getLanguage(), true);
-                    break;
-                case GBApplication.ACTION_THEME_CHANGE:
-                    recreate();
                     break;
                 case GBApplication.ACTION_QUIT:
                     finish();
@@ -85,67 +91,13 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
         init(activity, NONE);
     }
 
-    @StyleRes
-    public static int getThemeResource(final int flags, final boolean dark) {
-        if (GBApplication.areDynamicColorsEnabled()) {
-            if (dark) {
-                if ((flags & NO_ACTIONBAR) != 0) {
-                    if (GBApplication.isAmoledBlackEnabled())
-                        return R.style.GadgetbridgeThemeDynamicDarkAmoled_NoActionBar;
-                    else
-                        return R.style.GadgetbridgeThemeDynamicDark_NoActionBar;
-                } else {
-                    if (GBApplication.isAmoledBlackEnabled())
-                        return R.style.GadgetbridgeThemeDynamicDarkAmoled;
-                    else
-                        return R.style.GadgetbridgeThemeDynamicDark;
-                }
-            } else {
-                if ((flags & NO_ACTIONBAR) != 0) {
-                    return R.style.GadgetbridgeThemeDynamicLight_NoActionBar;
-                } else {
-                    return R.style.GadgetbridgeThemeDynamicLight;
-                }
-            }
-        } else if (dark) {
-            if ((flags & NO_ACTIONBAR) != 0) {
-                if (GBApplication.isAmoledBlackEnabled())
-                    return R.style.GadgetbridgeThemeBlack_NoActionBar;
-                else
-                    return R.style.GadgetbridgeThemeDark_NoActionBar;
-            } else {
-                if (GBApplication.isAmoledBlackEnabled())
-                    return R.style.GadgetbridgeThemeBlack;
-                else
-                    return R.style.GadgetbridgeThemeDark;
-            }
-        } else {
-            if ((flags & NO_ACTIONBAR) != 0) {
-                return R.style.GadgetbridgeTheme_NoActionBar;
-            } else {
-                return R.style.GadgetbridgeTheme;
-            }
-        }
-    }
-
-    public static void applyThemeOverlays(final Resources.Theme theme, final boolean dark) {
-        // Dynamic Color already ties tab/button/chip colors to the wallpaper palette, so the
-        // user's chosen accent preset only applies to the static Light/Dark themes.
-        if (!GBApplication.areDynamicColorsEnabled()) {
-            theme.applyStyle(GBApplication.getAccentColorOverlay(dark), true);
-        }
-        if (GBApplication.areContrastingSurfacesEnabled(dark)) {
-            theme.applyStyle(GBApplication.getContrastingSurfacesOverlay(dark), true);
-        }
-    }
-
+    /**
+     * Applies the theme and the language. Call it in {@code onCreate}, before {@code super.onCreate}.
+     *
+     * @param activity an {@link Activity}
+     */
     public static void init(GBActivity activity, int flags) {
-        final boolean dark = GBApplication.isDarkThemeEnabled();
-        activity.setTheme(getThemeResource(flags, dark));
-        if (activity instanceof Activity) {
-            applyThemeOverlays(((Activity) activity).getTheme(), dark);
-        }
-
+        ActivityTheme.apply((Activity) activity, (flags & NO_ACTIONBAR) != 0);
         activity.setLanguage(GBApplication.getLanguage(), false);
     }
 
@@ -154,7 +106,6 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
         IntentFilter filterLocal = new IntentFilter();
         filterLocal.addAction(GBApplication.ACTION_QUIT);
         filterLocal.addAction(GBApplication.ACTION_LANGUAGE_CHANGE);
-        filterLocal.addAction(GBApplication.ACTION_THEME_CHANGE);
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filterLocal);
 
         init(this);

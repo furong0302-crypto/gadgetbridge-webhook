@@ -23,7 +23,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isNotEmpty
 import androidx.gridlayout.widget.GridLayout
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.WorkoutValueFormatter
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.entries.ActivitySummaryEntry
@@ -148,7 +148,7 @@ class GridTableBuilder @JvmOverloads constructor(
             } else {
                 setPadding(dpToPx(15), dpToPx(verticalPadding), dpToPx(15), dpToPx(verticalPadding))
             }
-            setBackgroundColor(GBApplication.getWindowBackgroundColor(context))
+            setBackgroundColor(MaterialColors.getColor(this, android.R.attr.colorBackground))
 
             // A full-width (2-column-span) cell has no adjacent column, so it gets no side border.
             val marginLeft = if (columnSize == 2 || i % 2 == 0) 0 else 1

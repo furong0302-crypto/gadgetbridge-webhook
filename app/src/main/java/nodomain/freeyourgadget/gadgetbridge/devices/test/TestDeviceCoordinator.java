@@ -47,6 +47,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.GenericMetricSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.HydrationSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.EcgDataProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.Vo2MaxSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControl;
@@ -56,6 +57,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.test.activity.TestActivityTr
 import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestBloodPressureSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestBodyEnergySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestCyclingSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestEcgDataProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestGenericMetricSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestHeartRateRestingSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.samples.TestHrvSummarySampleProvider;
@@ -493,6 +495,17 @@ public class TestDeviceCoordinator extends AbstractDeviceCoordinator {
     @Override
     public boolean supportsHrvMeasurement(@NonNull final GBDevice device) {
         return supports(device, TestFeature.HRV_MEASUREMENT);
+    }
+
+    @Override
+    public boolean supportsEcgMeasurement(@NonNull final GBDevice device) {
+        return supports(device, TestFeature.ECG_MEASUREMENT);
+    }
+
+    @Nullable
+    @Override
+    public EcgDataProvider getEcgDataProvider(@NonNull final GBDevice device, @NonNull final DaoSession session) {
+        return supportsEcgMeasurement(device) ? new TestEcgDataProvider() : super.getEcgDataProvider(device, session);
     }
 
     @Override

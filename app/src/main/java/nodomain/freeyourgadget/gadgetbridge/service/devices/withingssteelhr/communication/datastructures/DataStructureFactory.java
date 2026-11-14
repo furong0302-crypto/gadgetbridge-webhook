@@ -101,6 +101,36 @@ public class DataStructureFactory {
                 case WithingsStructureType.ACTIVITY_SAMPLE_UNKNOWN:
                     structure = new ActivitySampleUnknown();
                     break;
+                case WithingsStructureType.STORED_MEASURE_META:
+                    structure = new StoredMeasureMeta();
+                    break;
+                case WithingsStructureType.STORED_MEASURE_DATA:
+                    structure = new StoredMeasureData();
+                    break;
+                case WithingsStructureType.STORED_MEASURE_DATA_EXTEND:
+                    structure = new StoredMeasureDataExtend();
+                    break;
+                case WithingsStructureType.STORED_SIGNAL_META:
+                    structure = new StoredSignalMeta();
+                    break;
+                case WithingsStructureType.STORED_SIGNAL_DATA:
+                    structure = new StoredSignalData();
+                    break;
+                case WithingsStructureType.STORED_SIGNAL_META_EXTEND:
+                    structure = new StoredSignalMetaExtended();
+                    break;
+                case WithingsStructureType.VASISTAS_TYPE:
+                    structure = new VasistasType();
+                    break;
+                case WithingsStructureType.VASISTAS_SPO2:
+                    structure = new VasistasSpo2();
+                    break;
+                case WithingsStructureType.VASISTAS_AHI:
+                    structure = new VasistasAhi();
+                    break;
+                case WithingsStructureType.VASISTAS_RESPIRATORY_RATE:
+                    structure = new VasistasRespiratoryRate();
+                    break;
                 case WithingsStructureType.END_OF_TRANSMISSION:
                     structure = new EndOfTransmission();
                     break;
@@ -126,10 +156,43 @@ public class DataStructureFactory {
                     structure = new GlyphId();
                     break;
                 case WithingsStructureType.NOTIFICATION_APP_ID:
-                    structure = new GlyphId();
+                    structure = new SourceAppId();
+                    break;
+                case WithingsStructureType.SHORTCUT_ACTION:
+                    structure = new ShortcutAction();
+                    break;
+                case WithingsStructureType.FEATURE_TAG_DEPRECATED:
+                    structure = new FeatureTagDeprecated();
+                    break;
+                case WithingsStructureType.FEATURE_TAGS_USER_ID:
+                    structure = new FeatureTagsUserId();
+                    break;
+                case WithingsStructureType.LOCAL_NOTIFICATION:
+                    structure = new LocalNotification();
+                    break;
+                case WithingsStructureType.GLANCE_STATUS:
+                    structure = new GlanceStatus();
+                    break;
+                case WithingsStructureType.ALARM:
+                    structure = new AlarmSettings();
+                    break;
+                case WithingsStructureType.ALARM_NAME:
+                    structure = new AlarmName();
+                    break;
+                case WithingsStructureType.LUMINOSITY_LEVEL:
+                    structure = new LuminosityLevel();
+                    break;
+                case WithingsStructureType.TRACKER_MOVE_HANDS:
+                    structure = new TrackerMoveHands();
+                    break;
+                case WithingsStructureType.TRACKER_WEAR_POS:
+                    structure = new TrackerWearPos();
+                    break;
+                case WithingsStructureType.USER:
+                    structure = new User();
                     break;
                 default:
-                    structure = null;
+                    structure = new RawWithingsStructure(structureTypeFromResponse);
                     logger.info("Received yet unknown structure type: " + structureTypeFromResponse);
             }
 

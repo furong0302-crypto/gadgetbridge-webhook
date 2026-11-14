@@ -21,23 +21,29 @@ import java.nio.ByteBuffer;
 public class ImageData extends WithingsStructure {
 
     byte [] imageData;
+    private boolean endOfMessage;
 
     public void setImageData(byte[] imageData) {
         this.imageData = imageData;
     }
 
+    public void setEndOfMessage(boolean endOfMessage) {
+        this.endOfMessage = endOfMessage;
+    }
+
+    @Override
+    public boolean withEndOfMessage() {
+        return endOfMessage;
+    }
+
     @Override
     public short getLength() {
-        return imageData != null ? (short)(imageData.length + 1 + HEADER_SIZE) : 1 + HEADER_SIZE;
+        return imageData != null ? (short)(imageData.length + HEADER_SIZE + 1) : HEADER_SIZE + 1;
     }
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer buffer) {
-        if (imageData != null) {
-            addByteArrayWithLengthByte(buffer, imageData);
-        } else {
-            addByteArrayWithLengthByte(buffer, new byte[0]);
-        }
+        addByteArrayWithLengthByte(buffer, imageData != null ? imageData : new byte[0]);
     }
 
     @Override

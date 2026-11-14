@@ -18,7 +18,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.util;
 
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -27,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -43,11 +41,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.MaterialColors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,59 +120,12 @@ public class AndroidUtils {
     }
 
     /**
-     * Returns the theme dependent text color as a css-style hex string.
-     * @param context the context to access the colour
+     * Returns the text color of the context's theme as a css-style hex string.
+     * @param context a context with the activity theme; the application context has none
      */
     public static String getTextColorHex(Context context) {
-        int color;
-        if (isDynamicColorActive()) {
-            color = getDynamicColor(context, com.google.android.material.R.attr.colorOnSurface);
-        } else if (GBApplication.isDarkThemeEnabled()) {
-            color = ContextCompat.getColor(context, R.color.primarytext_dark);
-        } else {
-            color = ContextCompat.getColor(context, R.color.primarytext_light);
-        }
-        return colorToHex(color);
+        return colorToHex(MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK));
     }
-
-    /**
-     * Returns the theme dependent background color as a css-style hex string.
-     * @param context the context to access the colour
-     */
-    public static String getBackgroundColorHex(Context context) {
-        int color;
-        if (isDynamicColorActive()) {
-            color = getDynamicColor(context, com.google.android.material.R.attr.colorSurface);
-        } else if (GBApplication.isDarkThemeEnabled()) {
-            color = ContextCompat.getColor(context, androidx.cardview.R.color.cardview_dark_background);
-        } else {
-            color = ContextCompat.getColor(context, androidx.cardview.R.color.cardview_light_background);
-        }
-        return colorToHex(color);
-    }
-
-    /**
-     * Whether the Dynamic Color theme is both selected and supported by the system.
-     */
-    public static boolean isDynamicColorActive() {
-        return DynamicColors.isDynamicColorAvailable() && GBApplication.areDynamicColorsEnabled();
-    }
-
-    /**
-     * Resolves a color attribute against the Dynamic Color theme matching the current
-     * light/dark setting. Independent of the context's own theme, so it also works with
-     * the application context.
-     */
-    public static int getDynamicColor(Context context, int attr) {
-        final Context dynamicColorContext = DynamicColors.wrapContextIfAvailable(context,
-                GBApplication.isDarkThemeEnabled() ? R.style.GadgetbridgeThemeDynamicDark : R.style.GadgetbridgeThemeDynamicLight);
-        @SuppressLint("ResourceType")
-        final TypedArray ta = dynamicColorContext.obtainStyledAttributes(new int[]{attr});
-        final int color = ta.getColor(0, 0);
-        ta.recycle();
-        return color;
-    }
-
 
     private static String colorToHex(int color) {
         return "#"

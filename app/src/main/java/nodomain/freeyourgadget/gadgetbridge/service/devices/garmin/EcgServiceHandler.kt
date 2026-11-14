@@ -1,7 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.garmin
 
 import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiEcgService
-import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.deviceevents.FileDownloadedDeviceEvent
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -9,11 +8,6 @@ import java.io.File
 
 class EcgServiceHandler(val deviceSupport: GarminSupport) {
     fun handle(ecgService: GdiEcgService.EcgService): GdiEcgService.EcgService? {
-        if (true) {
-            LOG.error("EcgServiceHandler is disabled")
-            return null
-        }
-
         if (!ecgService.hasFileTransfer()) {
             LOG.warn("No file transfer in ecg service")
             return null
@@ -61,9 +55,7 @@ class EcgServiceHandler(val deviceSupport: GarminSupport) {
             return null // do not signal file as saved
         }
 
-        val fileDownloadedDeviceEvent = FileDownloadedDeviceEvent()
-        fileDownloadedDeviceEvent.localPath = outputEcgFile.absolutePath
-        deviceSupport.evaluateGBDeviceEvent(fileDownloadedDeviceEvent)
+        deviceSupport.onPushedFileReceived(outputEcgFile)
 
         // TODO mark as synced
         return null

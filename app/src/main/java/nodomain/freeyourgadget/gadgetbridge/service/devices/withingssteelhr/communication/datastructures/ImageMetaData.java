@@ -20,9 +20,17 @@ import java.nio.ByteBuffer;
 
 public class ImageMetaData extends WithingsStructure {
 
-    private byte unknown = 0x00;
+    private byte index = 0x00;
     private byte width;
     private byte height;
+
+    public byte getIndex() {
+        return index;
+    }
+
+    public void setIndex(byte index) {
+        this.index = index;
+    }
 
     public byte getWidth() {
         return width;
@@ -47,14 +55,14 @@ public class ImageMetaData extends WithingsStructure {
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer buffer) {
-        buffer.put(unknown);
+        buffer.put(index);
         buffer.put(width);
         buffer.put(height);
     }
 
     @Override
     public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
-        unknown = rawDataBuffer.get();
+        index = rawDataBuffer.get();
         width = rawDataBuffer.get();
         height = rawDataBuffer.get();
     }

@@ -26,16 +26,17 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.databinding.ActivityWelcomeBinding;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 
+@AndroidEntryPoint
 public class WelcomeActivity extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(WelcomeActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AbstractGBActivity.init(this, AbstractGBActivity.NO_ACTIONBAR);
         super.onCreate(savedInstanceState);
         final ActivityWelcomeBinding binding = ActivityWelcomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

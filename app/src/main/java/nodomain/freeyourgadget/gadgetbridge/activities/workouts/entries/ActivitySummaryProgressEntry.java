@@ -7,11 +7,11 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.Locale;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.WorkoutValueFormatter;
 
@@ -56,7 +56,7 @@ public class ActivitySummaryProgressEntry extends ActivitySummarySimpleEntry {
         final TextView valueTextView = new TextView(context);
         valueTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         valueTextView.setTextSize(12);
-        valueTextView.setTextColor(GBApplication.getTextColor(context));
+        valueTextView.setTextColor(MaterialColors.getColor(valueTextView, R.attr.textColorPrimary));
         valueTextView.setGravity(Gravity.END);
         valueTextView.setText(String.format(Locale.getDefault(), "%s (%d%%)", workoutValueFormatter.formatValue(getValue(), getUnit()), progress));
 
@@ -74,7 +74,7 @@ public class ActivitySummaryProgressEntry extends ActivitySummarySimpleEntry {
         progressBar.setTrackThickness((int) (10 * context.getResources().getDisplayMetrics().density));
         progressBar.setTrackCornerRadius((int) (4 * context.getResources().getDisplayMetrics().density));
         progressBar.setTrackColor(ContextCompat.getColor(context, R.color.gauge_line_color));
-        progressBar.setIndicatorColor(color != 0 ? color : GBApplication.getTextColor(context));
+        progressBar.setIndicatorColor(color != 0 ? color : MaterialColors.getColor(progressBar, R.attr.textColorPrimary));
         progressBar.setTrackStopIndicatorSize(0);
         progressBar.setIndicatorTrackGapSize(0);
 

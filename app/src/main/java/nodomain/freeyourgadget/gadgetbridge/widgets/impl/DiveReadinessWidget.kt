@@ -17,8 +17,9 @@
 package nodomain.freeyourgadget.gadgetbridge.widgets.impl
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
-import nodomain.freeyourgadget.gadgetbridge.GBApplication
+import com.google.android.material.color.MaterialColors
 import nodomain.freeyourgadget.gadgetbridge.R
 import nodomain.freeyourgadget.gadgetbridge.devices.GenericMetricSampleProvider
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
@@ -89,7 +90,7 @@ object DiveReadinessWidget : MetricWidget<DiveReadinessWidget.Data>() {
             return emptyModel(context)
         }
         val fraction = data.value.coerceIn(0f, 100f) / 100f
-        val color = GBApplication.getTextColor(context)
+        val color = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK)
         val line = data.weeks?.let { weekLine(context, it) }
         return TileModel(
             value = String.format(java.util.Locale.getDefault(), "%.0f", data.value),
@@ -128,7 +129,7 @@ object DiveReadinessWidget : MetricWidget<DiveReadinessWidget.Data>() {
             xMax = (weeks.size - 1).toFloat(),
             yMin = yMin,
             yMax = yMax,
-            color = GBApplication.getTextColor(context),
+            color = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK),
         )
     }
 

@@ -36,6 +36,13 @@ data class NotificationSpec @JvmOverloads constructor(
     var title: String? = null,
     var subject: String? = null,
     var body: String? = null,
+    /**
+     * MessagingStyle conversation metadata. The sender and body identify the latest message,
+     * while the generic title, sender, and body remain unchanged for devices that do not opt in.
+     */
+    var conversationTitle: String? = null,
+    var conversationSender: String? = null,
+    var conversationBody: String? = null,
     var type: NotificationType? = null,
     var sourceName: String? = null,
     var channelId: String? = null,
@@ -56,6 +63,9 @@ data class NotificationSpec @JvmOverloads constructor(
             subject = subject?.let(RtlUtils::fixRtl),
             title = title?.let(RtlUtils::fixRtl),
             body = body?.let(RtlUtils::fixRtl),
+            conversationTitle = conversationTitle?.let(RtlUtils::fixRtl),
+            conversationSender = conversationSender?.let(RtlUtils::fixRtl),
+            conversationBody = conversationBody?.let(RtlUtils::fixRtl),
             sourceName = sourceName?.let(RtlUtils::fixRtl)
         )
     }
@@ -68,6 +78,9 @@ data class NotificationSpec @JvmOverloads constructor(
             subject = transform(subject, deviceSupport, transliterator),
             title = transform(title, deviceSupport, transliterator),
             body = transform(body, deviceSupport, transliterator),
+            conversationTitle = transform(conversationTitle, deviceSupport, transliterator),
+            conversationSender = transform(conversationSender, deviceSupport, transliterator),
+            conversationBody = transform(conversationBody, deviceSupport, transliterator),
             sourceName = transform(sourceName, deviceSupport, transliterator)
         )
 
@@ -80,11 +93,15 @@ data class NotificationSpec @JvmOverloads constructor(
         sender = null,
         subject = null,
         title = null,
-        body = null
+        body = null,
+        conversationTitle = null,
+        conversationSender = null,
+        conversationBody = null
     )
 
     fun withMessageBodyCleared(): NotificationSpec = copy(
-        body = null
+        body = null,
+        conversationBody = null
     )
 
     companion object {

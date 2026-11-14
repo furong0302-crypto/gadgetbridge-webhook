@@ -10,6 +10,8 @@ import nodomain.freeyourgadget.gadgetbridge.R
 
 /**
  * Chart colors, resolved once from a themed [Context].
+ *
+ * [backgroundColor] is transparent, so charts show the surface they are drawn on.
  */
 data class ChartTheme(
     val textColor: Int,
@@ -30,6 +32,7 @@ data class ChartTheme(
     val markerDotGapColor: Int,
 ) {
     companion object {
+        @JvmStatic
         fun from(context: Context): ChartTheme {
             val theme = context.theme
             fun attrColor(attrRes: Int): Int {
@@ -41,9 +44,9 @@ data class ChartTheme(
             val surface = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, Color.WHITE)
 
             return ChartTheme(
-                textColor = GBApplication.getTextColor(context),
-                secondaryTextColor = GBApplication.getSecondaryTextColor(context),
-                backgroundColor = GBApplication.getBackgroundColor(context),
+                textColor = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK),
+                secondaryTextColor = MaterialColors.getColor(context, R.attr.textColorSecondary, Color.GRAY),
+                backgroundColor = Color.TRANSPARENT,
                 heartRateColor = ContextCompat.getColor(context, GBApplication.getPrefs().chartsHeartRateColor.colorRes),
                 heartRateFillColor = ContextCompat.getColor(context, R.color.chart_heartrate_fill),
                 activityColor = attrColor(R.attr.chart_activity),
@@ -56,7 +59,7 @@ data class ChartTheme(
                 markerBorderColor = MaterialColors.getColor(context, R.attr.stat_tile_border, Color.GRAY),
                 markerTitleColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.GRAY),
                 markerValueColor = MaterialColors.getColor(context, R.attr.textColorPrimary, Color.BLACK),
-                markerDotGapColor = GBApplication.getWindowBackgroundColor(context),
+                markerDotGapColor = MaterialColors.getColor(context, android.R.attr.colorBackground, surface),
             )
         }
     }

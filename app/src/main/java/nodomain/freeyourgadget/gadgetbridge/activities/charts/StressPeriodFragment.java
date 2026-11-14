@@ -33,6 +33,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.android.material.color.MaterialColors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -409,7 +410,7 @@ public class StressPeriodFragment extends StressFragment<StressPeriodFragment.My
         mStressLevelsPieChart.setNoDataText("");
         mStressLevelsPieChart.setNoDataIconEnabled(false);
         mStressLevelsPieChart.setTouchEnabled(false);
-        mStressLevelsPieChart.setCenterTextColor(GBApplication.getTextColor(getContext()));
+        mStressLevelsPieChart.setCenterTextColor(MaterialColors.getColor(mStressLevelsPieChart, R.attr.textColorPrimary));
         mStressLevelsPieChart.setCenterTextSize(18f);
         mStressLevelsPieChart.setHoleColor(requireContext().getResources().getColor(R.color.transparent));
         mStressLevelsPieChart.setHoleRadius(87);

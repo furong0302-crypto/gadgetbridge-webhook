@@ -30,6 +30,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.MarkerView
@@ -218,7 +219,7 @@ class XiaomiHipeeP1HistoryActivity : AbstractGBActivity() {
                         val dot = View(this).apply {
                             background = GradientDrawable().apply {
                                 shape = GradientDrawable.OVAL
-                                setColor(GBApplication.getTextColor(this@XiaomiHipeeP1HistoryActivity))
+                                setColor(MaterialColors.getColor(cell, R.attr.textColorPrimary))
                             }
                         }
                         cell.addView(dot, FrameLayout.LayoutParams(dp(6), dp(6), Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL).apply {
@@ -276,7 +277,7 @@ class XiaomiHipeeP1HistoryActivity : AbstractGBActivity() {
 
     private fun setupChart() {
         chart.description.isEnabled = false
-        chart.legend.textColor = GBApplication.getTextColor(this)
+        chart.legend.textColor = MaterialColors.getColor(chart, R.attr.textColorPrimary)
         chart.noDataText = ""
         chart.isNoDataIconEnabled = false
         chart.isTouchEnabled = true
@@ -286,14 +287,14 @@ class XiaomiHipeeP1HistoryActivity : AbstractGBActivity() {
         chart.axisLeft.apply {
             axisMinimum = 0f
             granularity = 1f
-            textColor = GBApplication.getSecondaryTextColor(this@XiaomiHipeeP1HistoryActivity)
+            textColor = MaterialColors.getColor(chart, R.attr.textColorSecondary)
         }
         chart.xAxis.apply {
             position = XAxis.XAxisPosition.BOTTOM
             isDrawGridLinesEnabled = false
             granularity = 1f
             labelCount = 12
-            textColor = GBApplication.getSecondaryTextColor(this@XiaomiHipeeP1HistoryActivity)
+            textColor = MaterialColors.getColor(chart, R.attr.textColorSecondary)
             valueFormatter = IAxisValueFormatter { value, _ ->
                 if (value.toInt() in 0..23) String.format(Locale.getDefault(), "%02d", value.toInt()) else ""
             }
