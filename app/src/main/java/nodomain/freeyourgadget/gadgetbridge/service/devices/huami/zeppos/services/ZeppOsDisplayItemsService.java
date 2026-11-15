@@ -69,6 +69,8 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
     public static final byte DISPLAY_ITEMS_SECTION_MORE = 0x02;
     public static final byte DISPLAY_ITEMS_SECTION_DISABLED = 0x03;
 
+    private int version = 0;
+
     public ZeppOsDisplayItemsService(final ZeppOsSupport support) {
         super(support, true);
     }
@@ -82,7 +84,8 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
     public void handlePayload(final byte[] payload) {
         switch (payload[0]) {
             case CMD_CAPABILITIES_RESPONSE:
-                LOG.debug("Got display items capabilities response: {}", GB.hexdump(payload));
+                version = payload[1] & 0xff;
+                LOG.info("God display items service version {}", version);
                 final ZeppOsTransactionBuilder builder = createTransactionBuilder("request display items");
                 requestItems(builder, DISPLAY_ITEMS_MENU);
                 requestItems(builder, DISPLAY_ITEMS_SHORTCUTS);
@@ -205,7 +208,7 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
             allScreens.add(screenNameOrId);
 
             final int screenSectionVal = buf.get();
-            final int screenPosition = buf.get();
+            final int screenPosition = version >= 4 ? buf.getShort() & 0xffff : buf.get();
             final int flags = buf.get();
             if (flags != 0) {
                 final Flags flagsObj = new Flags();
@@ -353,14 +356,15 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
             }
         }
 
-        final ByteBuffer buf = ByteBuffer.allocate(4 + numItems * 12 + flagsOverhead);
+        final int itemSize = 12 + (version >= 4 ? 1 : 0);
+        final ByteBuffer buf = ByteBuffer.allocate(4 + numItems * itemSize + flagsOverhead);
         buf.order(ByteOrder.LITTLE_ENDIAN);
 
         buf.put(CMD_CREATE);
         buf.put(menuType);
         buf.putShort((short) numItems);
 
-        byte pos = 0;
+        int pos = 0;
         boolean inMoreSection = false;
 
         // IDs are 8-char hex strings, in upper case
@@ -392,7 +396,12 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
             buf.put(id.getBytes(StandardCharsets.UTF_8));
             buf.put((byte) 0);
             buf.put(sectionKey);
-            buf.put(pos++);
+            if (version >= 4) {
+                buf.putShort((short) pos);
+            } else {
+                buf.put((byte) pos);
+            }
+            pos++;
             final Flags flags = flagsMap.get(id);
             if (flags != null && flags.value != 0) {
                 buf.put((byte) (flags.value));
@@ -426,7 +435,12 @@ public class ZeppOsDisplayItemsService extends AbstractZeppOsService {
             buf.put(id.getBytes(StandardCharsets.UTF_8));
             buf.put((byte) 0);
             buf.put(DISPLAY_ITEMS_SECTION_DISABLED);
-            buf.put(pos++);
+            if (version >= 4) {
+                buf.putShort((short) pos);
+            } else {
+                buf.put((byte) pos);
+            }
+            pos++;
             final Flags flags = flagsMap.get(id);
             if (flags != null && flags.value != 0) {
                 buf.put((byte) (flags.value));

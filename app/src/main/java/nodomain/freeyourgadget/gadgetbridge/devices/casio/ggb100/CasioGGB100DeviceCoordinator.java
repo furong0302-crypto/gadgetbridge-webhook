@@ -144,7 +144,9 @@ public class CasioGGB100DeviceCoordinator extends Casio2C2DDeviceCoordinator {
             }
 
             @Override
-            public Workout parseWorkout(final BaseActivitySummary summary, final boolean forDetails) {
+            public Workout parseWorkout(final BaseActivitySummary summary,
+                                        final boolean forDetails,
+                                        final boolean includeCharts) {
                 final ActivitySummaryData data = ActivitySummaryData.fromJson(summary.getSummaryData());
                 if (!forDetails) {
                     return new Workout(summary, data, Collections.emptyList());

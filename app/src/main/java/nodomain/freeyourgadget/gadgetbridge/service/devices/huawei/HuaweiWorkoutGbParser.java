@@ -190,7 +190,7 @@ public class HuaweiWorkoutGbParser implements ActivitySummaryParser {
     @Override
     public BaseActivitySummary parseBinaryData(final BaseActivitySummary summary, final boolean forDetails) {
         // FIXME Do not use this
-        return parseWorkout(summary, forDetails).getSummary();
+        return parseWorkout(summary, forDetails, forDetails).getSummary();
     }
 
     private static WorkoutChart createSwolfChart(final Context context,
@@ -267,7 +267,9 @@ public class HuaweiWorkoutGbParser implements ActivitySummaryParser {
     }
 
     @Override
-    public nodomain.freeyourgadget.gadgetbridge.model.workout.Workout parseWorkout(BaseActivitySummary summary, final boolean forDetails) {
+    public nodomain.freeyourgadget.gadgetbridge.model.workout.Workout parseWorkout(BaseActivitySummary summary,
+                                                                                   final boolean forDetails,
+                                                                                   final boolean includeCharts) {
         if (!forDetails) {
             final ActivitySummaryData activitySummaryData = ActivitySummaryData.fromJson(summary.getSummaryData());
             if (summary.getGpxTrack() == null) {
@@ -305,26 +307,28 @@ public class HuaweiWorkoutGbParser implements ActivitySummaryParser {
             qb.where(HuaweiWorkoutSummarySampleDao.Properties.UserId.eq(user.getId()));
             final List<HuaweiWorkoutSummarySample> huaweiSummaries = qb.build().list();
             if (huaweiSummaries.isEmpty()) {
-                LOG.warn("Failed to find huawei summary for {}", summary.getStartTime());
+                LOG.warn("Failed to find Huawei summary for {}", summary.getStartTime());
                 return new nodomain.freeyourgadget.gadgetbridge.model.workout.Workout(summary, ActivitySummaryData.fromJson(summary.getSummaryData()));
             }
             final List<HuaweiActivityPoint> activityPoints = new ArrayList<>();
             final ActivitySummaryData activitySummaryData = updateBaseSummary(session, huaweiSummaries.get(0), summary, activityPoints);
             final ActivityKind activityKind = ActivityKind.fromCode(summary.getActivityKind());
             final List<WorkoutChart> charts = new LinkedList<>();
-            if (!activityPoints.isEmpty()) {
-                charts.addAll(DefaultWorkoutCharts.buildDefaultCharts(context, activityPoints, activityKind, activitySummaryData));
-                charts.addAll(buildHuaweiCharts(context, activityPoints));
-            }
-            byte[] recoveryHR = huaweiSummaries.get(0).getRecoveryHeartRates();
-            if (recoveryHR != null && recoveryHR.length > 0) {
-                // starts from workoutEndTime - 5000
-                byte[] recHR = StringUtils.hexToBytes(new String(recoveryHR));
-                final List<ChartPoint> heartRateDataPoints = new ArrayList<>();
-                for (int i = 0; i < recHR.length; i++) {
-                    heartRateDataPoints.add(new ChartPoint(i * 5.0, recHR[i] & 0xFF, null));
+            if (includeCharts) {
+                if (!activityPoints.isEmpty()) {
+                    charts.addAll(DefaultWorkoutCharts.buildDefaultCharts(context, activityPoints, activityKind, activitySummaryData));
+                    charts.addAll(buildHuaweiCharts(context, activityPoints));
                 }
-                charts.add(createRecoveryHeartRateChart(context, heartRateDataPoints));
+                byte[] recoveryHR = huaweiSummaries.get(0).getRecoveryHeartRates();
+                if (recoveryHR != null && recoveryHR.length > 0) {
+                    // starts from workoutEndTime - 5000
+                    byte[] recHR = StringUtils.hexToBytes(new String(recoveryHR));
+                    final List<ChartPoint> heartRateDataPoints = new ArrayList<>();
+                    for (int i = 0; i < recHR.length; i++) {
+                        heartRateDataPoints.add(new ChartPoint(i * 5.0, recHR[i] & 0xFF, null));
+                    }
+                    charts.add(createRecoveryHeartRateChart(context, heartRateDataPoints));
+                }
             }
             return new nodomain.freeyourgadget.gadgetbridge.model.workout.Workout(
                     summary,

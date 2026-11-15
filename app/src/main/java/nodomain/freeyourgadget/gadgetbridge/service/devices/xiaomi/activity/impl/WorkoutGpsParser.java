@@ -91,7 +91,7 @@ public class WorkoutGpsParser extends XiaomiActivityParser {
         final byte[] header = new byte[headerSize];
         buf.get(header);
 
-        LOG.debug("Workout gps Header: {}", GB.hexdump(header));
+        LOG.debug("Workout gps Header: {}", GB.lazyHexdump(header));
 
         if ((buf.limit() - buf.position()) % sampleSize != 0) {
             LOG.warn("Remaining data in the buffer is not a multiple of {}", sampleSize);

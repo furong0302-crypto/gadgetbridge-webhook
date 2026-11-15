@@ -77,7 +77,7 @@ public class DailyDetailsParser extends XiaomiActivityParser {
         final byte[] header = new byte[headerSize];
         buf.get(header);
 
-        LOG.debug("Daily Details Header: {}", GB.hexdump(header));
+        LOG.debug("Daily Details Header: {}", GB.lazyHexdump(header));
 
         final XiaomiComplexActivityParser complexParser = new XiaomiComplexActivityParser(header, buf);
 

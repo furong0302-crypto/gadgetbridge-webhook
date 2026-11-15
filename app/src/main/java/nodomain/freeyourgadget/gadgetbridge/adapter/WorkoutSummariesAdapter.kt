@@ -130,7 +130,7 @@ class WorkoutSummariesAdapter(
             if (summary.device == null) return
             val device = getGBDevice(summary.device)
             val parser = device.deviceCoordinator.getActivitySummaryParser(device, itemView.context)
-            val workout = parser.parseWorkout(summary, false)
+            val workout = parser.parseWorkout(summary, false, false)
 
             val hasGps = when {
                 workout.summary.gpxTrack != null -> true

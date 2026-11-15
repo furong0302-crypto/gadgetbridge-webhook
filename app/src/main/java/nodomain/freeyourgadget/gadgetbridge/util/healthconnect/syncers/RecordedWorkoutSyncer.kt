@@ -328,7 +328,7 @@ internal object RecordedWorkoutSyncer {
 
         for (workout in workouts) {
             try {
-                activitySummaryParser.parseWorkout(workout, true)
+                activitySummaryParser.parseWorkout(workout, true, false)
                 LOG.debug("Parsed workout summary for device '{}' at {}", deviceName, workout.startTime)
             } catch (e: Exception) {
                 LOG.error("Error parsing workout summary for device '{}' at {}", deviceName, workout.startTime, e)

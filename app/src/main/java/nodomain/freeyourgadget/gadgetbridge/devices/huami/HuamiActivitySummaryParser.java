@@ -69,11 +69,13 @@ public class HuamiActivitySummaryParser implements ActivitySummaryParser {
     @Override
     public BaseActivitySummary parseBinaryData(BaseActivitySummary summary, final boolean forDetails) {
         // FIXME Do not use this
-        return parseWorkout(summary, forDetails).getSummary();
+        return parseWorkout(summary, forDetails, forDetails).getSummary();
     }
 
     @Override
-    public Workout parseWorkout(final BaseActivitySummary summary, final boolean forDetails) {
+    public Workout parseWorkout(final BaseActivitySummary summary,
+                                final boolean forDetails,
+                                final boolean includeCharts) {
         Date startTime = summary.getStartTime();
         if (startTime == null) {
             LOG.error("Due to a bug, we can only parse the summary when startTime is already set");
@@ -100,7 +102,7 @@ public class HuamiActivitySummaryParser implements ActivitySummaryParser {
                 final AbstractHuamiActivityDetailsParser detailsParser = getDetailsParser(summary);
                 final ActivityTrack activityTrack = detailsParser.parse(detailsBytes);
 
-                enrichWithDetails(summary, activityTrack);
+                enrichWithDetails(summary, activityTrack, includeCharts);
             } catch (final Exception e) {
                 LOG.error("Failed enrich workout with details", e);
             }
@@ -447,19 +449,23 @@ public class HuamiActivitySummaryParser implements ActivitySummaryParser {
         }
     }
 
-    protected void enrichWithDetails(final BaseActivitySummary summary, final ActivityTrack activityTrack) throws IOException, GBException {
+    protected void enrichWithDetails(final BaseActivitySummary summary,
+                                     final ActivityTrack activityTrack,
+                                     final boolean includeCharts) throws IOException, GBException {
         final List<ActivityPoint> allPoints = activityTrack.getAllPoints();
         if (!allPoints.isEmpty()) {
             // Altitude from imported elevation tiles replaces what the device recorded
             if (ElevationTiles.correct(GBApplication.getContext(), gbDevice, ActivityKind.fromCode(summary.getActivityKind()), allPoints)) {
                 ElevationTiles.applyToSummary(summaryData, allPoints);
             }
-            charts.addAll(DefaultWorkoutCharts.buildDefaultCharts(
+            if (includeCharts) {
+                charts.addAll(DefaultWorkoutCharts.buildDefaultCharts(
                     GBApplication.getContext(),
                     allPoints,
                     ActivityKind.fromCode(summary.getActivityKind()),
                     summaryData
-            ));
+                ));
+            }
         }
     }
 }

@@ -75,7 +75,7 @@ public class XiaomiSimpleActivityParser {
         final byte[] header = new byte[headerSize];
         buf.get(header);
 
-        LOG.debug("Header: {}", GB.hexdump(header));
+        LOG.trace("Header: {}", GB.lazyHexdump(header));
 
         final Map<String, Number> hrZones = new HashMap<>(5);
 
@@ -87,11 +87,11 @@ public class XiaomiSimpleActivityParser {
             final Number value = dataEntry.get(buf);
             final int fieldSize = buf.position() - before;
             if (value == null) {
-                LOG.debug("Field {} = {} unknown bytes, skipping", i, fieldSize);
+                LOG.trace("Field {} = {} unknown bytes, skipping", i, fieldSize);
                 continue;
             }
 
-            LOG.debug("Field {} = {} as {} ({}b)", i, value, dataEntry, fieldSize);
+            LOG.trace("Field {} = {} as {} ({}b)", i, value, dataEntry, fieldSize);
 
             // Each bit in the header marks whether the data is valid or not, in order of the fields
             final boolean validData = (header[i / 8] & (1 << (7 - (i % 8)))) != 0;

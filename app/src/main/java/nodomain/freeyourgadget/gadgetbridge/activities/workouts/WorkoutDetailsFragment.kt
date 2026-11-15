@@ -175,7 +175,7 @@ class WorkoutDetailsFragment : Fragment(), MenuProvider {
                     rawGpsFile = gbDevice.deviceCoordinator.getWorkoutRawGpsFile(gbDevice, summary)
                     val parsedWorkout = try {
                         gbDevice.deviceCoordinator.getActivitySummaryParser(gbDevice, requireContext())
-                            .parseWorkout(summary, true)
+                            .parseWorkout(summary, true, true)
                     } catch (e: Exception) {
                         // Do not break completely - use any previously processed data
                         GB.toast(requireContext(), "Error while loading workout", Toast.LENGTH_SHORT, GB.ERROR, e)

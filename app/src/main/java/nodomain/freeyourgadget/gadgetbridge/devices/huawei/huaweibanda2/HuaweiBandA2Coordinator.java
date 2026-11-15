@@ -10,10 +10,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiLECoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
 public class HuaweiBandA2Coordinator extends HuaweiLECoordinator {
-    @Override
-    public boolean isExperimental() {
-        // #7280
-        return true;
+    public boolean isTransactionCrypted() {
+        return false;
     }
 
     @Override

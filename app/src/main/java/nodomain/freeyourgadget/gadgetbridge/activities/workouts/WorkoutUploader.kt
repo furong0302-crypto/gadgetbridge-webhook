@@ -79,14 +79,8 @@ object WorkoutUploader {
         summary: BaseActivitySummary,
         summaryData: ActivitySummaryData? = null
     ): File {
-        val effectiveSummaryData = summaryData ?: summary.summaryData?.let {
-            try {
-                ActivitySummaryData.fromJson(it)
-            } catch (e: Exception) {
-                LOG.warn("Failed to parse stored summary data for summary {}", summary.id, e)
-                null
-            }
-        }
+        val effectiveSummaryData = summaryData
+            ?: ActivitySummaryUtils.getSummaryData(context, gbDevice, summary)
         val fileName = ActivitySummaryUtils.getExportBaseName(context, summary) + ".fit"
         val cacheSubDir = File(context.cacheDir, "raw")
         cacheSubDir.mkdirs()

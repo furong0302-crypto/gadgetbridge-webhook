@@ -165,11 +165,13 @@ public class GarminWorkoutParser implements ActivitySummaryParser {
     @Override
     public BaseActivitySummary parseBinaryData(BaseActivitySummary summary, boolean forDetails) {
         // FIXME Do not use this
-        return parseWorkout(summary, forDetails).getSummary();
+        return parseWorkout(summary, forDetails, forDetails).getSummary();
     }
 
     @Override
-    public Workout parseWorkout(final BaseActivitySummary summary, final boolean forDetails) {
+    public Workout parseWorkout(final BaseActivitySummary summary,
+                                final boolean forDetails,
+                                final boolean includeCharts) {
         if (!forDetails) {
             // Our parsing is too slow, especially without a RecyclerView
             return new Workout(summary, ActivitySummaryData.fromJson(summary.getSummaryData()));
@@ -203,11 +205,12 @@ public class GarminWorkoutParser implements ActivitySummaryParser {
         }
 
         final ActivitySummaryData activitySummaryData = updateSummary(summary);
+
         final ActivityKind activityKind = ActivityKind.fromCode(summary.getActivityKind());
         activityPoints.forEach(ap -> FitActivityTrackProvider.normalizeStepCadence(ap, activityKind));
 
         final List<WorkoutChart> charts = new LinkedList<>();
-        if (!this.activityPoints.isEmpty()) {
+        if (includeCharts && !this.activityPoints.isEmpty()) {
             charts.addAll(DefaultWorkoutCharts.buildDefaultCharts(context, activityPoints, activityKind, activitySummaryData));
         }
 

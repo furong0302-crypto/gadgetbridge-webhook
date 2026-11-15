@@ -37,9 +37,9 @@ public class CmfWatchPro2Coordinator extends CmfWatchProCoordinator {
     }
 
     @Override
-    public int getBondingStyle() {
+    public boolean requiresAuthKey() {
         // We can negotiate auth key - #3982
-        return BONDING_STYLE_BOND;
+        return false;
     }
 
     @Override

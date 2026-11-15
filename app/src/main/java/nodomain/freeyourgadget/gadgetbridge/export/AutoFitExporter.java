@@ -84,13 +84,7 @@ public class AutoFitExporter {
 
         final String fileName = ActivitySummaryUtils.getExportBaseName(context, summary) + ".fit";
 
-        final ActivitySummaryData summaryData;
-        final String summaryJson = summary.getSummaryData();
-        if (summaryJson != null) {
-            summaryData = ActivitySummaryData.fromJson(summaryJson);
-        } else {
-            summaryData = null;
-        }
+        final ActivitySummaryData summaryData = ActivitySummaryUtils.getSummaryData(context, gbDevice, summary);
 
         try {
             final Uri directoryUri = Uri.parse(directory);

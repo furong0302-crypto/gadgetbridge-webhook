@@ -147,7 +147,7 @@ public class XiaomiRawFileAvailabilityTest extends TestBase {
         assertNotNull(stored.getRawSummaryData());
         assertArrayEquals(bytes, stored.getRawSummaryData());
 
-        final Workout workout = new WorkoutSummaryParser().parseWorkout(stored, false);
+        final Workout workout = new WorkoutSummaryParser().parseWorkout(stored, false, false);
         assertEquals(START, workout.getSummary().getEndTime());
         assertEquals(ActivityKind.UNKNOWN.getCode(), workout.getSummary().getActivityKind());
     }

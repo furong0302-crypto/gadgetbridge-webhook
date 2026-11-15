@@ -43,13 +43,15 @@ public interface ActivitySummaryParser {
      *                   should avoid slow operations such as reading and parsing raw files from
      *                   storage.
      * @return the {@link Workout}
-     * @deprecated Use/implement {@link #parseWorkout(BaseActivitySummary, boolean)} instead.
+     * @deprecated Use/implement {@link #parseWorkout(BaseActivitySummary, boolean, boolean)} instead.
      */
     @Deprecated
     BaseActivitySummary parseBinaryData(BaseActivitySummary summary, final boolean forDetails);
 
-    default Workout parseWorkout(BaseActivitySummary summary, final boolean forDetails) {
-        final BaseActivitySummary baseActivitySummary = parseBinaryData(summary, forDetails);
+    default Workout parseWorkout(BaseActivitySummary summary,
+                                 final boolean forDetails,
+                                 final boolean includeCharts) {
+        final BaseActivitySummary baseActivitySummary = parseBinaryData(summary, forDetails || includeCharts);
         return new Workout(
                 baseActivitySummary,
                 ActivitySummaryData.fromJson(baseActivitySummary.getSummaryData()),

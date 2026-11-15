@@ -18,6 +18,7 @@ import nodomain.freeyourgadget.gadgetbridge.export.GPXExporter;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityPoint;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryData;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityTrack;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityTrackProvider;
 import nodomain.freeyourgadget.gadgetbridge.model.GpxActivityTrackProvider;
@@ -39,6 +40,29 @@ public final class ActivitySummaryUtils {
         final String kindLabel = ActivityKind.fromCode(summary.getActivityKind()).getLabel(context).toLowerCase(Locale.ROOT);
         final String isoDate = DateTimeUtils.formatIso8601(summary.getStartTime());
         return FileUtils.makeValidFileName(isoDate + "-" + kindLabel);
+    }
+
+    /**
+     * Gets the {@link ActivitySummaryData} of a workout. Uses the stored JSON if present, else re-processes the raw
+     * binary data using the summary parser for the device.
+     */
+    @Nullable
+    public static ActivitySummaryData getSummaryData(final Context context,
+                                                     final GBDevice gbDevice,
+                                                     final BaseActivitySummary summary) {
+        try {
+            final String summaryJson = summary.getSummaryData();
+            if (summaryJson != null) {
+                return ActivitySummaryData.fromJson(summaryJson);
+            }
+            return gbDevice.getDeviceCoordinator()
+                .getActivitySummaryParser(gbDevice, context)
+                .parseWorkout(summary, true, false)
+                .getData();
+        } catch (final Exception e) {
+            LOG.warn("Failed to get summary data for summary {}", summary.getId(), e);
+            return null;
+        }
     }
 
     @Nullable
