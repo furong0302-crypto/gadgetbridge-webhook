@@ -53,6 +53,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.activities.install.InstallLauncher;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.util.BarShade;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -96,7 +97,7 @@ public class AppManagerActivity extends AbstractGBActivity {
         if (coordinator.supportsCachedAppManagement(mGBDevice)) {
             enabledTabsList.add("cache");
         }
-        if (coordinator.supportsInstalledAppManagement(mGBDevice) || coordinator.supportsWatchfaceManagement(mGBDevice)) {
+        if (mGBDevice.getType() == DeviceType.PEBBLE) {
             enabledTabsList.add("updates");
         }
         if (coordinator.supportsInstalledAppManagement(mGBDevice)) {

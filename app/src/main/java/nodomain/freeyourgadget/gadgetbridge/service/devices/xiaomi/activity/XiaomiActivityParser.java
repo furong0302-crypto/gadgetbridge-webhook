@@ -80,12 +80,12 @@ public abstract class XiaomiActivityParser {
     }
 
     @Nullable
-    public static XiaomiActivityParser create(final XiaomiActivityFileId fileId) {
+    public static XiaomiActivityParser create(final XiaomiActivityFileId fileId, final Context context) {
         switch (fileId.getType()) {
             case ACTIVITY:
                 return createForActivity(fileId);
             case SPORTS:
-                return createForSports(fileId);
+                return createForSports(fileId, context);
         }
 
         LOG.warn("Unknown file type for {}", fileId);
@@ -124,11 +124,11 @@ public abstract class XiaomiActivityParser {
         return null;
     }
 
-    private static XiaomiActivityParser createForSports(final XiaomiActivityFileId fileId) {
+    private static XiaomiActivityParser createForSports(final XiaomiActivityFileId fileId, final Context context) {
         assert fileId.getType() == XiaomiActivityFileId.Type.SPORTS;
 
         return switch (fileId.getDetailType()) {
-            case SUMMARY -> new WorkoutSummaryParser();
+            case SUMMARY -> new WorkoutSummaryParser(context);
             case GPS_TRACK -> new WorkoutGpsParser();
             case DETAILS -> new WorkoutDetailsParser();
             default -> null;

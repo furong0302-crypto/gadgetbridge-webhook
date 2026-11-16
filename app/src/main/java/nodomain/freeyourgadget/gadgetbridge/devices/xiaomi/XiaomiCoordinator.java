@@ -214,7 +214,7 @@ public abstract class XiaomiCoordinator extends AbstractBLEDeviceCoordinator {
     @Nullable
     @Override
     public ActivitySummaryParser getActivitySummaryParser(@NonNull final GBDevice device, final Context context) {
-        return new WorkoutSummaryParser();
+        return new WorkoutSummaryParser(context);
     }
 
     @Nullable

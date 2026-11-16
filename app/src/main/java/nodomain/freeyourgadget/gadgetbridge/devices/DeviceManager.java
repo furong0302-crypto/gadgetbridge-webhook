@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -75,9 +76,10 @@ public class DeviceManager {
     /**
      * This list is final, it will never be recreated. Only its contents change.
      * This allows direct access to the list from ListAdapters.
+     * Background threads can iterate over the list while the main thread updates it.
      */
-    private final List<GBDevice> deviceList = new ArrayList<>();
-    private List<GBDevice> selectedDevices = new ArrayList<>();
+    private final List<GBDevice> deviceList = new CopyOnWriteArrayList<>();
+    private final List<GBDevice> selectedDevices = new ArrayList<>();
 
     /**
      * The addresses of the devices in the database at the last refresh, or null before the first refresh.

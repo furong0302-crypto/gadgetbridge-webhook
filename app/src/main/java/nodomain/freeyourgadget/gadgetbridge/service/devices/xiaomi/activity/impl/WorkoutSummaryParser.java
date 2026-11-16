@@ -136,6 +136,12 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 public class WorkoutSummaryParser extends XiaomiActivityParser implements ActivitySummaryParser {
     private static final Logger LOG = LoggerFactory.getLogger(WorkoutSummaryParser.class);
 
+    private final Context context;
+
+    public WorkoutSummaryParser(final Context context) {
+        this.context = context;
+    }
+
     @Override
     public boolean parse(final Context context, final GBDevice gbDevice, final XiaomiActivityFileId fileId, final byte[] bytes) {
         BaseActivitySummary summary = new BaseActivitySummary();
@@ -271,7 +277,7 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
         }
 
         if (parser != null) {
-            parser.parse(summary, buf);
+            parser.parse(context, summary, buf);
         }
 
         return summary;

@@ -137,7 +137,7 @@ public class XiaomiRawFileAvailabilityTest extends TestBase {
         final XiaomiActivityFileId summaryId = fileId(SUBTYPE_FREESTYLE, XiaomiActivityFileId.DetailType.SUMMARY, 8);
         final byte[] bytes = fileBytes(summaryId, new byte[]{1, 2});
 
-        assertFalse(new WorkoutSummaryParser().parse(getContext(), device, summaryId, bytes));
+        assertFalse(new WorkoutSummaryParser(getContext()).parse(getContext(), device, summaryId, bytes));
 
         final List<BaseActivitySummary> summaries = daoSession.getBaseActivitySummaryDao().loadAll();
         assertEquals(1, summaries.size());
@@ -147,7 +147,7 @@ public class XiaomiRawFileAvailabilityTest extends TestBase {
         assertNotNull(stored.getRawSummaryData());
         assertArrayEquals(bytes, stored.getRawSummaryData());
 
-        final Workout workout = new WorkoutSummaryParser().parseWorkout(stored, false, false);
+        final Workout workout = new WorkoutSummaryParser(getContext()).parseWorkout(stored, false, false);
         assertEquals(START, workout.getSummary().getEndTime());
         assertEquals(ActivityKind.UNKNOWN.getCode(), workout.getSummary().getActivityKind());
     }

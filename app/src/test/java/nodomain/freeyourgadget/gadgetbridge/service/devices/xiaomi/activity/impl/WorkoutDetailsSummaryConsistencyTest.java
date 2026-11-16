@@ -19,6 +19,10 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.xiaomi.activity.imp
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+import android.content.Context;
 
 import org.junit.Assume;
 import org.junit.Test;
@@ -209,7 +213,7 @@ public class WorkoutDetailsSummaryConsistencyTest {
 
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(summaryBytes);
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         assertNotNull(label + ": summary not decoded", summary.getSummaryData());
         final ActivitySummaryData data = ActivitySummaryData.fromJson(summary.getSummaryData());
 

@@ -17,6 +17,10 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.xiaomi.activity.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+import android.content.Context;
 
 import org.junit.Test;
 
@@ -42,7 +46,7 @@ public class XiaomiSimpleActivityParserTest {
         }).order(ByteOrder.LITTLE_ENDIAN);
         final BaseActivitySummary summary = new BaseActivitySummary();
 
-        parser.parse(summary, buf);
+        parser.parse(mock(Context.class, RETURNS_DEEP_STUBS), summary, buf);
 
         final ActivitySummaryData data = ActivitySummaryData.fromJson(summary.getSummaryData());
         assertEquals(50000, data.getNumber(ActivitySummaryEntries.STEPS, null).intValue());

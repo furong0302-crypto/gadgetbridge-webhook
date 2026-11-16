@@ -150,7 +150,7 @@ public class XiaomiActivityFileFetcher {
             mHealthService.ackRecordedData(fileId);
         }
 
-        final XiaomiActivityParser activityParser = XiaomiActivityParser.create(fileId);
+        final XiaomiActivityParser activityParser = XiaomiActivityParser.create(fileId, mHealthService.getSupport().getContext());
         if (activityParser == null) {
             LOG.warn("Failed to find parser for {}", fileId);
             triggerNextFetch();

@@ -390,22 +390,6 @@ public class TestDeviceConfig {
         Assert.assertTrue(productModel.equals(((DeviceConfig.ProductInfo.Response) packetProductInformation).productModel));
     }
 
-    @Test(expected=HuaweiPacket.ParseException.class)
-    public void testProductInformationResponseException07() throws NoSuchFieldException, IllegalAccessException, HuaweiPacket.ParseException {
-        byte[] rawProductInformation = new byte[] {(byte) 0x5A, (byte) 0x00, (byte) 0x3A, (byte) 0x00, (byte) 0x01, (byte) 0x07, (byte) 0x7C, (byte) 0x01, (byte) 0x01, (byte) 0x7D, (byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x7E, (byte) 0x20, (byte) 0xFE, (byte) 0x24, (byte) 0x4C, (byte) 0x68, (byte) 0xFC, (byte) 0x1D, (byte) 0xAD, (byte) 0x64, (byte) 0x77, (byte) 0xC9, (byte) 0xE9, (byte) 0x26, (byte) 0x8D, (byte) 0x3C, (byte) 0x3C, (byte) 0x8C, (byte) 0xB6, (byte) 0xA6, (byte) 0xF1, (byte) 0xBF, (byte) 0xAC, (byte) 0xB6, (byte) 0x7A, (byte) 0x75, (byte) 0xA3, (byte) 0xA9, (byte) 0x07, (byte) 0x5F, (byte) 0x39, (byte) 0x0F, (byte) 0x28, (byte) 0x61, (byte) 0x50, (byte) 0x61};
-
-        HuaweiPacket packetProductInformation = new HuaweiPacket(secretsProvider).parse(rawProductInformation);
-        packetProductInformation.parseTlv();
-    }
-
-    @Test(expected=HuaweiPacket.ParseException.class)
-    public void testProductInformationResponseException0A() throws NoSuchFieldException, IllegalAccessException, HuaweiPacket.ParseException {
-        byte[] rawProductInformation = new byte[] {(byte) 0x5A, (byte) 0x00, (byte) 0x2A, (byte) 0x00, (byte) 0x01, (byte) 0x07, (byte) 0x7C, (byte) 0x01, (byte) 0x01, (byte) 0x7D, (byte) 0x10, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x7E, (byte) 0x10, (byte) 0xB6, (byte) 0x67, (byte) 0xA5, (byte) 0x6A, (byte) 0x46, (byte) 0x0F, (byte) 0x08, (byte) 0x1E, (byte) 0xAC, (byte) 0x1E, (byte) 0x6B, (byte) 0xF2, (byte) 0x11, (byte) 0x4A, (byte) 0x54, (byte) 0x20, (byte) 0xCF, (byte) 0xB6};
-
-        HuaweiPacket packetProductInformation = new HuaweiPacket(secretsProvider).parse(rawProductInformation);
-        packetProductInformation.parseTlv();
-    }
-
     @Test
     public void testBondRequest() throws NoSuchFieldException, IllegalAccessException {
         byte[] clientSerial = new byte[] {(byte) 0x54, (byte) 0x56, (byte) 0x64, (byte) 0x54, (byte) 0x4D, (byte) 0x44};

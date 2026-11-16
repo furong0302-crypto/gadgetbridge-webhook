@@ -38,7 +38,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntPredicate;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.workouts.entries.ActivitySummaryProgressEntry;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.XiaomiWorkoutType;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
@@ -69,7 +68,7 @@ public class XiaomiSimpleActivityParser {
         this.dataEntries = dataEntries;
     }
 
-    public void parse(final BaseActivitySummary summary, final ByteBuffer buf) {
+    public void parse(final Context context, final BaseActivitySummary summary, final ByteBuffer buf) {
         final ActivitySummaryData summaryData = new ActivitySummaryData();
 
         final byte[] header = new byte[headerSize];
@@ -155,9 +154,8 @@ public class XiaomiSimpleActivityParser {
                     final int zoneTime = Objects.requireNonNull(hrZones.get(zoneKey)).intValue();
 
                     final int resolvedColor;
-                    final Context zoneContext = GBApplication.getContextOrNull();
-                    if (zoneColor != 0 && zoneContext != null) {
-                        resolvedColor = zoneContext.getResources().getColor(zoneColor);
+                    if (zoneColor != 0) {
+                        resolvedColor = context.getResources().getColor(zoneColor);
                     } else {
                         resolvedColor = 0;
                     }

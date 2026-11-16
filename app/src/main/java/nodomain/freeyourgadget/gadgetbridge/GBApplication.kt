@@ -141,8 +141,6 @@ open class GBApplication : Application() {
     var openTracksObserver: OpenTracksContentObserver? = null
 
     init {
-        appContext = this
-        context = this
         // don't do anything here, add it to onCreate instead
 
         if (BuildConfig.DEBUG) {
@@ -233,8 +231,8 @@ open class GBApplication : Application() {
         setLanguage(languageCode)
 
         if (!GBEnvironment.env().isTest) {
-            PeriodicDbExporter.scheduleNextExecution(appContext)
-            PeriodicZipExporter.scheduleNextExecution(appContext)
+            PeriodicDbExporter.scheduleNextExecution(this)
+            PeriodicZipExporter.scheduleNextExecution(this)
             NotificationAppRepository.loadInBackground()
         }
 
@@ -263,7 +261,7 @@ open class GBApplication : Application() {
 
         // Let every external service schedule its own upkeep, such as renewing a token
         if (!GBEnvironment.env().isTest) {
-            ExternalServiceRegistry.scheduleBackgroundWork(appContext)
+            ExternalServiceRegistry.scheduleBackgroundWork(this)
         }
     }
 
@@ -274,10 +272,10 @@ open class GBApplication : Application() {
         LOG.info("Starting the deprecated NotificationCollectorMonitorService foreground service.")
         try {
             //the following will ensure the notification manager is kept alive
-            val serviceIntent = Intent(appContext, NotificationCollectorMonitorService::class.java)
+            val serviceIntent = Intent(this, NotificationCollectorMonitorService::class.java)
 
             //ContextCompat starts a background service on android < O automatically despite the method name
-            ContextCompat.startForegroundService(appContext, serviceIntent)
+            ContextCompat.startForegroundService(this, serviceIntent)
         } catch (e: IllegalStateException) {
             val message = e.toString()
             val instructionsIntent = Intent(
@@ -285,7 +283,7 @@ open class GBApplication : Application() {
                 "https://gadgetbridge.org/basics/topics/background-service/".toUri(),
             )
             val pi = PendingIntent.getActivity(
-                appContext,
+                this,
                 0,
                 instructionsIntent,
                 PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE,
@@ -303,7 +301,7 @@ open class GBApplication : Application() {
                     )
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .build(),
-                appContext,
+                this,
             )
         }
     }
@@ -425,8 +423,6 @@ open class GBApplication : Application() {
     companion object {
         private val LOG = LoggerFactory.getLogger(GBApplication::class.java)
 
-        private lateinit var appContext: GBApplication
-        private var context: GBApplication? = null
         private var appInstance: GBApplication? = null
         private lateinit var language: Locale
         private val idSenderLookup = LimitedQueue<Int, String>(16)
@@ -440,9 +436,9 @@ open class GBApplication : Application() {
         @JvmStatic
         fun quit() {
             LOG.info("Quitting Gadgetbridge...")
-            CompanionDeviceUtil.StopObservingAll(getContext())
+            CompanionDeviceUtil.StopObservingAll(app())
             val quitIntent = Intent(ACTION_QUIT)
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(quitIntent)
+            LocalBroadcastManager.getInstance(app()).sendBroadcast(quitIntent)
             app().deviceServiceInstance.quit()
             app().databaseManager.closeDatabase()
             exitProcess(0)
@@ -451,21 +447,21 @@ open class GBApplication : Application() {
         @JvmStatic
         fun restart() {
             LOG.info("Restarting Gadgetbridge...")
-            CompanionDeviceUtil.StopObservingAll(getContext())
+            CompanionDeviceUtil.StopObservingAll(app())
             val quitIntent = Intent(ACTION_QUIT)
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(quitIntent)
+            LocalBroadcastManager.getInstance(app()).sendBroadcast(quitIntent)
             app().deviceServiceInstance.quit()
 
             app().databaseManager.closeDatabase()
 
-            val startActivity = Intent(appContext, ControlCenterv2::class.java)
+            val startActivity = Intent(app(), ControlCenterv2::class.java)
             val pendingIntent = PendingIntent.getActivity(
-                appContext,
+                app(),
                 1337,
                 startActivity,
                 PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-            val alarmManager = appContext.getSystemService(ALARM_SERVICE) as AlarmManager
+            val alarmManager = app().getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 1500, pendingIntent)
 
             Runtime.getRuntime().exit(0)
@@ -476,18 +472,23 @@ open class GBApplication : Application() {
             return app().gbPrefs.getBoolean("minimize_priority", false)
         }
 
+        /**
+         * Returns the application context. Throws if [onCreate] hasn't run yet.
+         *
+         * Deprecated: a static Context hides what a class really depends on. Instead, in order of preference:
+         * 1. Activities, Fragments, Services, receivers and DeviceSupport use their own Context, or its
+         *    application context when the object outlives the component.
+         * 2. Other classes depend on the narrowest framework object Hilt provides (a `PackageManager`,
+         *    `ContentResolver`, system service, ...), not on a raw `Context`.
+         * 3. Text shown on a screen is resolved in the UI layer. Other text goes through a narrow strings
+         *    dependency.
+         * 4. A class whose instances Hilt can't create (built by an enum, by reflection or from a static
+         *    function) does one Hilt entry-point lookup and passes the dependencies down through constructors.
+         */
+        @Deprecated("Use the component's own Context, or inject a narrower dependency through Hilt. See getContext()'s KDoc.")
         @JvmStatic
         fun getContext(): Context {
-            return context as Context
-        }
-
-        /**
-         * Returns the application context if it has been created, or null during early startup
-         * (e.g. while broadcast receivers are being registered) and in unit tests.
-         */
-        @JvmStatic
-        fun getContextOrNull(): Context? {
-            return context
+            return app()
         }
 
         /**
@@ -629,11 +630,11 @@ open class GBApplication : Application() {
 
         @JvmStatic
         fun updateLanguage(locale: Locale) {
-            AndroidUtils.setLanguage(appContext, locale)
+            AndroidUtils.setLanguage(app(), locale)
 
             val intent = Intent()
             intent.action = ACTION_LANGUAGE_CHANGE
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent)
+            LocalBroadcastManager.getInstance(app()).sendBroadcast(intent)
         }
 
         @JvmStatic
@@ -643,7 +644,7 @@ open class GBApplication : Application() {
 
         @JvmStatic
         fun hasDirectInternetAccess(): Boolean {
-            return PermissionsUtils.checkPermission(getContext(), Manifest.permission.INTERNET)
+            return PermissionsUtils.checkPermission(app(), Manifest.permission.INTERNET)
         }
 
         @JvmStatic

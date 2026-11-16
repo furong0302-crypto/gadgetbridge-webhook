@@ -17,7 +17,7 @@ public class XiaomiActivityParserTest extends TestBase {
         final byte[] data = Files.readAllBytes(Paths.get("/storage/activity.bin"));
         final byte[] fileIdBytes = Arrays.copyOfRange(data, 0, 7);
         final XiaomiActivityFileId fileId = XiaomiActivityFileId.from(fileIdBytes);
-        final XiaomiActivityParser parser = XiaomiActivityParser.create(fileId);
+        final XiaomiActivityParser parser = XiaomiActivityParser.create(fileId, app);
 
         parser.parse(null, null, fileId, data);
     }

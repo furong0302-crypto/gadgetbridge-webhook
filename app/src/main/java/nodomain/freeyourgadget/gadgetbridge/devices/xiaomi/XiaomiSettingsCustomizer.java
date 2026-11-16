@@ -270,7 +270,7 @@ public class XiaomiSettingsCustomizer implements DeviceSpecificSettingsCustomize
 
         XiaomiActivityFileFetcher.registerActivityFile(device, fileId, activityFile);
 
-        final XiaomiActivityParser activityParser = XiaomiActivityParser.create(fileId);
+        final XiaomiActivityParser activityParser = XiaomiActivityParser.create(fileId, context);
         if (activityParser == null) {
             LOG.warn("Failed to find parser for {}", fileId);
             return;

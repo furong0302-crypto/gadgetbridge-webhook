@@ -19,6 +19,10 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.xiaomi.activity.imp
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+import android.content.Context;
 
 import org.junit.Test;
 
@@ -99,7 +103,7 @@ public class WorkoutSummaryParserTest {
         final byte[] bytes = Base64.getDecoder().decode(base64);
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(bytes);
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         final String json = summary.getSummaryData();
         assertNotNull("parser should populate summaryData", json);
         return ActivitySummaryData.fromJson(json);
@@ -235,7 +239,7 @@ public class WorkoutSummaryParserTest {
     public void outdoorCyclingV8_extractsStatsZonesLoadVitality() {
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(Base64.getDecoder().decode(OUTDOOR_CYCLING_V8_23SEP));
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         assertEquals(ActivityKind.OUTDOOR_CYCLING.getCode(), summary.getActivityKind());
 
         final ActivitySummaryData data = ActivitySummaryData.fromJson(summary.getSummaryData());
@@ -309,7 +313,7 @@ public class WorkoutSummaryParserTest {
         bytes[5] = 99; // fileId version byte
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(bytes);
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         assertEquals(ActivityKind.OUTDOOR_CYCLING.getCode(), summary.getActivityKind());
     }
 
@@ -326,7 +330,7 @@ public class WorkoutSummaryParserTest {
         final byte[] bytes = Base64.getDecoder().decode(OUTDOOR_RUN_V5_30SEP);
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(bytes);
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         assertEquals(ActivityKind.OUTDOOR_RUNNING.getCode(), summary.getActivityKind());
 
         final ActivitySummaryData data = parse(OUTDOOR_RUN_V5_30SEP);
@@ -425,7 +429,7 @@ public class WorkoutSummaryParserTest {
     public void outdoorCyclingV2V3_extractsStatsAltitudeZones() {
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(Base64.getDecoder().decode(OUTDOOR_CYCLING_V2_V3_04OCT));
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         assertEquals(ActivityKind.OUTDOOR_CYCLING.getCode(), summary.getActivityKind());
         assertEquals(1791123696000L, summary.getEndTime().getTime());
 
@@ -458,7 +462,7 @@ public class WorkoutSummaryParserTest {
     public void outdoorWalkingV1V3_extractsStatsAltitude() {
         final BaseActivitySummary summary = new BaseActivitySummary();
         summary.setRawSummaryData(Base64.getDecoder().decode(OUTDOOR_WALKING_V1_V3_03OCT));
-        new WorkoutSummaryParser().parseBinaryData(summary, true);
+        new WorkoutSummaryParser(mock(Context.class, RETURNS_DEEP_STUBS)).parseBinaryData(summary, true);
         assertEquals(ActivityKind.WALKING.getCode(), summary.getActivityKind());
 
         final ActivitySummaryData data = ActivitySummaryData.fromJson(summary.getSummaryData());
