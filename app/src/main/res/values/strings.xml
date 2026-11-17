@@ -5878,6 +5878,8 @@ The result is the average of all the measurements.</string>
     <string name="auth_settings">Authentication settings</string>
     <string name="devicetype_shokz_openswim_pro" translatable="false">Shokz OpenSwim Pro</string>
     <string name="devicetype_shokz_openrun_pro_2" translatable="false">Shokz OpenRun Pro 2</string>
+    <string name="devicetype_shokz_openfit_pro" translatable="false">Shokz OpenFit Pro</string>
+    <string name="shokz_dolby_atmos" translatable="false">Dolby Atmos</string>
     <string name="devicetype_battery_monitor" translatable="false">Battery Monitor</string>
     <string name="devicetype_victron_smartshunt" translatable="false">Victron SmartShunt</string>
     <string name="devicetype_dji_osmo_action_4" translatable="false">DJI Osmo Action 4</string>
@@ -5927,6 +5929,15 @@ The result is the average of all the measurements.</string>
     <string name="shokz_equalizer_band_3">Band 3</string>
     <string name="shokz_equalizer_band_4">Band 4</string>
     <string name="shokz_equalizer_band_5">Band 5</string>
+    <string name="shokz_equalizer_band_6">Band 6</string>
+    <string name="shokz_equalizer_band_7">Band 7</string>
+    <string name="shokz_equalizer_band_8">Band 8</string>
+    <string name="shokz_equalizer_band_9">Band 9</string>
+    <string name="shokz_equalizer_band_10">Band 10</string>
+    <string name="shokz_equalizer_privacy">Privacy</string>
+    <string name="shokz_head_tracking">Head tracking</string>
+    <string name="shokz_head_tracking_summary">Keeps the Dolby Atmos sound stage in place as you turn your head</string>
+    <string name="shokz_wearing_detection">Wearing detection</string>
     <string name="shokz_controls_long_press_multi_function">Long-press the multi-function button</string>
     <string name="shokz_controls_simultaneous_volume_up_down">Long-press volume up and down simultaneously</string>
     <string name="track_name_required">Track name cannot be empty</string>
@@ -6554,6 +6565,10 @@ The result is the average of all the measurements.</string>
     <string name="ugreen_high_quality_summary">Enable high-resolution audio decoding (LDAC)</string>
 
     <string name="devicetype_soundpeats_q3_pro" translatable="false">SOUNDPEATS Q3 Pro</string>
+    <string name="devicetype_baseus_bowie_mc1" translatable="false">Baseus Bowie MC1</string>
+    <string name="baseus_eq_classic" translatable="false">Baseus Classic</string>
+    <string name="baseus_eq_hifi_live">Hi-Fi Live</string>
+    <string name="baseus_eq_rock_classic">Rock Classic</string>
     <string name="soundpeats_movie_mode">Movie mode</string>
     <string name="soundpeats_movie_mode_summary">Optimize the sound stage for movies and series</string>
     <string name="soundpeats_touch_lock">Lock touch controls</string>

@@ -77,7 +77,7 @@ public class HuaweiEcgDataProvider implements EcgDataProvider {
 
         final float[] values = new float[samples.size()];
         for (int i = 0; i < samples.size(); i++) {
-            values[i] = samples.get(i).getValue();
+            values[i] = samples.get(i).getValue() / 1_000_000f;
         }
         return values;
     }

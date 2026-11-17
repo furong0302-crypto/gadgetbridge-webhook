@@ -24,6 +24,7 @@ import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Earphones;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FindPhone;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SetANCModeRequest.ANCMode;
 
 public class TestHuaweiPacket {
 
@@ -366,5 +367,17 @@ public class TestHuaweiPacket {
         Assert.assertArrayEquals(expected1, output.get(0));
         Assert.assertArrayEquals(expected2, output.get(1));
         Assert.assertArrayEquals(expected3, output.get(2));
+    }
+
+    // FreeBuds 6 ignores ANC levels unless they are sent in TLV tag 0x01 (FreeBuds Pro uses 0x02)
+    @Test
+    public void testSetANCModeRequestTag() throws HuaweiPacket.CryptoException, HuaweiPacket.MissingTagException {
+        Earphones.SetANCModeRequest openFit = new Earphones.SetANCModeRequest(paramsProvider, ANCMode.DYNAMIC, 0x01);
+        Assert.assertArrayEquals(new byte[] {0x01, 0x03}, openFit.getTlv().getBytes(0x01));
+        Assert.assertFalse(openFit.getTlv().contains(0x02));
+
+        Earphones.SetANCModeRequest pro = new Earphones.SetANCModeRequest(paramsProvider, ANCMode.COMFORT, 0x02);
+        Assert.assertArrayEquals(new byte[] {0x01, 0x01}, pro.getTlv().getBytes(0x02));
+        Assert.assertFalse(pro.getTlv().contains(0x01));
     }
 }

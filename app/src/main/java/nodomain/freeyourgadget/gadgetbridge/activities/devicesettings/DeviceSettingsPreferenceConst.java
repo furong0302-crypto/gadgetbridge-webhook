@@ -439,6 +439,8 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_UGREEN_GAME_MODE = "ugreen_game_mode";
     public static final String PREF_UGREEN_DUAL_CONNECT = "ugreen_dual_connect";
     public static final String PREF_UGREEN_SPATIAL_AUDIO = "ugreen_spatial_audio";
+    public static final String PREF_BASEUS_BASS_BOOST = "baseus_bass_boost";
+    public static final String PREF_BASEUS_LOW_LATENCY = "baseus_low_latency";
     public static final String PREF_UGREEN_HIGH_QUALITY = "ugreen_high_quality";
 
     public static final String PREF_SOUNDPEATS_ANC_MODE = "soundpeats_anc_mode";
@@ -684,8 +686,17 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_3 = "pref_shokz_equalizer_custom_band_3";
     public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_4 = "pref_shokz_equalizer_custom_band_4";
     public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_5 = "pref_shokz_equalizer_custom_band_5";
+    public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_6 = "pref_shokz_equalizer_custom_band_6";
+    public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_7 = "pref_shokz_equalizer_custom_band_7";
+    public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_8 = "pref_shokz_equalizer_custom_band_8";
+    public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_9 = "pref_shokz_equalizer_custom_band_9";
+    public static final String PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_10 = "pref_shokz_equalizer_custom_band_10";
     public static final String PREF_SHOKZ_CONTROLS_LONG_PRESS_MULTI_FUNCTION = "shokz_controls_long_press_multi_function";
     public static final String PREF_SHOKZ_CONTROLS_SIMULTANEOUS_VOLUME_UP_DOWN = "shokz_controls_simultaneous_volume_up_down";
+    public static final String PREF_SHOKZ_NOISE_CANCELLING_LEVEL = "pref_shokz_noise_cancelling_level";
+    public static final String PREF_SHOKZ_DOLBY_ATMOS = "pref_shokz_dolby_atmos";
+    public static final String PREF_SHOKZ_HEAD_TRACKING = "pref_shokz_head_tracking";
+    public static final String PREF_SHOKZ_WEARING_DETECTION = "pref_shokz_wearing_detection";
 
     public static final String PREF_OVERRIDE_FEATURES_ENABLED = "override_features_enabled";
     public static final String PREF_OVERRIDE_FEATURES_LIST = "override_features_list";

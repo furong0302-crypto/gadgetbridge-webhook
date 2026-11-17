@@ -20,6 +20,9 @@ import androidx.annotation.NonNull;
 
 import java.util.Date;
 
+import nodomain.freeyourgadget.gadgetbridge.util.gson.GsonSerialized;
+
+@GsonSerialized
 public class ZipBackupMetadata {
     private final String appId;
     private final String appVersionName;

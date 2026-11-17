@@ -24,6 +24,8 @@ import java.util.Locale;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiFreebudsCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiHeadphonesCapabilities;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiPacket;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Earphones;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiSupportProvider;
@@ -62,7 +64,9 @@ public class SetANCModeRequest extends Request {
     protected List<byte[]> createRequest() throws RequestCreationException {
         try {
             ANCMode ancMode = SetANCModeRequest.ANCMode.fromPreferences(GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()));
-            return new Earphones.SetANCModeRequest(this.paramsProvider, ancMode).serialize();
+            HuaweiFreebudsCoordinator coordinator = (HuaweiFreebudsCoordinator) this.getDevice().getDeviceCoordinator();
+            int tag = coordinator.supports(this.getDevice(), HuaweiHeadphonesCapabilities.OpenFitNoiseCancellationModes) ? 0x01 : 0x02;
+            return new Earphones.SetANCModeRequest(this.paramsProvider, ancMode, tag).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);
         }

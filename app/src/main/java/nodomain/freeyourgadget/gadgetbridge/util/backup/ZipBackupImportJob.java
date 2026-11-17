@@ -44,6 +44,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiState;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.widgets.WidgetInstance;
@@ -216,13 +217,31 @@ public class ZipBackupImportJob extends AbstractZipBackupJob {
                     final SharedPreferences devicePrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
                     if (devicePrefs != null && !isAborted()) {
                         final ZipEntry devicePrefsZipEntry = zipFile.getEntry(String.format(Locale.ROOT, PREFS_DEVICE_FILENAME, dbDevice.getIdentifier()));
-                        if (devicePrefsZipEntry == null) {
-                            continue;
+                        if (devicePrefsZipEntry != null) {
+                            try (InputStream devicePrefsInputStream = zipFile.getInputStream(devicePrefsZipEntry)) {
+                                final JsonBackupPreferences jsonBackupPreferences = JsonBackupPreferences.fromJson(devicePrefsInputStream);
+                                if (!jsonBackupPreferences.importInto(devicePrefs)) {
+                                    LOG.warn("Device preferences for {} were not commited", dbDevice.getIdentifier());
+                                }
+                            }
                         }
-                        try (InputStream devicePrefsInputStream = zipFile.getInputStream(devicePrefsZipEntry)) {
-                            final JsonBackupPreferences jsonBackupPreferences = JsonBackupPreferences.fromJson(devicePrefsInputStream);
-                            if (!jsonBackupPreferences.importInto(devicePrefs)) {
-                                LOG.warn("Device preferences for {} were not commited", dbDevice.getIdentifier());
+                    }
+
+                    if (isAborted()) {
+                        break;
+                    }
+
+                    final ZipEntry huaweiCapabilitiesZipEntry = zipFile.getEntry(String.format(Locale.ROOT, PREFS_HUAWEI_CAPABILITIES_FILENAME, dbDevice.getIdentifier()));
+                    if (huaweiCapabilitiesZipEntry != null) {
+                        LOG.debug("Importing Huawei capabilities for {}", dbDevice.getIdentifier());
+                        final SharedPreferences huaweiCapabilities = GBApplication.getContext().getSharedPreferences(
+                            HuaweiState.getCapabilitiesSharedPreferencesName(dbDevice.getIdentifier()),
+                            Context.MODE_PRIVATE
+                        );
+                        try (InputStream huaweiCapabilitiesInputStream = zipFile.getInputStream(huaweiCapabilitiesZipEntry)) {
+                            final JsonBackupPreferences jsonBackupPreferences = JsonBackupPreferences.fromJson(huaweiCapabilitiesInputStream);
+                            if (!jsonBackupPreferences.importInto(huaweiCapabilities)) {
+                                LOG.warn("Huawei capabilities for {} were not commited", dbDevice.getIdentifier());
                             }
                         }
                     }

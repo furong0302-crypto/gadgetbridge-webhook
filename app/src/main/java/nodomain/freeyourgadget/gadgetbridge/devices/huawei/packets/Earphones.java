@@ -87,14 +87,14 @@ public class Earphones {
     public static class SetANCModeRequest extends HuaweiPacket {
         public static final byte id = 0x04;
 
-        public SetANCModeRequest(ParamsProvider paramsProvider, ANCMode newState) {
+        public SetANCModeRequest(ParamsProvider paramsProvider, ANCMode newState, int tag) {
             super(paramsProvider);
             this.serviceId = Earphones.id;
             this.commandId = id;
 
             byte[] data = {AudioMode.ANC.getCode(), newState.getCode()};
 
-            this.tlv = new HuaweiTLV().put(0x02, data);
+            this.tlv = new HuaweiTLV().put(tag, data);
 
             this.complete = true;
         }

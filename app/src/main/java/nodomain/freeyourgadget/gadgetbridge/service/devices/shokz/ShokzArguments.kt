@@ -30,6 +30,7 @@ enum class ShokzEqualizer(
     SWIMMING(0x07, R.string.Swimming, setOf(ShokzMediaSource.MP3)),
     // Only shown by the official app when its account region is set to the US.
     CLASSIC(0x08, R.string.haylou_s35_anc_eq_classic, setOf(ShokzMediaSource.BLUETOOTH)),
+    PRIVACY(0x09, R.string.shokz_equalizer_privacy, setOf(ShokzMediaSource.BLUETOOTH)),
     VOLUME_BOOST(0x0a, R.string.shokz_equalizer_volume_boost, setOf(ShokzMediaSource.BLUETOOTH)),
     ;
 

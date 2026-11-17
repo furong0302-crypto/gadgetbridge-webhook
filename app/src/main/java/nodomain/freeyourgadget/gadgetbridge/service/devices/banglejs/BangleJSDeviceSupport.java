@@ -1933,6 +1933,13 @@ public class BangleJSDeviceSupport extends AbstractBTLESingleDeviceSupport {
             o.put("calName", cropToLength(calendarEventSpec.getCalName(),20));
             o.put("color", calendarEventSpec.getColor());
             o.put("allDay", calendarEventSpec.getAllDay());
+            if (calendarEventSpec.getReminders() != null && !calendarEventSpec.getReminders().isEmpty()) {
+                JSONArray reminders = new JSONArray();
+                for (Long reminder : calendarEventSpec.getReminders()) {
+                    reminders.put(reminder / 1000);
+                }
+                o.put("reminders", reminders);
+            }
             uartTxJSON("onAddCalendarEvent", o);
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());

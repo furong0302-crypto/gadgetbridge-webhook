@@ -42,6 +42,8 @@ public class HuaweiFreebuds6Coordinator extends HuaweiFreebudsCoordinator {
     public Set<HuaweiHeadphonesCapabilities> getCapabilities() {
         return new HashSet<>(Arrays.asList(
                 HuaweiHeadphonesCapabilities.InEarDetection,
+                HuaweiHeadphonesCapabilities.AudioModes,
+                HuaweiHeadphonesCapabilities.OpenFitNoiseCancellationModes,
                 HuaweiHeadphonesCapabilities.BetterAudioQuality
         ));
     }

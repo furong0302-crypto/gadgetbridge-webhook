@@ -20,6 +20,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControlToggleGrou
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControlTrailingAction
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControls
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
+import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport
 import nodomain.freeyourgadget.gadgetbridge.service.devices.shokz.ShokzEqualizer
 import nodomain.freeyourgadget.gadgetbridge.service.devices.shokz.ShokzMediaSource
@@ -58,6 +59,42 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
     open fun supportsMp3(): Boolean = true
 
     /**
+     * Whether this device consists of two earbuds and a charging case (e.g. the OpenFit Pro),
+     * each reporting their own battery level.
+     */
+    open fun supportsTws(): Boolean = false
+
+    /**
+     * Whether this device supports toggling active noise cancelling and adjusting its level.
+     */
+    open fun supportsNoiseCancelling(): Boolean = false
+
+    open fun supportsDolbyAtmos(): Boolean = false
+
+    /**
+     * Whether this device supports head tracking for Dolby Atmos (HEAD_TRACKING_GET/SET). The
+     * official app only offers it while Dolby Atmos is enabled, and turns it off along with it.
+     */
+    open fun supportsHeadTracking(): Boolean = false
+
+    /**
+     * Whether this device supports toggling wearing detection (WEARING_DETECTION_GET/SET).
+     */
+    open fun supportsWearingDetection(): Boolean = false
+
+    override fun getBatteryCount(device: GBDevice): Int = if (supportsTws()) 3 else 1
+
+    override fun getBatteryConfig(device: GBDevice): Array<BatteryConfig> = if (supportsTws()) {
+        arrayOf(
+            BatteryConfig(0, R.drawable.ic_nothing_ear_l, R.string.left_earbud),
+            BatteryConfig(1, R.drawable.ic_nothing_ear_r, R.string.right_earbud),
+            BatteryConfig(2, R.drawable.ic_tws_case, R.string.battery_case),
+        )
+    } else {
+        super.getBatteryConfig(device)
+    }
+
+    /**
      * Whether this device supports customizing the long-press multi-function button and
      * simultaneous volume up/down controls (CONTROLS_GET/CONTROLS_SET). Confirmed present on
      * the OpenSwim Pro; the OpenRun Pro 2 does not respond to CONTROLS_GET at all.
@@ -88,27 +125,46 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
     open fun supportsClassicAndVolumeBoost(): Boolean = false
 
     /**
+     * Whether this device supports the Privacy equalizer preset (code 0x09). Confirmed present on
+     * the OpenFit Pro; unverified on other Shokz devices, so disabled by default.
+     */
+    open fun supportsPrivacyEqualizer(): Boolean = false
+
+    /**
+     * Number of bands of the custom equalizer, each in the -5..5 range.
+     */
+    open fun customEqualizerBandCount(): Int = 5
+
+    /**
+     * Whether this device reads the equalizer via EQUALIZER_V2_GET and sets the custom equalizer
+     * via EQUALIZER_CUSTOM_SET, instead of EQUALIZER_GET and EQUALIZER_SET. Confirmed on the
+     * OpenFit Pro, whose official app never sends EQUALIZER_GET.
+     */
+    open fun supportsEqualizerV2(): Boolean = false
+
+    /**
      * Encodes the EQUALIZER_SET payload for a given preset. Beyond the preset code (first byte),
      * these carry extra device-specific tuning parameters that were reverse-engineered from the
      * respective official app/device traffic, and may not be identical across Shokz models.
      */
     open fun equalizerArgs(equalizer: ShokzEqualizer): ByteArray = when (equalizer) {
         ShokzEqualizer.STANDARD, ShokzEqualizer.SWIMMING, ShokzEqualizer.BASS, ShokzEqualizer.TREBLE,
-        ShokzEqualizer.CLASSIC, ShokzEqualizer.VOLUME_BOOST ->
+        ShokzEqualizer.CLASSIC, ShokzEqualizer.PRIVACY, ShokzEqualizer.VOLUME_BOOST ->
             byteArrayOf(equalizer.code.toByte(), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
 
         ShokzEqualizer.VOCAL ->
             byteArrayOf(equalizer.code.toByte(), 0xfc.toByte(), 0x00, 0x03, 0x02, 0x02, 0x00, 0x00)
 
-        // CUSTOM carries 5 user-adjustable band gains, built separately from preferences by
+        // CUSTOM carries the user-adjustable band gains, built separately from preferences by
         // the caller - this default is never actually sent.
         ShokzEqualizer.CUSTOM ->
             byteArrayOf(equalizer.code.toByte(), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
     }
 
     /**
-     * Encodes the EQUALIZER_SET payload for the custom equalizer, given the 5 band gains
-     * (each in the -5..5 range, as reverse-engineered from the official Shokz app).
+     * Encodes the payload for the custom equalizer, given [customEqualizerBandCount] band gains
+     * (each in the -5..5 range, as reverse-engineered from the official Shokz app). It is sent
+     * via EQUALIZER_CUSTOM_SET if [supportsEqualizerV2], otherwise via EQUALIZER_SET.
      */
     open fun customEqualizerArgs(bands: IntArray): ByteArray = byteArrayOf(
         ShokzEqualizer.CUSTOM.code.toByte(),
@@ -120,7 +176,8 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
         ShokzMediaSource.BLUETOOTH in equalizer.sources &&
             (supportsBassTreble() || equalizer != ShokzEqualizer.BASS && equalizer != ShokzEqualizer.TREBLE) &&
             (supportsCustomEqualizer() || equalizer != ShokzEqualizer.CUSTOM) &&
-            (supportsClassicAndVolumeBoost() || equalizer != ShokzEqualizer.CLASSIC && equalizer != ShokzEqualizer.VOLUME_BOOST)
+            (supportsClassicAndVolumeBoost() || equalizer != ShokzEqualizer.CLASSIC && equalizer != ShokzEqualizer.VOLUME_BOOST) &&
+            (supportsPrivacyEqualizer() || equalizer != ShokzEqualizer.PRIVACY)
 
     private fun mediaSource(device: GBDevice): ShokzMediaSource =
         if (!supportsMp3()) {
@@ -152,6 +209,17 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
                 )
             )
         }
+
+        controls.addAll(
+            QuickControls.fromDeviceSettings(
+                device,
+                keys = emptyList(),
+                optionalKeys = listOfNotNull(
+                    DeviceSettingsPreferenceConst.PREF_ACTIVE_NOISE_CANCELLING_TOGGLE.takeIf { supportsNoiseCancelling() },
+                    DeviceSettingsPreferenceConst.PREF_SHOKZ_DOLBY_ATMOS.takeIf { supportsDolbyAtmos() },
+                ),
+            )
+        )
 
         controls.add(
             QuickControlDialog.forPreference(
@@ -212,6 +280,53 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
             )
         }
 
+        if (supportsNoiseCancelling()) {
+            category(
+                key = "pref_key_header_shokz_noise_control",
+                title = R.string.prefs_noise_control,
+            ) {
+                switchSetting(
+                    key = DeviceSettingsPreferenceConst.PREF_ACTIVE_NOISE_CANCELLING_TOGGLE,
+                    title = R.string.prefs_active_noise_cancelling,
+                    icon = R.drawable.ic_noise_control_on,
+                )
+                seekbar(
+                    key = DeviceSettingsPreferenceConst.PREF_SHOKZ_NOISE_CANCELLING_LEVEL,
+                    title = R.string.prefs_active_noise_cancelling_level,
+                    icon = R.drawable.ic_surround,
+                    min = 0,
+                    max = 100,
+                    defaultValue = 100,
+                    dependency = DeviceSettingsPreferenceConst.PREF_ACTIVE_NOISE_CANCELLING_TOGGLE,
+                )
+            }
+        }
+
+        if (supportsDolbyAtmos()) {
+            switchSetting(
+                key = DeviceSettingsPreferenceConst.PREF_SHOKZ_DOLBY_ATMOS,
+                title = R.string.shokz_dolby_atmos,
+                icon = R.drawable.ic_surround,
+            )
+            if (supportsHeadTracking()) {
+                switchSetting(
+                    key = DeviceSettingsPreferenceConst.PREF_SHOKZ_HEAD_TRACKING,
+                    title = R.string.shokz_head_tracking,
+                    summary = R.string.shokz_head_tracking_summary,
+                    icon = R.drawable.ic_surround,
+                    dependency = DeviceSettingsPreferenceConst.PREF_SHOKZ_DOLBY_ATMOS,
+                )
+            }
+        }
+
+        if (supportsWearingDetection()) {
+            switchSetting(
+                key = DeviceSettingsPreferenceConst.PREF_SHOKZ_WEARING_DETECTION,
+                title = R.string.shokz_wearing_detection,
+                icon = R.drawable.ic_ear_sound,
+            )
+        }
+
         // Equalizer presets - same enum, filtered to entries valid for each media source
         equalizerPreset<ShokzEqualizer>(
             key = DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_BLUETOOTH,
@@ -239,24 +354,10 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
                         ) == ShokzEqualizer.CUSTOM
                 },
             ) {
-                val bandKeys = listOf(
-                    DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_1,
-                    DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_2,
-                    DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_3,
-                    DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_4,
-                    DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_5,
-                )
-                val bandTitles = listOf(
-                    R.string.shokz_equalizer_band_1,
-                    R.string.shokz_equalizer_band_2,
-                    R.string.shokz_equalizer_band_3,
-                    R.string.shokz_equalizer_band_4,
-                    R.string.shokz_equalizer_band_5,
-                )
-                bandKeys.forEachIndexed { i, key ->
+                CUSTOM_EQUALIZER_BAND_KEYS.take(customEqualizerBandCount()).forEachIndexed { i, key ->
                     seekbar(
                         key = key,
-                        title = bandTitles[i],
+                        title = CUSTOM_EQUALIZER_BAND_TITLES[i],
                         icon = R.drawable.ic_graphic_eq,
                         min = -5,
                         max = 5,
@@ -313,4 +414,32 @@ abstract class ShokzCoordinator : AbstractBLClassicDeviceCoordinator() {
     override fun supportsPhoneCalls(device: GBDevice): Boolean = true
 
     override fun supportsCallControl(device: GBDevice): Boolean = true
+
+    companion object {
+        val CUSTOM_EQUALIZER_BAND_KEYS = listOf(
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_1,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_2,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_3,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_4,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_5,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_6,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_7,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_8,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_9,
+            DeviceSettingsPreferenceConst.PREF_SHOKZ_EQUALIZER_CUSTOM_BAND_10,
+        )
+
+        private val CUSTOM_EQUALIZER_BAND_TITLES = listOf(
+            R.string.shokz_equalizer_band_1,
+            R.string.shokz_equalizer_band_2,
+            R.string.shokz_equalizer_band_3,
+            R.string.shokz_equalizer_band_4,
+            R.string.shokz_equalizer_band_5,
+            R.string.shokz_equalizer_band_6,
+            R.string.shokz_equalizer_band_7,
+            R.string.shokz_equalizer_band_8,
+            R.string.shokz_equalizer_band_9,
+            R.string.shokz_equalizer_band_10,
+        )
+    }
 }

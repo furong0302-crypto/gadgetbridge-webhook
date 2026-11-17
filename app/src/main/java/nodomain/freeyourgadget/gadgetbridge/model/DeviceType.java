@@ -562,6 +562,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sbm_67.SanitasSBM67Coordinat
 import nodomain.freeyourgadget.gadgetbridge.devices.sbm_67.SilverCrestSBM67Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.scannable.ScannableDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sennheiser.SennheiserMomentumInEarWirelessCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.shokz.ShokzOpenFitProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.shokz.ShokzOpenRunPro2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.shokz.ShokzOpenSwimProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sinilink.SinilinkCoordinator;
@@ -619,6 +620,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSpaceOneC
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreSportX20Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreV20iCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundpeats.SoundpeatsQ3ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.baseus.BaseusBowieMc1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.supercars.SuperCarsCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.test.TestDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.teufel.TeufelMyndCoordinator;
@@ -1129,6 +1131,7 @@ public enum DeviceType {
     PIXEL_BUDS_A(PixelBudsACoordinator::new),
     SHOKZ_OPENSWIM_PRO(ShokzOpenSwimProCoordinator::new),
     SHOKZ_OPENRUN_PRO_2(ShokzOpenRunPro2Coordinator::new),
+    SHOKZ_OPENFIT_PRO(ShokzOpenFitProCoordinator::new),
     BM2_BATTERY_MONITOR(Bm2Coordinator::new),
     BM6_BATTERY_MONITOR(Bm6Coordinator::new),
     VICTRON_SMARTSHUNT(VictronSmartShuntCoordinator::new),
@@ -1165,6 +1168,7 @@ public enum DeviceType {
     SOUNDCORE_P42I(SoundcoreP42iCoordinator::new),
     SOUNDCORE_V20I(SoundcoreV20iCoordinator::new),
     SOUNDPEATS_Q3_PRO(SoundpeatsQ3ProCoordinator::new),
+    BASEUS_BOWIE_MC1(BaseusBowieMc1Coordinator::new),
     HAYLOU_S35_ANC(HaylouS35AncCoordinator::new),
     MOONDROP_SPACE_TRAVEL(MoondropSpaceTravelCoordinator::new),
     MOONDROP_SPACE_TRAVEL_2(MoondropSpaceTravel2Coordinator::new),

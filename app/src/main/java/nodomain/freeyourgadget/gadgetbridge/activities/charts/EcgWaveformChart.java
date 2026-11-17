@@ -28,7 +28,8 @@ import nodomain.freeyourgadget.gadgetbridge.model.EcgRecord;
 import nodomain.freeyourgadget.gadgetbridge.model.EcgSample;
 
 public class EcgWaveformChart {
-    private static final float DISPLAY_Y_AXIS_HALF_RANGE = 1.5f;
+    private static final float DISPLAY_Y_AXIS_MIN_RANGE = 3f;
+    private static final float DISPLAY_Y_AXIS_PADDING = 0.1f;
     private static final float ECG_MAJOR_X_GRID_SECONDS = 0.2f;
     private static final float ECG_MINOR_X_GRID_SECONDS = 0.04f;
     private static final float ECG_MAJOR_Y_GRID = 0.5f;
@@ -121,11 +122,17 @@ public class EcgWaveformChart {
         chart.getXAxis().setForceLabelsEnabled(true);
         chart.getXAxis().setValueFormatter(new SessionXAxisFormatter(record.getStartTimestamp()));
 
+        final float padding = (maxValue - minValue) * DISPLAY_Y_AXIS_PADDING;
+        float yMin = minValue - padding;
+        float yMax = maxValue + padding;
+        final float missingRange = DISPLAY_Y_AXIS_MIN_RANGE - (yMax - yMin);
+        if (missingRange > 0) {
+            yMin -= missingRange / 2;
+            yMax += missingRange / 2;
+        }
         final YAxis leftAxis = chart.getAxisLeft();
-        final float maxAbs = Math.max(Math.abs(minValue), Math.abs(maxValue));
-        final float halfRange = Math.max(DISPLAY_Y_AXIS_HALF_RANGE, maxAbs * 1.25f);
-        leftAxis.setAxisMinimum(-halfRange);
-        leftAxis.setAxisMaximum(halfRange);
+        leftAxis.setAxisMinimum((float) Math.floor(yMin / ECG_MAJOR_Y_GRID) * ECG_MAJOR_Y_GRID);
+        leftAxis.setAxisMaximum((float) Math.ceil(yMax / ECG_MAJOR_Y_GRID) * ECG_MAJOR_Y_GRID);
         chart.fitScreen();
         chart.invalidate();
     }

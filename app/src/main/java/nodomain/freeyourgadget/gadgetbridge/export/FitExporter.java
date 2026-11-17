@@ -728,9 +728,7 @@ public class FitExporter {
             b.setDepth(depth);
         }
 
-        // step_length (FIT field 85, mm). Both current ActivityPoint sources store mm:
-        // FitRecord.toActivityPoint round-trips the FIT value (already mm), and
-        // ZeppOsActivityDetailsParser converts its cm stride to a mm step. Emit when set
+        // step_length (FIT field 85, mm), same unit as ActivityPoint. Emit when set
         // (ActivityPoint default is -1 = unset; 0 mm is not a meaningful step).
         final int stepLength = p.getStepLength();
         if (stepLength > 0) {

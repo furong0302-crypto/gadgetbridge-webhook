@@ -43,6 +43,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiState;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
@@ -140,6 +141,15 @@ public class ZipBackupExportJob extends AbstractZipBackupJob {
                 final SharedPreferences devicePrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
                 if (devicePrefs != null) {
                     exportPreferences(zipOut, devicePrefs, String.format(Locale.ROOT, PREFS_DEVICE_FILENAME, dbDevice.getIdentifier()));
+                }
+
+                final SharedPreferences huaweiCapabilities = GBApplication.getContext().getSharedPreferences(
+                    HuaweiState.getCapabilitiesSharedPreferencesName(dbDevice.getIdentifier()),
+                    Context.MODE_PRIVATE
+                );
+                if (!huaweiCapabilities.getAll().isEmpty()) {
+                    LOG.debug("Exporting Huawei capabilities for {}", dbDevice.getIdentifier());
+                    exportPreferences(zipOut, huaweiCapabilities, String.format(Locale.ROOT, PREFS_HUAWEI_CAPABILITIES_FILENAME, dbDevice.getIdentifier()));
                 }
             }
         } catch (final Exception e) {
