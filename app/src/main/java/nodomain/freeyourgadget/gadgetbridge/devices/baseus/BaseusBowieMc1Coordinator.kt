@@ -66,5 +66,11 @@ class BaseusBowieMc1Coordinator : AbstractBLClassicDeviceCoordinator() {
                 defaultValue = false,
             )
         }
+
+        xmlScreen(
+            DeviceSpecificSettingsScreen.CALLS_AND_NOTIFICATIONS,
+            R.xml.devicesettings_headphones,
+            connectedOnly = false,
+        )
     }
 }
