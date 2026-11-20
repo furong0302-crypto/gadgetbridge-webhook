@@ -128,6 +128,7 @@ public class BluetoothNameTest extends TestBase {
             put("Domyos-TC-9610", DeviceType.DOMYOS_T540);
             put("MOMENTUM M2 IEBT", DeviceType.SENNHEISER_MOMENTUM_IN_EAR_WIRELESS);
             put("MOMENTUM M2 AEBT", null); // the over-ear MOMENTUM Wireless, not tested
+            put("MOMENTUM 3", DeviceType.SENNHEISER_MOMENTUM_3_WIRELESS);
             put("Polar H10 96C0B12D", DeviceType.POLARH10);
             put("808S 0007734", DeviceType.COOSPO_H808S);
             put("H808S-1A2B3C", DeviceType.COOSPO_H808S);

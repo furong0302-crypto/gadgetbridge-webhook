@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -41,6 +42,7 @@ public class PebbleLESupport {
 
     private final BluetoothDevice mBtDevice;
     private PipeReader mPipeReader;
+    private final AtomicInteger mTxSequence = new AtomicInteger(0);
     private PebbleGATTServer mPebbleGATTServer;
     private PebbleGATTClient mPebbleGATTClient;
     private final PipedInputStream mPipedInputStream;
@@ -191,6 +193,9 @@ public class PebbleLESupport {
             } else {
                 sendDataToPebble(new byte[]{0x03}); // no we don't know what that means
             }
+            // The watch restarts its numbering at 0 on a reset, and drops data with any other number.
+            // Restart only after the reply is queued, so that packet 0 cannot be sent before it.
+            mTxSequence.set(0);
         } else if (command == 0) { // normal package
             LOG.info("got PPoGATT package serial = {} sending ACK", serial);
 
@@ -218,8 +223,6 @@ public class PebbleLESupport {
     }
 
     private class PipeReader extends Thread {
-        int mmSequence = 0;
-
         PipeReader(){
             super("PebbleLESupport_read_" + THREAD_COUNTER.getAndIncrement());
         }
@@ -256,8 +259,8 @@ public class PebbleLESupport {
                     while (payloadToSend > 0) {
                         int chunkSize = Math.min(payloadToSend, maxChunkSize);
                         byte[] outBuf = new byte[chunkSize + 1];
-                        outBuf[0] = (byte) ((mmSequence << 3) & 0xff);
-                        mmSequence = (mmSequence + 1) & 0x1f; // keep serial in 5-bit range (0-31)
+                        int sequence = mTxSequence.getAndUpdate(s -> (s + 1) & 0x1f); // keep serial in 5-bit range (0-31)
+                        outBuf[0] = (byte) ((sequence << 3) & 0xff);
                         System.arraycopy(buf, srcPos, outBuf, 1, chunkSize);
                         sendDataToPebble(outBuf);
                         srcPos += chunkSize;

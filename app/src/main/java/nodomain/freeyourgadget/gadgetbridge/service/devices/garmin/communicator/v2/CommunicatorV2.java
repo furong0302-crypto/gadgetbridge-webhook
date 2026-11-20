@@ -137,6 +137,30 @@ public class CommunicatorV2 implements ICommunicator {
             }
         }
 
+        // Some watches (eg. Forerunner 235) expose only 281x, as a single characteristic that is
+        // both writable and notifiable - use it for both directions
+        for (final UUID uuid : UUID_CHARACTERISITC_GARMIN_ML_RX) {
+            final BluetoothGattCharacteristic characteristic = mSupport.getCharacteristic(uuid);
+            if (characteristic == null) {
+                continue;
+            }
+            final int properties = characteristic.getProperties();
+            final boolean writable = (properties & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0;
+            final boolean notifiable = (properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0;
+            if (writable && notifiable) {
+                LOG.info("Using single bidirectional ML characteristic {}", uuid);
+
+                characteristicReceive = characteristic;
+                characteristicSend = characteristic;
+
+                builder.notify(characteristicReceive, true);
+                builder.write(characteristicSend, closeAllServices());
+                closingAll = true;
+
+                return true;
+            }
+        }
+
         LOG.warn("Failed to find any known ML characteristics");
 
         return false;
@@ -366,7 +390,8 @@ public class CommunicatorV2 implements ICommunicator {
                     return;
                 }
                 final int handle = message.get() & 0xff;
-                final int reliable = message.get();
+                // Older devices (eg. Forerunner 235) omit the reliable byte - treat as plain ML
+                final int reliable = message.hasRemaining() ? message.get() : 0;
                 LOG.debug("Got register response for {}, handle={}, reliable={}", registeredService, handle, reliable);
 
                 serviceByHandle.put(handle, registeredService);

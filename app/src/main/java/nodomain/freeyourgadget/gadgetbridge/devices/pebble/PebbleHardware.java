@@ -49,32 +49,34 @@ public class PebbleHardware {
     // ======================= Platform Enum =======================
     /**
      * Pebble platform types, corresponding to the SDK platform names.
-     * Each platform defines its capabilities: BLE-only, health tracking, heart rate monitor.
+     * Each platform defines its capabilities: BLE-only, health tracking, heart rate monitor, SpO2 sensor.
      * Codename prefixes are used for model string matching (e.g., "snowy_dvt" matches "snowy" → BASALT).
      */
     public enum Platform {
-        //     platformName, displayName,       bleOnly, hasHealth, hasHRM, codenamePrefixes
-        APLITE("aplite", "Pebble Classic",      false,   false,     false),
-        BASALT("basalt", "Pebble Time",         false,   true,      false,  "snowy"),
-        CHALK("chalk", "Pebble Time Round",     false,   true,      false,  "spalding"),
-        DIORITE("diorite", "Pebble 2",          true,    true,      true,   "silk"),
-        EMERY("emery", "Pebble Time 2",         true,    true,      true,   "robert", "obelix"),
-        FLINT("flint", "Pebble 2 Duo",          true,    true,      false,  "asterix"),
-        GABBRO("gabbro", "Pebble Round 2",      true,    true,      true,   "getafix");
+        //     platformName, displayName,       bleOnly, hasHealth, hasHRM, hasSpo2, codenamePrefixes
+        APLITE("aplite", "Pebble Classic",      false,   false,     false, false),
+        BASALT("basalt", "Pebble Time",         false,   true,      false, false,  "snowy"),
+        CHALK("chalk", "Pebble Time Round",     false,   true,      false, false,  "spalding"),
+        DIORITE("diorite", "Pebble 2",          true,    true,      true,  false,  "silk"),
+        EMERY("emery", "Pebble Time 2",         true,    true,      true,  true,   "robert", "obelix"),
+        FLINT("flint", "Pebble 2 Duo",          true,    true,      false, false,  "asterix"),
+        GABBRO("gabbro", "Pebble Round 2",      true,    true,      true,  false,  "getafix");
 
         private final String platformName;
         private final String displayName;
         private final boolean bleOnly;
         private final boolean hasHealth;
         private final boolean hasHRM;
+        private final boolean hasSpo2;
         private final String[] codenamePrefixes;
 
-        Platform(String platformName, String displayName, boolean bleOnly, boolean hasHealth, boolean hasHRM, String... codenamePrefixes) {
+        Platform(String platformName, String displayName, boolean bleOnly, boolean hasHealth, boolean hasHRM, boolean hasSpo2, String... codenamePrefixes) {
             this.platformName = platformName;
             this.displayName = displayName;
             this.bleOnly = bleOnly;
             this.hasHealth = hasHealth;
             this.hasHRM = hasHRM;
+            this.hasSpo2 = hasSpo2;
             this.codenamePrefixes = codenamePrefixes;
         }
 
@@ -96,6 +98,10 @@ public class PebbleHardware {
 
         public boolean hasHRM() {
             return hasHRM;
+        }
+
+        public boolean hasSpo2() {
+            return hasSpo2;
         }
 
         public String[] getCodenamePrefixes() {
@@ -159,6 +165,10 @@ public class PebbleHardware {
 
         public boolean hasHRM() {
             return platform.hasHRM();
+        }
+
+        public boolean hasSpo2() {
+            return platform.hasSpo2();
         }
 
         public String getPlatformName() {
@@ -341,6 +351,17 @@ public class PebbleHardware {
         }
         HardwareRevision hw = getByModelString(model);
         return hw != null && hw.isBleOnly();
+    }
+
+    /**
+     * Check if device model has a SpO2 sensor.
+     *
+     * @param model Model string from GBDevice.getModel()
+     * @return true if the device has a SpO2 sensor
+     */
+    public static boolean hasSpo2(@Nullable final String model) {
+        final HardwareRevision hw = getByModelString(model);
+        return hw != null && hw.hasSpo2();
     }
 
     /**

@@ -23,7 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +33,9 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
+import nodomain.freeyourgadget.gadgetbridge.devices.GenericSpo2SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleHealthSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.GenericSpo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.entities.PebbleHealthActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -103,6 +107,7 @@ class DatalogSessionHealthSteps extends DatalogSessionPebbleHealth {
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             PebbleHealthSampleProvider sampleProvider = new PebbleHealthSampleProvider(getDevice(), dbHandler.getDaoSession());
             PebbleHealthActivitySample[] samples = new PebbleHealthActivitySample[stepsRecords.length];
+            List<GenericSpo2Sample> spo2Samples = new ArrayList<>();
             // TODO: user and device
             Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(getDevice(), dbHandler.getDaoSession()).getId();
@@ -117,9 +122,21 @@ class DatalogSessionHealthSteps extends DatalogSessionPebbleHealth {
                         stepsRecord.heart_rate
                 );
                 samples[j].setProvider(sampleProvider);
+
+                if (stepsRecord.spo2_percent > 0) {
+                    spo2Samples.add(new GenericSpo2Sample(
+                            stepsRecord.timestamp * 1000L,
+                            deviceId,
+                            userId,
+                            stepsRecord.spo2_percent
+                    ));
+                }
             }
 
             sampleProvider.addGBActivitySamples(Arrays.asList(samples));
+            if (!spo2Samples.isEmpty()) {
+                new GenericSpo2SampleProvider(getDevice(), dbHandler.getDaoSession()).addSamples(spo2Samples);
+            }
         } catch (Exception ex) {
             LOG.debug(ex.getMessage());
         }
@@ -139,8 +156,8 @@ class DatalogSessionHealthSteps extends DatalogSessionPebbleHealth {
         int heart_rate;
         int heart_rate_total_weight;
         int heart_rate_zone;
-        int spo_percent;
-        int spo_quality;
+        int spo2_percent;
+        int spo2_quality;
 
         byte[] rawData;
 
@@ -175,8 +192,8 @@ class DatalogSessionHealthSteps extends DatalogSessionPebbleHealth {
                 this.heart_rate_zone = record.get() & 0xff;
             }
             if (version >=14) {
-                this.spo_percent = record.get() & 0xff;
-                this.spo_quality = record.get() & 0xff;
+                this.spo2_percent = record.get() & 0xff;
+                this.spo2_quality = record.get() & 0xff;
             }
         }
 

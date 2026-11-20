@@ -624,6 +624,13 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SENNHEISER_MOMENTUM_VOICE_PROMPTS = "pref_sennheiser_momentum_voice_prompts";
     public static final String PREF_SENNHEISER_MOMENTUM_VOICE_ANSWER = "pref_sennheiser_momentum_voice_answer";
     public static final String PREF_SENNHEISER_MOMENTUM_SWAP_VOLUME_BUTTONS = "pref_sennheiser_momentum_swap_volume_buttons";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_EQUALIZER = "pref_sennheiser_momentum_3_equalizer";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_EQUALIZER_BASS = "pref_sennheiser_momentum_3_equalizer_bass";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_EQUALIZER_MID = "pref_sennheiser_momentum_3_equalizer_mid";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_EQUALIZER_TREBLE = "pref_sennheiser_momentum_3_equalizer_treble";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_HIGH_END = "pref_sennheiser_momentum_3_high_end";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_NOISE_CONTROL = "pref_sennheiser_momentum_3_noise_control";
+    public static final String PREF_SENNHEISER_MOMENTUM_3_TRANSPARENT_PAUSE = "pref_sennheiser_momentum_3_transparent_pause";
 
     public static final String PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE = "pref_sony_ambient_sound_control_button_mode";
     public static final String PREF_SONY_FOCUS_VOICE = "pref_sony_focus_voice";

@@ -2580,6 +2580,7 @@
     <string name="devicetype_soundcore_v20i" translatable="false">Soundcore V20i</string>
     <string name="devicetype_haylou_s35_anc" translatable="false">Haylou S35 ANC</string>
     <string name="devicetype_sennheiser_momentum_in_ear_wireless" translatable="false">Sennheiser MOMENTUM In-Ear Wireless</string>
+    <string name="devicetype_sennheiser_momentum_3_wireless" translatable="false">Sennheiser MOMENTUM 3 Wireless</string>
     <string name="devicetype_pixel_buds_a_series" translatable="false">Pixel Buds A-Series</string>
     <string name="devicetype_moondrop_space_travel" translatable="false">Moondrop Space Travel</string>
     <string name="devicetype_moondrop_space_travel_2" translatable="false">Moondrop Space Travel 2</string>
@@ -6551,6 +6552,18 @@ The result is the average of all the measurements.</string>
     <string name="sennheiser_momentum_voice_answer_summary">Accept or reject an incoming call by saying yes or no</string>
     <string name="sennheiser_momentum_swap_volume_buttons_title">Swap volume buttons</string>
     <string name="sennheiser_momentum_swap_volume_buttons_summary">Reverse the direction of the volume + and - buttons</string>
+    <string name="sennheiser_momentum_3_equalizer_movie">Movie</string>
+    <string name="sennheiser_momentum_3_equalizer_mid">Mid</string>
+    <string name="sennheiser_momentum_3_high_end_title">High-end sound tuning</string>
+    <string name="sennheiser_momentum_3_high_end_summary">Sennheiser\'s reference sound, used instead of the equalizer</string>
+    <string name="sennheiser_momentum_3_noise_control_maximum">Maximum</string>
+    <string name="sennheiser_momentum_3_noise_control_anti_wind">Anti-wind</string>
+    <string name="sennheiser_momentum_3_noise_control_anti_pressure">Anti-pressure</string>
+    <string name="sennheiser_momentum_3_noise_control_transparent_hearing">Transparent hearing</string>
+    <string name="sennheiser_momentum_3_noise_control_maximum_short">Max</string>
+    <string name="sennheiser_momentum_3_noise_control_anti_pressure_short">Pressure</string>
+    <string name="sennheiser_momentum_3_transparent_pause_title">Pause music automatically</string>
+    <string name="sennheiser_momentum_3_transparent_pause_summary">Automatically pauses your music when transparent hearing is activated</string>
 
     <string name="devicetype_f8" translatable="false">F8</string>
     <string name="f8_prefs_users">Users</string>
