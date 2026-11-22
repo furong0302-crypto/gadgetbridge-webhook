@@ -2,6 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.util.healthconnect.syncers
 
 import org.junit.Assert.*
 import org.junit.Test
+import java.time.Instant
 
 class HealthConnectSyncerTest {
 
@@ -104,6 +105,40 @@ class HealthConnectSyncerTest {
         assertEquals(0, noWork.recordsSynced + noWork.recordsSkipped)
         assertTrue((hasWork.recordsSynced + hasWork.recordsSkipped) > 0)
         assertTrue((hasSkipped.recordsSynced + hasSkipped.recordsSkipped) > 0)
+    }
+
+    @Test
+    fun sliceWriteRange_startIsExclusive() {
+        val start = Instant.parse("2026-06-15T00:00:00Z")
+        val end = Instant.parse("2026-06-16T00:00:00Z")
+
+        assertFalse(isWithinSliceWriteRange(start, start, end))
+    }
+
+    @Test
+    fun sliceWriteRange_endIsInclusive() {
+        val start = Instant.parse("2026-06-15T00:00:00Z")
+        val end = Instant.parse("2026-06-16T00:00:00Z")
+
+        assertTrue(isWithinSliceWriteRange(end, start, end))
+    }
+
+    @Test
+    fun sliceWriteRange_insideIsIncluded() {
+        val start = Instant.parse("2026-06-15T00:00:00Z")
+        val end = Instant.parse("2026-06-16T00:00:00Z")
+
+        assertTrue(isWithinSliceWriteRange(start.plusSeconds(1), start, end))
+        assertTrue(isWithinSliceWriteRange(end.minusSeconds(1), start, end))
+    }
+
+    @Test
+    fun sliceWriteRange_outsideIsExcluded() {
+        val start = Instant.parse("2026-06-15T00:00:00Z")
+        val end = Instant.parse("2026-06-16T00:00:00Z")
+
+        assertFalse(isWithinSliceWriteRange(start.minusSeconds(1), start, end))
+        assertFalse(isWithinSliceWriteRange(end.plusSeconds(1), start, end))
     }
 }
 

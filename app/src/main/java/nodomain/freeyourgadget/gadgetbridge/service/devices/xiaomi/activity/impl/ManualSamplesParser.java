@@ -163,6 +163,8 @@ public class ManualSamplesParser extends XiaomiActivityParser {
         // Mi Band 9 Active files contain 7 file-id bytes, one padding byte, a 0xff
         // header, one or more 6-byte samples, and a final 4-byte CRC. Each sample is
         // a little-endian timestamp followed by a type and an unsigned byte value.
+        // Redmi Watch 5 Active uses the same layout with a 0xe0 header, and also
+        // reports manual heart rate measurements (type 0x01).
         if (bytes.length < 19) {
             LOG.warn("Manual samples v1 packet too short: {}", bytes.length);
             return null;
@@ -179,7 +181,7 @@ public class ManualSamplesParser extends XiaomiActivityParser {
         }
 
         final int header = buf.get() & 0xff;
-        if (header != 0xff) {
+        if (header != 0xff && header != 0xe0) {
             LOG.warn("Unexpected manual samples v1 header {}", header);
             return null;
         }
@@ -197,19 +199,26 @@ public class ManualSamplesParser extends XiaomiActivityParser {
             final int value = buf.get() & 0xff;
 
             final int type;
+            final int maxValue;
             switch (typeV1) {
+                case 0x01:
+                    type = XiaomiManualSampleProvider.TYPE_HR;
+                    maxValue = 254;
+                    break;
                 case 0x02:
                     type = XiaomiManualSampleProvider.TYPE_SPO2;
+                    maxValue = 100;
                     break;
                 case 0x03:
                     type = XiaomiManualSampleProvider.TYPE_STRESS;
+                    maxValue = 100;
                     break;
                 default:
                     LOG.warn("Unknown manual samples v1 type {}", typeV1);
                     return null;
             }
 
-            if (value == 0 || value > 100) {
+            if (value == 0 || value > maxValue) {
                 LOG.warn("Invalid manual samples v1 value {} for type {}", value, typeV1);
                 return null;
             }

@@ -99,7 +99,7 @@ internal object TemperatureSyncer : HealthConnectSyncer {
                     continue
                 }
                 val timestamp = Instant.ofEpochMilli(sample.timestamp)
-                if (!timestamp.isBefore(sliceStartBoundary) && timestamp.isBefore(sliceEndBoundary)) {
+                if (isWithinSliceWriteRange(timestamp, sliceStartBoundary, sliceEndBoundary)) {
                     recordsToInsert.add(
                         BodyTemperatureRecord(
                             time = timestamp,
@@ -111,7 +111,7 @@ internal object TemperatureSyncer : HealthConnectSyncer {
                     )
                 } else {
                     LOG.trace(
-                        "Skipping Body Temperature sample for device '{}' at {} (value: {}°C) as it's outside slice {} - {}.",
+                        "Skipping Body Temperature sample for device '{}' at {} (value: {}°C) as it's outside the write range ({} - {}].",
                         deviceName,
                         timestamp,
                         sample.temperature,
@@ -140,7 +140,7 @@ internal object TemperatureSyncer : HealthConnectSyncer {
                 val ts = Instant.ofEpochMilli(it.timestamp)
                 val tempC = it.temperature.toDouble()
                 (tempC in MIN_PLAUSIBLE_SKIN_TEMP_C..MAX_PLAUSIBLE_SKIN_TEMP_C) &&
-                        (!ts.isBefore(sliceStartBoundary) && ts.isBefore(sliceEndBoundary))
+                        isWithinSliceWriteRange(ts, sliceStartBoundary, sliceEndBoundary)
             }.sortedBy { it.timestamp }
 
             if (validSkinSamplesInSlice.isNotEmpty()) {
@@ -192,7 +192,7 @@ internal object TemperatureSyncer : HealthConnectSyncer {
         val latest = insertedRecords.mapNotNull {
             when (it) {
                 is BodyTemperatureRecord -> it.time
-                is SkinTemperatureRecord -> it.endTime
+                is SkinTemperatureRecord -> it.deltas.lastOrNull()?.time
                 else -> null
             }
         }.maxOrNull()

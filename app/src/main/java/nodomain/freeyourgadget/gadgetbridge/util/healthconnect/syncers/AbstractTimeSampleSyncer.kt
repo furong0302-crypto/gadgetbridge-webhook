@@ -33,6 +33,14 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import kotlin.reflect.KClass
 
+internal fun <T : TimeSample> samplesWithinWriteRange(
+    samples: List<T>,
+    sliceStartBoundary: Instant,
+    sliceEndBoundary: Instant
+): List<T> = samples.filter {
+    isWithinSliceWriteRange(Instant.ofEpochMilli(it.timestamp), sliceStartBoundary, sliceEndBoundary)
+}
+
 /**
  * A base class for synchronizing generic Gadgetbridge TimeSample samples to Health Connect.
  * This class provides common logic for fetching samples and converting them to records.
@@ -102,19 +110,17 @@ internal abstract class AbstractTimeSampleSyncer<TSample : TimeSample, TRecord :
         var skippedCount = 0
         var latestSyncedTimestamp: Instant? = null
 
-        val recordsToInsert = samples.filter {
-            val timestamp = Instant.ofEpochMilli(it.timestamp)
-            if (timestamp.isBefore(sliceStartBoundary) || timestamp.isAfter(sliceEndBoundary)) {
-                logger.trace(
-                    "Skipping sample for at {} as it's outside the slice {} - {}.",
-                    timestamp,
-                    sliceStartBoundary,
-                    sliceEndBoundary
-                )
-                return@filter false
-            }
-            return@filter true
-        }.mapNotNull { sample ->
+        val relevantSamples = samplesWithinWriteRange(samples, sliceStartBoundary, sliceEndBoundary)
+        if (relevantSamples.size != samples.size) {
+            logger.trace(
+                "Skipped {} sample(s) outside the write range ({} - {}].",
+                samples.size - relevantSamples.size,
+                sliceStartBoundary,
+                sliceEndBoundary
+            )
+        }
+
+        val recordsToInsert = relevantSamples.mapNotNull { sample ->
             val sampleOffset = offset.rules.getOffset(Instant.ofEpochMilli(sample.timestamp))
             convertSample(
                 sample,

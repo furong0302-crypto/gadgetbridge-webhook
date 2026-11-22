@@ -36,12 +36,15 @@ class TemperatureSyncerCursorTest {
         metadata = metadata
     )
 
-    private fun skin(start: Instant, end: Instant) = SkinTemperatureRecord(
+    private fun skin(start: Instant, lastDelta: Instant, end: Instant) = SkinTemperatureRecord(
         startTime = start,
         startZoneOffset = ZoneOffset.UTC,
         endTime = end,
         endZoneOffset = ZoneOffset.UTC,
-        deltas = listOf(SkinTemperatureRecord.Delta(start, TemperatureDelta.celsius(0.1))),
+        deltas = listOf(
+            SkinTemperatureRecord.Delta(start, TemperatureDelta.celsius(0.1)),
+            SkinTemperatureRecord.Delta(lastDelta, TemperatureDelta.celsius(0.2))
+        ),
         baseline = Temperature.celsius(33.0),
         metadata = metadata
     )
@@ -67,19 +70,21 @@ class TemperatureSyncerCursorTest {
     }
 
     @Test
-    fun skinRecord_advancesToEndTime() {
-        val records: List<Record> = listOf(skin(base.plusSeconds(100), base.plusSeconds(900)))
+    fun skinRecord_advancesToLastDeltaTime() {
+        val records: List<Record> = listOf(
+            skin(base.plusSeconds(100), base.plusSeconds(899), base.plusSeconds(900))
+        )
         val stats = TemperatureSyncer.buildStatistics(records, recordsSkipped = 0)
-        assertEquals(base.plusSeconds(900), stats.latestRecordTimestamp)
+        assertEquals(base.plusSeconds(899), stats.latestRecordTimestamp)
     }
 
     @Test
     fun mixedBodyAndSkin_advanceToFurthestForwardEdge() {
         val records: List<Record> = listOf(
             body(base.plusSeconds(500)),
-            skin(base.plusSeconds(100), base.plusSeconds(7200))
+            skin(base.plusSeconds(100), base.plusSeconds(7199), base.plusSeconds(7200))
         )
         val stats = TemperatureSyncer.buildStatistics(records, recordsSkipped = 0)
-        assertEquals(base.plusSeconds(7200), stats.latestRecordTimestamp)
+        assertEquals(base.plusSeconds(7199), stats.latestRecordTimestamp)
     }
 }

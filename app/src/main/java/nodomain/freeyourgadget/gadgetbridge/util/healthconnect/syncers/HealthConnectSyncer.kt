@@ -51,6 +51,12 @@ internal fun clientRecordId(device: Device, type: String, idKey: Long): String =
 internal fun distanceClientRecordId(device: Device, endEpochSecond: Long): String =
     clientRecordId(device, DistanceSyncer.RECORD_TYPE, endEpochSecond)
 
+internal fun isWithinSliceWriteRange(
+    timestamp: Instant,
+    sliceStartBoundary: Instant,
+    sliceEndBoundary: Instant
+): Boolean = timestamp.isAfter(sliceStartBoundary) && !timestamp.isAfter(sliceEndBoundary)
+
 /**
  * Statistics returned by a syncer after processing a slice.
  */

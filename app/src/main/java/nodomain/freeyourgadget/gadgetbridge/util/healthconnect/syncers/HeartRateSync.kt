@@ -82,14 +82,11 @@ internal object HeartRateSyncer : ActivitySampleSyncer {
         val heartRateRecordList = mutableListOf<Record>()
         val currentHcSamples = mutableListOf<HeartRateRecord.Sample>()
         var previousSampleTimestamp: Instant? = null
-        var skippedCount = 0
 
         for (gbSample in validHRSamples) {
             val currentSampleTimestamp = Instant.ofEpochSecond(gbSample.timestamp.toLong())
 
-            // Use inclusive boundaries [sliceStart, sliceEnd] for the slice
-            if (currentSampleTimestamp.isBefore(sliceStartBoundary) || currentSampleTimestamp.isAfter(sliceEndBoundary)) {
-                skippedCount++
+            if (!isWithinSliceWriteRange(currentSampleTimestamp, sliceStartBoundary, sliceEndBoundary)) {
                 continue
             }
 
@@ -150,7 +147,7 @@ internal object HeartRateSyncer : ActivitySampleSyncer {
 
         if (heartRateRecordList.isEmpty()) {
             LOG.info("No valid HeartRateRecord(s) created for device '$deviceName' for slice $sliceStartBoundary to $sliceEndBoundary after processing ${validHRSamples.size} samples.")
-            return SyncerStatistics(recordsSkipped = skippedCount, recordType = "HeartRate")
+            return SyncerStatistics(recordType = "HeartRate")
         }
 
         LOG.info("Attempting to insert ${heartRateRecordList.size} HeartRateRecord(s) for device '$deviceName' for slice $sliceStartBoundary to $sliceEndBoundary.")
@@ -159,6 +156,6 @@ internal object HeartRateSyncer : ActivitySampleSyncer {
         }
 
         LOG.info("Successfully inserted ${heartRateRecordList.size} HeartRateRecord(s) for device '$deviceName' for slice $sliceStartBoundary to $sliceEndBoundary.")
-        return SyncerStatistics(recordsSynced = heartRateRecordList.size, recordsSkipped = skippedCount, recordType = "HeartRate", latestRecordTimestamp = previousSampleTimestamp)
+        return SyncerStatistics(recordsSynced = heartRateRecordList.size, recordType = "HeartRate", latestRecordTimestamp = previousSampleTimestamp)
     }
 }

@@ -1,5 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.util.healthconnect.syncers
 
+import androidx.health.connect.client.records.metadata.Device
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
 import nodomain.freeyourgadget.gadgetbridge.model.SleepSession
 import nodomain.freeyourgadget.gadgetbridge.model.SleepStage
@@ -18,10 +19,8 @@ import java.time.Instant
 // needed.
 class SleepSessionIdentityTest {
 
-    // Deterministic id minter mirroring SleepSyncer's hour-bucketed scheme (without device parts).
-    private val mintId: (Instant) -> String = { start ->
-        "id-${start.epochSecond / 3600 * 3600}"
-    }
+    private val device = Device(type = Device.TYPE_WATCH, manufacturer = "test", model = "test")
+    private val mintId: (Instant) -> String = { start -> sleepSessionClientRecordId(device, start) }
 
     private fun det(start: String, end: String) = DetectedSleepSession(Instant.parse(start), Instant.parse(end))
 
@@ -67,9 +66,9 @@ class SleepSessionIdentityTest {
 
     @Test
     fun fragmentOnStartEdge_matchesGrownNight_noOrphan() {
-        // First detection is a single-sample fragment sitting exactly on the night's eventual start
-        // edge (23:08Z). When the full night 23:08Z->07:25Z is detected next, it must reuse the
-        // frozen id, not spawn a second record. (Inclusive overlap; strict would re-orphan here.)
+        // First detection is a single-sample fragment at the night's eventual start (23:08Z) whose
+        // end falls strictly inside the night. When the full night 23:08Z->07:25Z is detected
+        // next, it must reuse the frozen id, not spawn a second record.
         val frag = plan(emptyList(), det("2026-06-14T23:08:00Z", "2026-06-14T23:08:01Z"))
         val night = plan(frag.rows, det("2026-06-14T23:08:00Z", "2026-06-15T07:25:00Z"))
 
@@ -80,7 +79,6 @@ class SleepSessionIdentityTest {
 
     @Test
     fun gapSeparatedSessions_stayDistinct() {
-        // The segmenter only splits across a wake gap > 1h, so distinct sessions never touch.
         // A nap and a later main sleep with a clear gap must remain two records.
         val first = plan(emptyList(), det("2026-06-14T13:00:00Z", "2026-06-14T14:00:00Z"))
         val second = plan(first.rows, det("2026-06-14T23:08:00Z", "2026-06-15T07:25:00Z"))
@@ -99,6 +97,38 @@ class SleepSessionIdentityTest {
         assertEquals(2, result.rows.size)
         assertEquals(2, result.rows.map { it.clientRecordId }.toSet().size)
         assertEquals(2, result.planned.size)
+    }
+
+    // ★ Regression guard for #7393: the segmenter splits on a short wake gap if it has steps, so
+    // two sessions can start in the same UTC hour. They must not share a clientRecordId.
+    @Test
+    fun sessionsStartingInSameHour_getDistinctIds() {
+        val result = plan(
+            emptyList(),
+            det("2026-06-15T00:10:00Z", "2026-06-15T00:50:00Z"),
+            det("2026-06-15T00:55:00Z", "2026-06-15T01:30:00Z")
+        )
+        assertEquals(2, result.rows.size)
+        assertEquals(2, result.rows.map { it.clientRecordId }.toSet().size)
+        assertEquals(2, result.planned.size)
+    }
+
+    @Test
+    fun touchingSessionDiscoveredInLaterPass_staysDistinct() {
+        val first = plan(emptyList(), det("2026-06-15T06:00:00Z", "2026-06-15T07:00:00Z"))
+        val second = plan(first.rows, det("2026-06-15T07:00:00Z", "2026-06-15T08:00:00Z"))
+        assertEquals(2, second.rows.size)
+        assertEquals(2, second.rows.map { it.clientRecordId }.toSet().size)
+        assertEquals(1, second.planned.size)
+    }
+
+    @Test
+    fun sessionEndingAtExistingRowStart_staysDistinct() {
+        val first = plan(emptyList(), det("2026-06-15T08:00:00Z", "2026-06-15T09:00:00Z"))
+        val second = plan(first.rows, det("2026-06-15T07:00:00Z", "2026-06-15T08:00:00Z"))
+        assertEquals(2, second.rows.size)
+        assertEquals(2, second.rows.map { it.clientRecordId }.toSet().size)
+        assertEquals(1, second.planned.size)
     }
 
     // ★ Skip-if-unchanged: the 24h look-back re-scans an already-synced night every run; an unchanged

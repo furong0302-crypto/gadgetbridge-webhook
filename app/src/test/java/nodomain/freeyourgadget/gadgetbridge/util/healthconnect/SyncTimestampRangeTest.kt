@@ -53,6 +53,41 @@ class SyncTimestampRangeTest : TestBase() {
     }
 
     @Test
+    fun legacySecondsCursor_convertsToMillis() {
+        assertEquals(sampleMillis, HealthConnectUtils.storedSyncCursorToMillis(sampleMillis / 1000))
+    }
+
+    @Test
+    fun millisecondCursor_isUnchanged() {
+        assertEquals(sampleMillis, HealthConnectUtils.storedSyncCursorToMillis(sampleMillis))
+    }
+
+    @Test
+    fun cursorRoundTrip_keepsMilliseconds() {
+        val cursor = Instant.ofEpochMilli(sampleMillis + 700L)
+        val roundTripped = Instant.ofEpochMilli(
+            HealthConnectUtils.storedSyncCursorToMillis(HealthConnectUtils.syncCursorToStored(cursor))
+        )
+        assertEquals(cursor, roundTripped)
+    }
+
+    @Test
+    fun legacyCursorThreshold_classifiesSecondsAndMillis() {
+        assertEquals(99_999_999_999L * 1000L, HealthConnectUtils.storedSyncCursorToMillis(99_999_999_999L))
+        assertEquals(100_000_000_000L, HealthConnectUtils.storedSyncCursorToMillis(100_000_000_000L))
+    }
+
+    @Test
+    fun millisecondCursorRow_isReadAsMilliseconds() {
+        val deviceId = DBHelper.getDevice(device, daoSession).id!!
+        val cursor = Instant.ofEpochMilli(sampleMillis + 700L)
+        daoSession.healthConnectSyncStateDao.insertOrReplace(
+            HealthConnectSyncState(deviceId, dataType.name, cursor.toEpochMilli())
+        )
+        assertEquals(cursor, range().first)
+    }
+
+    @Test
     fun singleSampleAlreadySynced_givesAnEmptyRange() {
         val deviceId = DBHelper.getDevice(device, daoSession).id!!
         daoSession.healthConnectSyncStateDao.insertOrReplace(

@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
@@ -15,6 +16,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.HealthConnectSyncStateDao
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils
 import nodomain.freeyourgadget.gadgetbridge.util.GB
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.GadgetbridgeDataExporter
+import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectUtils
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectSyncWorker
 import nodomain.freeyourgadget.gadgetbridge.util.healthconnect.HealthConnectWorkoutSync
 import org.slf4j.Logger
@@ -114,7 +116,7 @@ class HealthConnectDebugFragment : AbstractDebugFragment() {
                 addDynamicCategory(gbDevice.aliasOrName)
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 for (state in syncStates) {
-                    val zonedDateTime = Instant.ofEpochMilli(state.lastSyncTimestamp * 1000L)
+                    val zonedDateTime = Instant.ofEpochMilli(HealthConnectUtils.storedSyncCursorToMillis(state.lastSyncTimestamp))
                         .atZone(ZoneId.systemDefault())
 
                     addDynamicPref(
@@ -123,7 +125,12 @@ class HealthConnectDebugFragment : AbstractDebugFragment() {
                         zonedDateTime.format(formatter)
                     ) {
                         val datePicker = MaterialDatePicker.Builder.datePicker()
-                            .setSelection(DateTimeUtils.toUtcDayStartMillis(state.lastSyncTimestamp * 1000L))
+                            .setSelection(DateTimeUtils.toUtcDayStartMillis(HealthConnectUtils.storedSyncCursorToMillis(state.lastSyncTimestamp)))
+                            .setCalendarConstraints(
+                                CalendarConstraints.Builder()
+                                    .setStart(HealthConnectUtils.MIN_VALID_SAMPLE_MILLIS)
+                                    .build()
+                            )
                             .build()
                         datePicker.addOnPositiveButtonClickListener { selection ->
                             val selectedDate = DateTimeUtils.utcMillisToLocalDate(selection)
@@ -135,7 +142,7 @@ class HealthConnectDebugFragment : AbstractDebugFragment() {
 
                             GBApplication.acquireDB().use { db ->
                                 val syncStateDao = db.daoSession.healthConnectSyncStateDao
-                                state.lastSyncTimestamp = date.time / 1000
+                                state.lastSyncTimestamp = date.time - 1000L
 
                                 LOG.info(
                                     "Updating Health Connect sync state for device {}, data type {} to timestamp: {}",

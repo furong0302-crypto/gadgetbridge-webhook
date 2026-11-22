@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.una
 
+import android.content.Context
 import androidx.core.content.edit
 import nodomain.freeyourgadget.gadgetbridge.GBApplication
 import nodomain.freeyourgadget.gadgetbridge.R
@@ -27,7 +28,9 @@ import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityTrackProvider
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType
+import nodomain.freeyourgadget.gadgetbridge.model.FitActivityTrackProvider
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport
 import nodomain.freeyourgadget.gadgetbridge.service.devices.una.UnaDeviceSupport
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs
@@ -67,6 +70,9 @@ class UnaDeviceCoordinator : AbstractBLEDeviceCoordinator() {
     override fun supportsDataFetching(device: GBDevice): Boolean = true
 
     override fun supportsRecordedActivities(device: GBDevice): Boolean = true
+
+    override fun getActivityTrackProvider(device: GBDevice, context: Context): ActivityTrackProvider =
+        FitActivityTrackProvider()
 
     // One aggregate sample per day for steps and floors, which have no per-minute source on this
     // firmware, plus a real per-minute heart rate timeline.

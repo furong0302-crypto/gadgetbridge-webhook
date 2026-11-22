@@ -20,6 +20,7 @@ import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.records.metadata.Metadata
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
@@ -30,6 +31,9 @@ import java.time.Instant
 import java.time.ZoneId
 
 private val LOG = LoggerFactory.getLogger("SleepSyncer")
+
+internal fun sleepSessionClientRecordId(device: Device, start: Instant): String =
+    "gb-sleep-${device.manufacturer ?: "unknown"}-${device.model ?: "unknown"}-${start.epochSecond}"
 
 // Persisted per-night identity. The SleepSessionProvider can re-segment a night's start earlier across syncs, so
 // we freeze a clientRecordId on first sight and reuse it for any later time-overlapping detection;
@@ -84,10 +88,11 @@ internal object SleepSyncer {
             for (idx in rows.indices) {
                 if (idx in used) continue
                 val r = rows[idx]
-                // Inclusive overlap (d.start <= r.end && d.end >= r.start): the segmenter only
-                // splits across a >1h wake gap so distinct sessions never touch, and inclusive
-                // still matches a fragment sitting exactly on the grown session's start edge.
-                if (!d.start.isAfter(r.endTime) && !d.end.isBefore(r.startTime)) {
+                // Strict overlap (d.start < r.end && d.end > r.start): distinct sessions may share
+                // an edge (the segmenter splits on awake samples with steps, and device records can
+                // abut), so only interior overlap matches. A fragment inside the grown session's
+                // start edge still matches.
+                if (d.start.isBefore(r.endTime) && d.end.isAfter(r.startTime)) {
                     matchIdx = idx
                     break
                 }
@@ -162,10 +167,7 @@ internal object SleepSyncer {
             return SleepSyncResult(SyncerStatistics(recordType = "Sleep", recordsSkipped = skippedCount), existingRows)
         }
 
-        val mintId: (Instant) -> String = { start ->
-            val startHourEpoch = start.epochSecond / 3600 * 3600
-            "gb-sleep-${device.manufacturer ?: "unknown"}-${device.model ?: "unknown"}-$startHourEpoch"
-        }
+        val mintId: (Instant) -> String = { start -> sleepSessionClientRecordId(device, start) }
 
         val plan = planSleepSessions(
             existingRows = existingRows,

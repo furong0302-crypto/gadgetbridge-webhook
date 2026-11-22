@@ -62,6 +62,52 @@ public class ManualSamplesParserTest {
         assertEquals(27, stress27.get(0).getValue().intValue());
     }
 
+    // Redmi Watch 5 Active: 0xe0 header, manual measurements taken on the watch
+    private static final String RW5A_SPO2_97_PACKET = "ede3016bf4011800e0ede3016b0261356c8e23";
+    private static final String RW5A_STRESS_30_PACKET = "34e4016bf4011800e034e4016b031e08099fae";
+    private static final String RW5A_HR_98_PACKET = "44e4016bf4011800e044e4016b0162f08164c8";
+    private static final String RW5A_HR_106_PACKET = "64e4016bf4011800e064e4016b016a6a32d649";
+
+    @Test
+    public void decodeVersion1RedmiWatch5Active() {
+        final List<XiaomiManualSample> spo2 = decode(RW5A_SPO2_97_PACKET);
+        assertNotNull(spo2);
+        assertEquals(1, spo2.size());
+        assertEquals(XiaomiManualSampleProvider.TYPE_SPO2, spo2.get(0).getType().intValue());
+        assertEquals(97, spo2.get(0).getValue().intValue());
+        assertEquals(0x6B01E3EDL * 1000, spo2.get(0).getTimestamp());
+
+        final List<XiaomiManualSample> stress = decode(RW5A_STRESS_30_PACKET);
+        assertNotNull(stress);
+        assertEquals(1, stress.size());
+        assertEquals(XiaomiManualSampleProvider.TYPE_STRESS, stress.get(0).getType().intValue());
+        assertEquals(30, stress.get(0).getValue().intValue());
+
+        final List<XiaomiManualSample> hr98 = decode(RW5A_HR_98_PACKET);
+        assertNotNull(hr98);
+        assertEquals(1, hr98.size());
+        assertEquals(XiaomiManualSampleProvider.TYPE_HR, hr98.get(0).getType().intValue());
+        assertEquals(98, hr98.get(0).getValue().intValue());
+    }
+
+    @Test
+    public void decodeVersion1HeartRateAbove100() {
+        final List<XiaomiManualSample> samples = decode(RW5A_HR_106_PACKET);
+
+        assertNotNull(samples);
+        assertEquals(1, samples.size());
+        assertEquals(XiaomiManualSampleProvider.TYPE_HR, samples.get(0).getType().intValue());
+        assertEquals(106, samples.get(0).getValue().intValue());
+    }
+
+    @Test
+    public void decodeVersion1RejectsOutOfRangeHeartRate() {
+        final byte[] packet = GB.hexStringToByteArray(RW5A_HR_98_PACKET);
+        packet[14] = (byte) 0xff;
+
+        assertNull(decode(packet));
+    }
+
     @Test
     public void decodeVersion1RejectsUnknownHeader() {
         final byte[] packet = GB.hexStringToByteArray(SPO2_97_PACKET);

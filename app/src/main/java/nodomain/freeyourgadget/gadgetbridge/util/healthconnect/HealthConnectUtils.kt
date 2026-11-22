@@ -492,7 +492,7 @@ class HealthConnectUtils {
                         val syncState = HealthConnectSyncState(
                             deviceFromDb.id!!,
                             dataType.name,
-                            timestampToPersistForThisDataType.epochSecond
+                            syncCursorToStored(timestampToPersistForThisDataType)
                         )
 
                         LOG.info("$HC_SYNC_TAG Updating Health Connect sync state for device {}, data type {} to timestamp: {}", gbDevice.aliasOrName, dataType.name, timestampToPersistForThisDataType)
@@ -548,10 +548,17 @@ class HealthConnectUtils {
         private const val INITIAL_DELAY_MS = 1000L
         internal const val HC_SYNC_TAG = "[HC_SYNC]"
 
+        private const val LEGACY_SECONDS_THRESHOLD = 100_000_000_000L
+
+        internal fun storedSyncCursorToMillis(stored: Long): Long =
+            if (stored < LEGACY_SECONDS_THRESHOLD) stored * 1000L else stored
+
+        internal fun syncCursorToStored(cursor: Instant): Long = cursor.toEpochMilli()
+
         // Floor the sync-start at 2015 (Gadgetbridge predates it). A bogus near-epoch sample
         // timestamp otherwise resolves the start to ~1970 and triggers a full historical resync.
         private const val MIN_VALID_SAMPLE_SECONDS = 1420070400L // 2015-01-01T00:00:00Z
-        private const val MIN_VALID_SAMPLE_MILLIS = MIN_VALID_SAMPLE_SECONDS * 1000
+        internal const val MIN_VALID_SAMPLE_MILLIS = MIN_VALID_SAMPLE_SECONDS * 1000
 
         /**
          * Deletes the sync state of [dataType] for [gbDevice].
@@ -646,16 +653,17 @@ class HealthConnectUtils {
             syncState: HealthConnectSyncState?
         ): Instant? {
             if (syncState != null) {
-                CompanionLogger.info("$HC_SYNC_TAG Found existing sync state for {}({}), last sync was at: {}", gbDevice.aliasOrName, dataType.name, Instant.ofEpochSecond(syncState.lastSyncTimestamp))
-                return Instant.ofEpochSecond(syncState.lastSyncTimestamp)
+                CompanionLogger.info("$HC_SYNC_TAG Found existing sync state for {}({}), last sync was at: {}", gbDevice.aliasOrName, dataType.name, Instant.ofEpochMilli(storedSyncCursorToMillis(syncState.lastSyncTimestamp)))
+                return Instant.ofEpochMilli(storedSyncCursorToMillis(syncState.lastSyncTimestamp))
             }
 
             val initialSyncPrefs = context.getSharedPreferences(GBPrefs.HEALTH_CONNECT_SETTINGS, Context.MODE_PRIVATE)
             val initialSyncStartTs = initialSyncPrefs.getLong(GBPrefs.HEALTH_CONNECT_INITIAL_SYNC_START_TS, -1L)
 
             if (initialSyncStartTs != -1L) {
-                CompanionLogger.info("$HC_SYNC_TAG Using initial sync start timestamp for {}({}): {} ({})", gbDevice.aliasOrName, dataType.name, initialSyncStartTs, Instant.ofEpochSecond(initialSyncStartTs))
-                return Instant.ofEpochSecond(initialSyncStartTs)
+                val start = Instant.ofEpochSecond(initialSyncStartTs).minusSeconds(1)
+                CompanionLogger.info("$HC_SYNC_TAG Using initial sync start timestamp for {}({}): {} ({})", gbDevice.aliasOrName, dataType.name, initialSyncStartTs, start)
+                return start
             }
 
             val firstTs = getFirstSampleTimestamp(deviceCoordinator, gbDevice, db, dataType)

@@ -30,8 +30,6 @@ import nodomain.freeyourgadget.gadgetbridge.entities.UnaDailySample
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample
-import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryData
-import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryEntries
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes
@@ -45,9 +43,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.Batter
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfoProfile
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfo
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfoProfile
-import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.FitFile
-import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.NativeFITMessages
-import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.RecordData
 import nodomain.freeyourgadget.gadgetbridge.util.kotlin.getParcelableCompat
 import nodomain.freeyourgadget.gadgetbridge.util.GB
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs
@@ -623,9 +618,8 @@ class UnaDeviceSupport : AbstractBTLESingleDeviceSupport(LOG) {
     /** True once parsed and persisted, which is the condition for marking the path synced. */
     private fun handleActivityFile(path: String, bytes: ByteArray): Boolean {
         return try {
-            val fitFile = FitFile.parseIncoming(bytes)
-            val records = fitFile.getRecordsByNativeMessage(NativeFITMessages.FIT_RECORD())
-            persistWorkout(records, activityKindForPath(path))
+            val workout = UnaWorkoutFile.parse(bytes) ?: return true
+            persistWorkout(workout, activityKindForPath(path))
         } catch (e: Exception) {
             LOG.error("Failed to parse activity file {}", path, e)
             false
@@ -644,31 +638,13 @@ class UnaDeviceSupport : AbstractBTLESingleDeviceSupport(LOG) {
     // Each file is a single discrete recorded workout, not continuous all-day monitoring,
     // so it's stored as a BaseActivitySummary (like Garmin's FitImporter does for ACTIVITY-type
     // FIT files) rather than a per-second AbstractActivitySample stream.
-    private fun persistWorkout(records: List<RecordData>, kind: ActivityKind): Boolean {
-        val timestamps = records.mapNotNull { it.computedTimestamp }
-        val startTimestamp = timestamps.minOrNull() ?: return true
-        val endTimestamp = timestamps.maxOrNull()!!
-
-        val heartRates = records.mapNotNull { (it.getFieldByName("heart_rate") as? Number)?.toInt() }
-            .filter { it > 0 }
-        val distances = records.mapNotNull { (it.getFieldByName("distance") as? Number)?.toDouble() }
-
+    private fun persistWorkout(workout: UnaWorkoutFile, kind: ActivityKind): Boolean {
         return try {
+            val directory = device.deviceCoordinator.getWritableExportDirectory(device, true)
             GBApplication.acquireDB().use { dbHandler ->
                 val session = dbHandler.daoSession
-                val summary = ActivitySummaryParser.findOrCreateBaseActivitySummary(session, device, startTimestamp)
-                summary.endTime = Date(endTimestamp * 1000L)
-                summary.activityKind = kind.code
-
-                val summaryData = ActivitySummaryData()
-                if (heartRates.isNotEmpty()) {
-                    summaryData.add(ActivitySummaryEntries.HR_AVG, heartRates.average(), ActivitySummaryEntries.UNIT_BPM)
-                }
-                distances.maxOrNull()?.let {
-                    summaryData.add(ActivitySummaryEntries.DISTANCE_METERS, it, ActivitySummaryEntries.UNIT_METERS)
-                }
-                summary.summaryData = summaryData.toJson()
-
+                val summary = ActivitySummaryParser.findOrCreateBaseActivitySummary(session, device, workout.startTimestamp)
+                workout.saveToSummary(summary, kind, directory)
                 BaseActivitySummaryProvider(device, session).persistSamples(listOf(summary), context)
             }
         } catch (e: Exception) {

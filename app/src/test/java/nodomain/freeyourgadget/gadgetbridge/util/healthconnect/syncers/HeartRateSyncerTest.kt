@@ -56,19 +56,31 @@ class HeartRateSyncerTest {
             override fun setHeartRate(value: Int) {}
         }
 
+    private fun syncInto(client: CapturingClient, startTs: Int, endTs: Int, samples: List<ActivitySample>) {
+        runBlocking {
+            HeartRateSyncer.sync(
+                client, gbDevice, metadata, zoneId,
+                Instant.ofEpochSecond(startTs.toLong()), Instant.ofEpochSecond(endTs.toLong()),
+                grantedPermissions, samples
+            )
+        }
+    }
+
+    private fun syncSamples(startTs: Int, endTs: Int, samples: List<ActivitySample>): List<Long> {
+        val client = CapturingClient()
+        syncInto(client, startTs, endTs, samples)
+        return bpmOf(client)
+    }
+
+    private fun bpmOf(client: CapturingClient): List<Long> = client.inserted
+        .filterIsInstance<HeartRateRecord>()
+        .flatMap { it.samples }
+        .map { it.beatsPerMinute }
+
     private fun syncBpm(values: List<Int>): List<Long> {
         val baseTs = 1_700_000_000
         val samples = values.mapIndexed { i, bpm -> hrSample(baseTs + i * 60, bpm) }
-        val start = Instant.ofEpochSecond(baseTs.toLong())
-        val end = Instant.ofEpochSecond(baseTs.toLong() + values.size * 60L)
-        val client = CapturingClient()
-        runBlocking {
-            HeartRateSyncer.sync(client, gbDevice, metadata, zoneId, start, end, grantedPermissions, samples)
-        }
-        return client.inserted
-            .filterIsInstance<HeartRateRecord>()
-            .flatMap { it.samples }
-            .map { it.beatsPerMinute }
+        return syncSamples(baseTs - 1, baseTs + values.size * 60, samples)
     }
 
     @Test
@@ -94,6 +106,50 @@ class HeartRateSyncerTest {
     fun aboveHcLimit_isNotSynced() {
         val bpm = syncBpm(listOf(60, 301, 62))
         assertEquals(listOf(60L, 62L), bpm)
+    }
+
+    @Test
+    fun sampleAtSliceStart_isNotResynced() {
+        val baseTs = 1_700_000_000
+        val samples = listOf(hrSample(baseTs, 60), hrSample(baseTs + 60, 62))
+        val bpm = syncSamples(baseTs, baseTs + 600, samples)
+        assertEquals(listOf(62L), bpm)
+    }
+
+    @Test
+    fun sampleAtSliceEnd_isSynced() {
+        val baseTs = 1_700_000_000
+        val samples = listOf(hrSample(baseTs, 60), hrSample(baseTs + 60, 62))
+        val bpm = syncSamples(baseTs - 1, baseTs + 60, samples)
+        assertEquals(listOf(60L, 62L), bpm)
+    }
+
+    @Test
+    fun adjacentSlices_writeBoundarySampleOnce() {
+        val baseTs = 1_700_000_000
+        val samples = listOf(hrSample(baseTs, 60), hrSample(baseTs + 60, 62), hrSample(baseTs + 120, 64))
+        val client = CapturingClient()
+        syncInto(client, baseTs - 1, baseTs + 60, samples)
+        syncInto(client, baseTs + 60, baseTs + 600, samples)
+        assertEquals(listOf(60L, 62L, 64L), bpmOf(client))
+    }
+
+    @Test
+    fun nextRunFromCursor_doesNotResyncLastSample() {
+        val baseTs = 1_700_000_000
+        val samples = listOf(hrSample(baseTs, 60), hrSample(baseTs + 60, 62))
+        val client = CapturingClient()
+        val first = runBlocking {
+            HeartRateSyncer.sync(
+                client, gbDevice, metadata, zoneId,
+                Instant.ofEpochSecond(baseTs - 1L), Instant.ofEpochSecond(baseTs + 600L),
+                grantedPermissions, samples
+            )
+        }
+        assertEquals(Instant.ofEpochSecond(baseTs + 60L), first.latestRecordTimestamp)
+        val withNewSample = samples + hrSample(baseTs + 120, 64)
+        syncInto(client, first.latestRecordTimestamp!!.epochSecond.toInt(), baseTs + 600, withNewSample)
+        assertEquals(listOf(60L, 62L, 64L), bpmOf(client))
     }
 
     private class CapturingClient : HealthConnectClient {
