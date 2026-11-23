@@ -6,7 +6,6 @@
     <string name="battery_level">مستوى البطارية</string>
     <string name="title_activity_settings">إعدادات</string>
     <string name="action_donate">تبرع</string>
-    <string name="find_lost_device_message">ابحث عن %1$s؟</string>
     <string name="controlcenter_delete_device">حذف الجهاز</string>
     <string name="controlcenter_delete_device_name">حذف %1$s</string>
     <string name="controlcenter_delete_device_dialogmessage">سيؤدي هذا إلى حذف الجهاز وجميع البيانات المرتبطة به!</string>
@@ -195,7 +194,7 @@
     <string name="prefs_galaxy_buds_experimental">تجريبي</string>
     <string name="prefs_right">يمين</string>
     <string name="controlcenter_fetch_activity_data">المزامنه</string>
-    <string name="controlcenter_find_device">ابحث عن جهاز مفقود</string>
+    <string name="controlcenter_find_device">بحث عن جهاز مفقود</string>
     <string name="app_configure">تهيئة</string>
     <string name="title_activity_fw_app_insaller">FW / مثبت التطبيق</string>
     <string name="pref_title_audio_player">مشغل الصوت المفضل</string>
@@ -2910,7 +2909,7 @@
     <string name="smart_ring_measurement_error_worn_incorrectly">خطأ في القياس. هل مستشعرات الحلقة موجهة بشكل صحيح ؟</string>
     <string name="choose_device">اختر جهازا</string>
     <string name="no_supported_devices_found">لم يتم العثور على الأجهزة المدعومة</string>
-    <string name="search">بحث</string>
+    <string name="search">500 مللي ثانية</string>
     <string name="pref_deprecated_media_control_summary">إرسال أوامر التحكم في الوسائط كأحداث رئيسية بدلاً من وحدة التحكم في الوسائط.</string>
     <string name="smart_ring_measurement_error_unknown">خطأ قياس غير معروف %d تم استلامه من الحلقة</string>
     <string name="hr_resting">الراحة</string>
@@ -3167,7 +3166,6 @@
     <string name="activity_prefs_goal_standing_hours">الهدف اليومي: ساعات الوقوف</string>
     <string name="fw_upgrade_notice_huawei">أنت على وشك رفع البرنامج الثابت %1$s على %2$s الخاص بك.\n\nالبرنامج الثابت الحالي هو %3$s\n\nسيتم إعادة تشغيل جهازك بعد الرفع.\n\nتابع على مسؤوليتك الخاصة!</string>
     <string name="charts_show_balance_steps_summary">إظهار الزيادة / عدم وجود خطوات في الرسوم البيانية الأسبوعية والشهرية</string>
-    <string name="range_percentage_float">%1$.1f%% – %2$.1f%%</string>
     <string name="audio_recordings">التسجيلات الصوتية</string>
     <string name="open_source_licenses">التراخيص</string>
     <string name="dialog_close">أغلق</string>
@@ -3176,7 +3174,6 @@
     <string name="pref_workout_send_gps_timeout_summary">أوقف GPS عندما لا يرسل الجهاز بيانات التمرين مفتوحة (بالمللي ثانية)</string>
     <string name="pref_title_stable_connection">اتصال مستقر</string>
     <string name="zepp_os_install_map_instructions">بعد بدء التثبيت على الهاتف، يجب عليك الموافقة على الساعة أيضًا.</string>
-    <string name="range_percentage">%1$d%% – %2$d%%</string>
     <string name="range_degrees">%1$dº – %2$dº</string>
     <string name="pref_watch_face">واجهة الساعة</string>
     <string name="pref_device_version">إصدار الجهاز</string>

@@ -218,7 +218,7 @@
     <string name="miband_pairing_using_dummy_userdata">Geen geldige gebruikers data ingegeven, voorlopig dummy gebruikersdata gebruiken.</string>
     <string name="miband_pairing_tap_hint">Als uw Mi Band trilt en oplicht, tik een aantal keer na elkaar.</string>
     <string name="appinstaller_install">Installeren</string>
-    <string name="discovery_connected_devices_hint">Maak uw apparaat zichtbaar. Apparaten die op dit moment verbonden zijn zullen waarschijnlijk niet zichtbaar zijn. Activeer locatie (b.v. GPS). Schakel Privacy Guard voor Gadgetbridge uit, anders kan uw telefoon crashen en herstarten. Als er geen apparaat gevonden is na een paar minuten, probeer dan opnieuw na het opnieuw opstarten van uw telefoon.</string>
+    <string name="discovery_connected_devices_hint">Maak uw apparaat zichtbaar. Apparaten die op dit moment verbonden zijn zullen waarschijnlijk niet zichtbaar zijn. Activeer locatie (b.v. GPS).</string>
     <string name="discovery_note">Opmerking:</string>
     <string name="candidate_item_device_image">Apparaatafbeelding</string>
     <string name="miband_prefs_alias">Naam / Alias</string>
@@ -929,7 +929,7 @@
     <string name="menuitem_takephoto">Camera-afstandsbediening</string>
     <string name="menuitem_mutephone">Telefoon dempen</string>
     <string name="menuitem_findphone">Vind telefoon</string>
-    <string name="menuitem_spo2">SpO2</string>
+    <string name="menuitem_spo2">SpO₂</string>
     <string name="activity_type_strength_training">Krachttraining</string>
     <string name="dbmanagementactivity_export_finished">Verwijdering voltooid</string>
     <string name="activity_data_management_directory_content_title">Directory-inhoud exporteren/importeren</string>
@@ -3155,7 +3155,7 @@
     <string name="stepRateMax">Max. stapcadans</string>
     <string name="Jumps">Sprongen</string>
     <string name="weekly_total">Weektotaal</string>
-    <string name="first_start_overview_desc">Gadgetbridge heeft twee weergaven, elks met hun eigen opzet.</string>
+    <string name="first_start_overview_desc">Gadgetbridge heeft twee weergaven, elk met hun eigen opzet.</string>
     <string name="first_start_overview_dashboard">Via het dashboard krijgt u snel een beeld van uw vooruitgang vandaag. De kalenderweergave toont de status van uw doelen over een hele maand.</string>
     <string name="redmi_buds_5_pro_combo_transparency_off">Transparantie / Uit</string>
     <string name="redmi_buds_5_pro_adaptive_sound">Adaptief geluid</string>
@@ -4070,7 +4070,7 @@
     <string name="movement_evaluation">Bewegingsevaluatie</string>
     <string name="pref_notifications_pictures_enable">Stuur meldingsafbeeldingen</string>
     <string name="pref_notifications_pictures_enable_summary">Stuur afbeeldingen bij meldingen naar het huidige apparaat</string>
-    <string name="activity_title_rebble_app_store">Rebble app-winkel</string>
+    <string name="activity_title_rebble_app_store">Pebble app-winkel</string>
     <string name="prefs_internet_helper_title">Internet Helper</string>
     <string name="prefs_internet_helper_summary">Configureer de URLs die via de internet helper add-on-app opgevraagd mogen worden</string>
     <string name="internet_helper_pref_app_req_title">Add-on-app vereist</string>
@@ -4451,4 +4451,21 @@
     <string name="weather_condition_light_shower_sleet">lichte bui met natte sneeuw</string>
     <string name="permission_navigation_comaps">%1$s heeft toestemming nodig om navigatiegegevens van CoMaps te mogen lezen. Tik op \"%2$s\" om naar de app-instellingen te gaan en de permissie toe te wijzen, kom daarna hier terug en schakel de optie opnieuw in.</string>
     <string name="diving_pressure_sac_avg">Luchtgebruik aan de oppervlakte</string>
+    <string name="range_integer">%1$d – %2$d</string>
+    <string name="controlcenter_snackbar_discovering_services">Zoeken naar services…</string>
+    <string name="duration_short_day">1d</string>
+    <string name="duration_short_week">1w</string>
+    <string name="duration_short_two_weeks">2w</string>
+    <string name="duration_short_month">1m</string>
+    <string name="duration_short_six_months">6m</string>
+    <string name="duration_short_three_months">3m</string>
+    <string name="duration_short_year">1j</string>
+    <string name="appmanager_watchapps_watchfaces_updates">Updates</string>
+    <string name="pref_header_device_card">Apparaatkaart</string>
+    <string name="pref_device_card_show_items_title">Toon kaartonderdelen</string>
+    <string name="pref_device_card_items_title">Kaartonderdelen</string>
+    <string name="pref_device_card_items_summary">Pas de onderdelen van de apparaatkaart aan</string>
+    <string name="pref_device_card_show_quick_controls_title">Toon snelle instellingen</string>
+    <string name="pref_device_card_quick_controls_title">Snelle instellingen</string>
+    <string name="pref_device_card_quick_controls_summary">Pas de snelle instellingen op de apparaatkaart aan</string>
 </resources>

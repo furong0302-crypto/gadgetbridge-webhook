@@ -6696,7 +6696,7 @@ The result is the average of all the measurements.</string>
     <string name="workout_power_zone_7">Zone 7</string>
 
     <string name="workout_weight_body_weight">Body weight</string>
-    <string name="workout_weight_percent_1rm">% of 1RM</string>
+    <string name="workout_weight_percent_1rm">%% of 1RM</string>
     <string name="workout_weight_rm">Rep max (RM)</string>
     <string name="workout_weight_load_category">Load category</string>
     <string name="workout_load_heavy">Heavy</string>

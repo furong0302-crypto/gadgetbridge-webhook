@@ -5215,7 +5215,7 @@
     <string name="workout_power_zone_6">Zona 6</string>
     <string name="workout_power_zone_7">Zona 7</string>
     <string name="workout_weight_body_weight">Berat badan</string>
-    <string name="workout_weight_percent_1rm">% dari 1RM</string>
+    <string name="workout_weight_percent_1rm">%% dari 1RM</string>
     <string name="workout_weight_rm">Maksimum repetisi (RM)</string>
     <string name="workout_swim_stroke_choice">Pilihan</string>
     <string name="workout_swim_stroke_individual_medley">Gaya ganti perorangan</string>

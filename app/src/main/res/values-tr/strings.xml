@@ -3889,4 +3889,20 @@
     <string name="xiaomi_vibration_section_types">Bildirim türleri</string>
     <string name="xiaomi_vibration_type_notification">Bildirimler</string>
     <string name="xiaomi_vibration_type_sms">SMS</string>
+    <string name="controlcenter_snackbar_discovering_services">Hizmetler taranıyor…</string>
+    <string name="controlcenter_get_spo2_measurement">Kandaki oksijeni ölç</string>
+    <string name="duration_short_week">1h</string>
+    <string name="duration_short_two_weeks">2h</string>
+    <string name="duration_short_six_months">6a</string>
+    <string name="duration_short_three_months">3a</string>
+    <string name="duration_short_year">1y</string>
+    <string name="appmanager_watchapps_watchfaces_updates">Güncellemeler</string>
+    <string name="appmanager_app_store">Uygulama mağazası</string>
+    <string name="refresh">Yenile</string>
+    <string name="pref_device_card_show_items_title">Cihaz kartı öğelerini göster</string>
+    <string name="pref_description_navigation_continuous_updates">Etkinleştirildiğinde güncellemeler cihaza sürekli gönderilir. Devre dışı bırakıldığında yalnızca her dönüşte gönderilir.</string>
+    <string name="pref_title_navigation_update_rate">Sürekli mod güncelleme aralığı (milisaniye)</string>
+    <string name="navigation_destination_reached">Hedefe ulaşıldı</string>
+    <string name="navigation_eta">Varış: %1$s</string>
+    <string name="navigation_distance_left">%1$s kaldı</string>
 </resources>

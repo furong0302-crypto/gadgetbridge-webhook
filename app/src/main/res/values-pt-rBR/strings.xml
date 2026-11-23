@@ -4884,4 +4884,18 @@
     <string name="lux_hours_unit">K</string>
     <string name="menuitem_solar_charging">Carga solar</string>
     <string name="solar_charging_intensity_chart_label">Intensidade da carga solar</string>
+    <string name="range_integer">%1$d – %2$d</string>
+    <string name="controlcenter_snackbar_discovering_services">Descobrindo dispositivos…</string>
+    <string name="controlcenter_get_spo2_measurement">Obter medição de oxigênio no sangue</string>
+    <string name="duration_short_day">1d</string>
+    <string name="duration_short_week">1 s</string>
+    <string name="duration_short_two_weeks">2 s</string>
+    <string name="duration_short_month">1 m</string>
+    <string name="duration_short_six_months">6m</string>
+    <string name="duration_short_three_months">3 m</string>
+    <string name="duration_short_year">1a</string>
+    <string name="appmanager_watchapps_watchfaces_updates">Atualizações</string>
+    <string name="pref_header_device_card">Cartão de dispositivo</string>
+    <string name="pref_device_card_show_items_title">Mostrar itens de cartão</string>
+    <string name="pref_device_card_items_title">Items do cartão</string>
 </resources>

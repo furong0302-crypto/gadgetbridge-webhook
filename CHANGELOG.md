@@ -4,18 +4,62 @@
 
 #### Next release (WIP)
 
+* Initial support for Baseus Bowie MC1
 * Initial support for Coospo H808S
+* Initial support for Garmin Montana 700
+* Initial support for Huawei Band A2, TalkBand B7
+* Initial support for iGPSPORT BSC300T
+* Initial support for Mijia Smart Neck and Shoulder Massager
+* Initial support for Sennheiser MOMENTUM 3
+* Initial support for Shokz OpenFit Pro
+* Initial support for Soundpeats Q3 Pro
+* Initial support for Withings ScanWatch / ScanWatch Light / ScanWatch 2
+* Initial support for X9 Ultra (Wearfit)
+* 1MORE SonoFlow (SE): Add noise control quick actions
 * Add automatic sync of loyalty cards
+* Bangle.js: Fix health connect trigger on activity sync finish
+* Bangle.js: Send calendar reminders
 * Casio GBD-200: Migrate old paired devices to new implementation
+* Charts: Use material dropdown for generic metric selector
+* CMF Watch Pro 2/3: Fix auth key negotiation
 * Coospo: Expose live heart rate
 * Enable predictive back gesture
+* FIT export: Ensure activity summary data is populated
+* Fix companion pairing from device card for some devices
+* Fix first heart rate sample not being used for average
+* Fix occasional crash when pairing new device
+* Fix zip backup metadata in release builds
+* Garmin Forerunner 235: Fix ML initialization
 * Garmin: Add charts for training status
 * Garmin: Add new dashboard widgets for ascent, descent, and dive readiness
+* Garmin: Enable ECG charts
+* Garmin: Fix accelerometer on some devices
+* Garmin: Fix conection on some older devices
 * Garmin: Generate turns from points in GPX track
+* H59: Add button action support
+* Health Connect: Fix heart rate synced twice on sync boundaries
+* Health Connect: Fix syncing multiple sleep sessions on the same hour
 * Health Connect: Sync basal metabolic rate
+* Huami: Fix activity parsing crash when trace logs are enabled
+* Huawei FreeBuds 6: Enable noise cancelling and ANC levels
+* Huawei: Enable ECG charts
+* Huawei: Fix workout sync on some watches
+* Huawei: Include capabilities in zip export / import
+* Huawei: Sync altitude data (no UI)
 * Mi Band 6: Improve workout details parsing
+* Nothing Ear/CMF Buds: Add noise control quick actions
+* Pebble: Add SpO2 support
+* Pebble: Fix connection sequence number reset
 * Replace initial permissions request with per-device permissions
+* Respect system animations being disabled
+* Test Device: Add ECG support
+* UNA Watch: Persist full workout FIT files
 * Update minSdk to 24 (Android 7 / Nougat)
+* Withings Steel HR: Bug fixes and improvements
+* Xiaomi: Improve activity and workout sync
+* Zepp OS: Allow forwarding assistant voice to an external voice service
+* Zepp OS: Disable screenshots for Zepp OS 1.0 devices
+* Zepp OS: Fix display items on recent watches
 
 #### 2026.11.1
 
