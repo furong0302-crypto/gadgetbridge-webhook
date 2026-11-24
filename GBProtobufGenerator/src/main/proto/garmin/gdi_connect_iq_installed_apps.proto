@@ -2,6 +2,7 @@ syntax = "proto2";
 
 package GDI.Proto.ConnectIQInstalledApps;
 option java_package = "nodomain.freeyourgadget.gadgetbridge.proto.garmin";
+option java_outer_classname = "GdiInstalledApps";
 
 enum AppType {
     UNKNOWN_APP_TYPE = 0;
@@ -93,7 +94,7 @@ message GetInstalledAppsResponse {
 
     required uint64 available_space = 1;
     required uint32 available_slots = 2;
-    repeated GDI.Proto.ConnectIQInstalledApps.GetInstalledAppsResponse.InstalledApp installed_app = 3 [packed = false];
+    repeated GDI.Proto.ConnectIQInstalledApps.GetInstalledAppsResponse.InstalledApp installed_app = 3;
 }
 
 message LaunchAppRequest {
@@ -164,7 +165,7 @@ message UpdateInstalledAppsRequest {
         optional bool favorite = 4;
     }
 
-    repeated GDI.Proto.ConnectIQInstalledApps.UpdateInstalledAppsRequest.InstalledApp installed_app = 1 [packed = false];
+    repeated GDI.Proto.ConnectIQInstalledApps.UpdateInstalledAppsRequest.InstalledApp installed_app = 1;
 }
 
 message UpdateInstalledAppsResponse {

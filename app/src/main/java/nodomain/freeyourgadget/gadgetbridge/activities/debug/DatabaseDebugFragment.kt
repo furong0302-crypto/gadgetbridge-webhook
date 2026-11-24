@@ -23,6 +23,7 @@ class DatabaseDebugFragment : AbstractDebugFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.debug_preferences_database, rootKey)
 
+        onClick(PREF_DEBUG_VACUUM_DATABASE) { vacuumDatabase() }
         onClick(PREF_DEBUG_EMPTY_DATABASE) { emptyDatabase() }
         onClick(PREF_DEBUG_DELETE_OLD_DATABASE) { deleteOldActivityDbFile() }
     }
@@ -99,6 +100,28 @@ class DatabaseDebugFragment : AbstractDebugFragment() {
                 )
             }
 
+            is DatabaseDebugEvent.VacuumCompleted -> {
+                if (event.exception == null) {
+                    GB.toast(
+                        requireContext(),
+                        getString(R.string.dbmanagementactivity_vacuum_successfully_completed),
+                        Toast.LENGTH_SHORT,
+                        GB.INFO
+                    )
+                } else {
+                    GB.toast(
+                        requireContext(),
+                        getString(
+                            R.string.dbmanagementactivity_vacuum_failed,
+                            event.exception.message
+                        ),
+                        Toast.LENGTH_LONG,
+                        GB.ERROR,
+                        event.exception
+                    )
+                }
+            }
+
             is DatabaseDebugEvent.NavigateToTable -> {
                 goTo(
                     DatabaseTableDebugFragment().apply {
@@ -131,11 +154,23 @@ class DatabaseDebugFragment : AbstractDebugFragment() {
             .show()
     }
 
+    private fun vacuumDatabase() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setCancelable(true)
+            .setTitle(R.string.dbmanagementactivity_vacuum_database_title)
+            .setIcon(R.drawable.compress)
+            .setMessage(R.string.dbmanagementactivity_vacuum_database_confirmation)
+            .setPositiveButton(R.string.ok) { _, _ -> viewModel.vacuumDatabase() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .show()
+    }
+
     companion object {
         private const val PREF_DEBUG_DATABASE_VERSION = "pref_debug_database_version"
         private const val DANGEROUS_ACTIONS = "dangerous_actions"
         private const val PREF_DEBUG_DELETE_OLD_DATABASE = "pref_debug_delete_old_database"
         private const val PREF_DEBUG_EMPTY_DATABASE = "pref_debug_empty_database"
         private const val PREF_HEADER_DATABASE_TABLES = "pref_header_database_tables"
+        private const val PREF_DEBUG_VACUUM_DATABASE = "pref_debug_vacuum_database"
     }
 }

@@ -1,12 +1,6 @@
 plugins {
-    id("java-library")
+    id("gadgetbridge.jvm.common")
     alias(libs.plugins.protobuf)
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
 }
 
 dependencies {
@@ -15,7 +9,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "${libs.protoc.get()}"
+        artifact = libs.protoc.get().toString()
     }
 
     generateProtoTasks {

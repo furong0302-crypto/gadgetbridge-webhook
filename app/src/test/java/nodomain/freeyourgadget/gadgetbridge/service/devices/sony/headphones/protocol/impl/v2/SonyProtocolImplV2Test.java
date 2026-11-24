@@ -26,6 +26,7 @@ import static nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphon
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import java.util.Map;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCapabilities;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControlButtonMode;
@@ -53,7 +55,10 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.prot
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.v1.params.BatteryType;
 
 public class SonyProtocolImplV2Test {
-    private final MockSonyCoordinator coordinator = new MockSonyCoordinator();
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
+
+    private MockSonyCoordinator coordinator;
     private final SonyProtocolImplV2 protocol = new SonyProtocolImplV2(null) {
         @Override
         protected SonyHeadphonesCoordinator getCoordinator() {
@@ -63,6 +68,7 @@ public class SonyProtocolImplV2Test {
 
     @Before
     public void before() {
+        coordinator = new MockSonyCoordinator();
         coordinator.getDefaultCapabilities().clear();
         // Same as the WF-1000XM4
         coordinator.getDefaultCapabilities().addAll(Arrays.asList(

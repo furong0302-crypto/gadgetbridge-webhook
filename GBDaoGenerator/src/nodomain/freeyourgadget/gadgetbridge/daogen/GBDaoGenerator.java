@@ -337,8 +337,6 @@ public class GBDaoGenerator {
         final DeviceDataTablesGenerator deviceDataTablesGenerator = new DeviceDataTablesGenerator(schema, device);
         deviceDataTablesGenerator.validate();
 
-        deleteOldFiles(outputDirPath);
-
         new DaoGenerator().generateAll(schema, outputDirPath);
 
         deviceDataTablesGenerator.generate(loadTemplate("gadgetbridge/device-data-tables.ftl"), outputDirPath);
@@ -406,65 +404,6 @@ public class GBDaoGenerator {
                             "Fix by calling entity.implementsSerializable() when defining them in " +
                             GBDaoGenerator.class.getSimpleName());
         }
-    }
-
-    private static void deleteOldFiles(final String outputDirPath) throws IOException {
-        // Cleanup the legacy directory to avoid classpath conflicts during build for users that pull the latest changes
-        // FIXME: Remove this eventually, and app/src/main/java/nodomain/freeyourgadget/gadgetbridge/entities/.gitignore as well
-        if (new File(LEGACY_DIR, "DaoSession.java").isFile()) {
-            Files.walkFileTree(new File(LEGACY_DIR).toPath(), new SimpleFileVisitor<>() {
-                @SuppressWarnings("NullableProblems")
-                @Override
-                public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
-                    if (Files.isSymbolicLink(dir)) {
-                        return FileVisitResult.SKIP_SUBTREE;
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @SuppressWarnings("NullableProblems")
-                @Override
-                public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
-                    final File file = path.toFile();
-                    if (!file.isFile()) {
-                        return FileVisitResult.SKIP_SUBTREE;
-                    }
-                    if (file.getName().endsWith(".java")) {
-                        if (!file.getName().startsWith("Abstract") && !file.getName().equals("GenericActivitySample.java")) {
-                            System.out.println("Deleting legacy file: " + path);
-                            Files.delete(path);
-                        }
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
-
-        Files.walkFileTree(new File(outputDirPath).toPath(), new SimpleFileVisitor<>() {
-            @SuppressWarnings("NullableProblems")
-            @Override
-            public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
-                if (Files.isSymbolicLink(dir)) {
-                    return FileVisitResult.SKIP_SUBTREE;
-                }
-                return FileVisitResult.CONTINUE;
-            }
-
-            @SuppressWarnings("NullableProblems")
-            @Override
-            public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
-                if (!path.toFile().isFile()) {
-                    return FileVisitResult.SKIP_SUBTREE;
-                }
-                if (path.toString().endsWith(".java")) {
-                    if (Boolean.getBoolean("verbose")) {
-                        System.out.println("Deleting: " + path);
-                    }
-                    Files.delete(path);
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
     }
 
     private static Entity addTag(Schema schema) {

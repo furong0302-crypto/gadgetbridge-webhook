@@ -14,20 +14,20 @@ message CapabilitiesRequest {
 }
 
 message CapabilitiesResponse {
-    repeated GDI.Proto.SmsNotification.CannedListType type = 1 [packed = false];
+    repeated GDI.Proto.SmsNotification.CannedListType type = 1;
 }
 
 message SmsCannedList {
     optional GDI.Proto.SmsNotification.CannedListType type = 1;
-    repeated string responses = 2 [packed = false];
+    repeated string responses = 2;
 }
 
 message SmsCannedListChangedNotification {
-    repeated GDI.Proto.SmsNotification.CannedListType changed_types = 1 [packed = false];
+    repeated GDI.Proto.SmsNotification.CannedListType changed_types = 1;
 }
 
 message SmsCannedListRequest {
-    repeated GDI.Proto.SmsNotification.CannedListType requested_types = 1 [packed = false];
+    repeated GDI.Proto.SmsNotification.CannedListType requested_types = 1;
 }
 
 message SmsCannedListResponse {
@@ -37,7 +37,7 @@ message SmsCannedListResponse {
     }
 
     optional GDI.Proto.SmsNotification.SmsCannedListResponse.ResponseStatus status = 1;
-    repeated GDI.Proto.SmsNotification.SmsCannedList lists = 2 [packed = false];
+    repeated GDI.Proto.SmsNotification.SmsCannedList lists = 2;
 }
 
 message SmsNotificationService {

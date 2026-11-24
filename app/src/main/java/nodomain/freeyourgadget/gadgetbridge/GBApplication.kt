@@ -53,6 +53,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import nodomain.freeyourgadget.gadgetbridge.di.ApplicationScope
 import nodomain.freeyourgadget.gadgetbridge.di.DefaultPrefs
+import nodomain.freeyourgadget.gadgetbridge.di.RootEntryPoints
 import nodomain.freeyourgadget.gadgetbridge.externalevents.BluetoothStateChangeReceiver
 import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.apps.NotificationAppRepository
 import nodomain.freeyourgadget.gadgetbridge.externalevents.opentracks.OpenTracksContentObserver
@@ -190,6 +191,7 @@ open class GBApplication : Application() {
      */
     override fun onCreate() {
         appInstance = this
+        RootEntryPoints.register(this)
         super.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver)
 
@@ -340,6 +342,7 @@ open class GBApplication : Application() {
         unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
         bluetoothStateChangeReceiver?.let { unregisterReceiver(it) }
         bluetoothStateChangeReceiver = null
+        RootEntryPoints.unregister()
         super.onTerminate()
     }
 
@@ -495,6 +498,8 @@ open class GBApplication : Application() {
          * Returns the facade for talking to devices. Devices are managed by
          * an Android Service and this facade provides access to its functionality.
          *
+         * - In a coordinator: `getDeviceService()`.
+         *
          * @return the facade for talking to the service/devices.
          */
         @Deprecated("Use Hilt DI to inject DeviceService instead.")
@@ -506,6 +511,8 @@ open class GBApplication : Application() {
         /**
          * Returns the facade for talking to a specific device. Devices are managed by
          * an Android Service and this facade provides access to its functionality.
+         *
+         * - In a coordinator: `getDeviceService().forDevice(device)`.
          *
          * @return the facade for talking to the service/device.
          */
@@ -577,22 +584,22 @@ open class GBApplication : Application() {
             return app().doNotDisturbPolicy.getGrantedInterruptionFilter()
         }
 
+        /**
+         * - In a coordinator: `getScopedPrefs().getDeviceSpecificSharedPrefs(deviceIdentifier)`.
+         */
         @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun getDeviceSpecificSharedPrefs(deviceIdentifier: CharSequence?): SharedPreferences {
             return app().scopedPrefs.getDeviceSpecificSharedPrefs(deviceIdentifier)
         }
 
+        /**
+         * - In a coordinator: `getScopedPrefs().getDevicePrefs(gbDevice)`.
+         */
         @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
         @JvmStatic
         fun getDevicePrefs(gbDevice: GBDevice): DevicePrefs {
             return app().scopedPrefs.getDevicePrefs(gbDevice)
-        }
-
-        @Deprecated("Use Hilt DI to inject ScopedPrefsProvider instead.")
-        @JvmStatic
-        fun deleteDeviceSpecificSharedPrefs(deviceIdentifier: CharSequence?) {
-            app().scopedPrefs.deleteDeviceSpecificSharedPrefs(deviceIdentifier)
         }
 
         /**

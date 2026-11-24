@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.soundcore.SoundcoreEqualizer;
@@ -15,12 +16,16 @@ import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreAeroFit2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.soundcore.SoundcoreLiberty3ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.soundcore.devices.SoundcoreLibertyProtocol;
 
 public class SoundcoreV1ResponseTest {
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
+
     @Test
     public void centralDispatcherRoutesBatteryNotificationsToHook() {
         final TestProtocol protocol = new TestProtocol();

@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         mavenLocal()
         google {
@@ -35,8 +36,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Gadgetbridge"
 
-include(":app")
 include(":GBDaoGenerator")
 include(":FitCodeGenerator")
 include(":KaitaiAuxGenerator")
 include(":GBProtobufGenerator")
+include(":app")

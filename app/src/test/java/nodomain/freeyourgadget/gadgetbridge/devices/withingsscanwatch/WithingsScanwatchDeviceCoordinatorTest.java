@@ -20,13 +20,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ShortcutAction;
 
 public class WithingsScanwatchDeviceCoordinatorTest {
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
+
     @Test
     public void nameOnlyDiscoverySelectsOnlyTheMatchingCoordinator() {
         final WithingsScanwatchDeviceCoordinator scanwatchCoordinator = new WithingsScanwatchDeviceCoordinator();

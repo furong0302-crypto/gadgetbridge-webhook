@@ -1,12 +1,8 @@
-plugins {
-    application
-    java
-}
+import tasks.BaseGeneratorTask
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+plugins {
+    id("gadgetbridge.jvm.common")
+    application
 }
 
 application {
@@ -17,26 +13,29 @@ dependencies {
     implementation(libs.snakeyaml)
 }
 
-abstract class JavaExecKaitai : JavaExec() {
-    @get:OutputDirectory
-    abstract val generatedSourceDirectory: DirectoryProperty
-}
-
-tasks.register<JavaExecKaitai>("genKaitaiAux") {
+val genKaitaiAux = tasks.register<BaseGeneratorTask>("genKaitaiAux") {
     description = "Generate auxiliary source files from Kaitai structs"
 
-    val appProject = project(":app")
-    val ksyDir = appProject.file("src/main/ksy")
-
-    generatedSourceDirectory.set(appProject.layout.buildDirectory.dir("generated/sources/kaitaiaux"))
-
-    inputs.dir(ksyDir)
-    outputs.dir(generatedSourceDirectory)
+    inputDirectory.convention(layout.projectDirectory.dir("../app/src/main/ksy"))
+    generatedSourceDirectory.set(layout.buildDirectory.dir("generated/sources/kaitaiaux"))
 
     mainClass = application.mainClass
-    args(ksyDir, generatedSourceDirectory.get().asFile.absolutePath)
-    classpath = sourceSets.main.get().runtimeClasspath
-    if (gradle.startParameter.logLevel <= LogLevel.INFO) {
-        jvmArgs("-Dverbose=true")
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            inputDirectory.get().asFile.absolutePath,
+            generatedSourceDirectory.get().asFile.absolutePath
+        )
+    })
+    classpath(sourceSets.named("main").map { it.runtimeClasspath })
+}
+
+val generatedKaitaiAux = configurations.create("generatedKaitaiAux") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+
+artifacts {
+    add("generatedKaitaiAux", layout.buildDirectory.dir("generated/sources/kaitaiaux")) {
+        builtBy(genKaitaiAux)
     }
 }

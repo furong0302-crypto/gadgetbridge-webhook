@@ -98,14 +98,14 @@ message SessionGroup {
     required string name = 2;
     required uint64 start_unix_timestamp = 3;
     required uint64 duration_s = 4;
-    repeated GDI.Proto.LiveTrack.Session sessions = 5 [packed = false];
+    repeated GDI.Proto.LiveTrack.Session sessions = 5;
 }
 
 message SessionSupportRequest {
 }
 
 message SessionSupportResponse {
-    repeated GDI.Proto.LiveTrack.DeviceType supported_session_types = 1 [packed = false];
+    repeated GDI.Proto.LiveTrack.DeviceType supported_session_types = 1;
     optional bool spectator_messaging_supported = 2;
 }
 
@@ -160,7 +160,7 @@ message StatusNotification {
 }
 
 message StopNotification {
-    repeated string session_ids = 1 [packed = false];
+    repeated string session_ids = 1;
     optional uint64 extended_viewable_duration_s = 2;
 }
 

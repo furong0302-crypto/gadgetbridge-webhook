@@ -67,6 +67,29 @@ class DatabaseDebugRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun vacuumDatabase(): Exception? = withContext(ioDispatcher) {
+        try {
+            databaseManager.acquireWrite().use { db ->
+                db.database.execSQL("VACUUM")
+            }
+            databaseManager.acquireWrite().use { db ->
+                // GB typically has no write ahead log so wal_checkpoint shouldn't be
+                // required but do it anyway to be on the safe side
+                db.database.rawQuery("PRAGMA wal_checkpoint(TRUNCATE);", null).use { res ->
+                    if (res.moveToNext()) {
+                        val busy = res.getInt(0)
+                        val log = res.getInt(1)
+                        val checkpointed = res.getInt(2)
+                        LOG.debug("WAL checkpoint: busy=$busy, log=$log, checkpointed=$checkpointed")
+                    }
+                }
+            }
+            null
+        } catch (e: Exception) {
+            e
+        }
+    }
+
     private companion object {
         private val LOG: Logger = LoggerFactory.getLogger(DatabaseDebugRepositoryImpl::class.java)
     }

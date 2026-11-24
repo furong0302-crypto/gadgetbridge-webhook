@@ -7,14 +7,18 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSett
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsScreen
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.ScreenSetting
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.dsl.SwitchSetting
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 class UgreenHituneMax5cCoordinatorTest {
+    @get:Rule
+    val coordinatorDependencies = MockCoordinatorDependencies()
 
     @Test
     fun testSupportsOSBatteryLevel() {

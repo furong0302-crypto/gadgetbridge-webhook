@@ -10,7 +10,7 @@ message DeepLinkingService {
 }
 
 message OpenDeepLinkingRequest {
-    repeated string schemas = 1 [packed = false];
+    repeated string schemas = 1;
 }
 
 message OpenDeepLinkingResponse {

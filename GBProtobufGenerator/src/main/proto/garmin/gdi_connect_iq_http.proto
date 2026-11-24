@@ -210,10 +210,10 @@ message RawResourceRequest {
     optional uint32 max_size = 2;
     optional GDI.Proto.ConnectIQHTTP.RawResourceRequest.HTTPMethod method = 3;
     optional string body = 4;
-    repeated GDI.Proto.ConnectIQHTTP.RawResourceRequest.HTTPHeader headers = 5 [packed = false];
+    repeated GDI.Proto.ConnectIQHTTP.RawResourceRequest.HTTPHeader headers = 5;
     optional bool use_data_xfer = 6;
     optional bytes raw_body = 7;
-    repeated GDI.Proto.ConnectIQHTTP.RawResourceRequest.MultipartForm forms = 8 [packed = false];
+    repeated GDI.Proto.ConnectIQHTTP.RawResourceRequest.MultipartForm forms = 8;
     optional int32 connection_timeout_seconds = 9;
     optional int32 read_timeout_seconds = 10;
     optional GDI.Proto.ConnectIQHTTP.EncryptedEnvelope encrypted_request = 11;
@@ -238,5 +238,5 @@ message RawResourceResponse {
     optional int32 http_status_code = 2;
     optional bytes resource_data = 3;
     optional GDI.Proto.DataTypes.DataTransferItem xfer_data = 4;
-    repeated GDI.Proto.ConnectIQHTTP.RawResourceResponse.HTTPHeader headers = 5 [packed = false];
+    repeated GDI.Proto.ConnectIQHTTP.RawResourceResponse.HTTPHeader headers = 5;
 }

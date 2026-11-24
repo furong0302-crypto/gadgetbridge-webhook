@@ -26,6 +26,7 @@ sealed interface DatabaseDebugEvent {
     data class DatabaseDeleted(val success: Boolean) : DatabaseDebugEvent
     data class OldDatabaseDeleted(val success: Boolean) : DatabaseDebugEvent
     data class NavigateToTable(val tableName: String) : DatabaseDebugEvent
+    data class VacuumCompleted(val exception: Exception?) : DatabaseDebugEvent
 }
 
 @HiltViewModel
@@ -70,6 +71,13 @@ class DatabaseDebugViewModel @Inject constructor(
         launchDelete {
             _events.send(DatabaseDebugEvent.OldDatabaseDeleted(repository.deleteOldDatabase()))
             refresh()
+        }
+    }
+
+    fun vacuumDatabase() {
+        viewModelScope.launch {
+            val success = repository.vacuumDatabase()
+            _events.send(DatabaseDebugEvent.VacuumCompleted(success))
         }
     }
 

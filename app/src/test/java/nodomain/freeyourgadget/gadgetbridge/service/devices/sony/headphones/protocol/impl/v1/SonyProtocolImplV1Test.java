@@ -22,6 +22,7 @@ import static nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphon
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.SonyTestUtils.assertRequests;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCapabilities;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControl;
@@ -56,7 +58,10 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.prot
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class SonyProtocolImplV1Test {
-    private final MockSonyCoordinator coordinator = new MockSonyCoordinator();
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
+
+    private MockSonyCoordinator coordinator;
     private final SonyProtocolImplV1 protocol = new SonyProtocolImplV1(null) {
         @Override
         protected SonyHeadphonesCoordinator getCoordinator() {
@@ -66,6 +71,7 @@ public class SonyProtocolImplV1Test {
 
     @Before
     public void before() {
+        coordinator = new MockSonyCoordinator();
         coordinator.getDefaultCapabilities().clear();
     }
 

@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package garmin_vivomovehr;
+package GDI.Proto.ExploreSync;
 option java_package = "nodomain.freeyourgadget.gadgetbridge.proto.garmin";
 option java_outer_classname = "GdiExploreSync";
 

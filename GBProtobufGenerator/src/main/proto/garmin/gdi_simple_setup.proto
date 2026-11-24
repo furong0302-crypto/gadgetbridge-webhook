@@ -19,7 +19,7 @@ message AlternateModeResponse {
 
 message Feature {
     required GDI.Proto.SimpleSetup.FeatureType feature_type = 1;
-    repeated int32 compatibility_id = 2 [packed = false];
+    repeated int32 compatibility_id = 2;
 }
 
 enum FeatureType {
@@ -30,11 +30,11 @@ enum FeatureType {
 }
 
 message SelectedRestoreListNotification {
-    repeated GDI.Proto.SimpleSetup.FeatureType feature_type = 1 [packed = false];
+    repeated GDI.Proto.SimpleSetup.FeatureType feature_type = 1;
 }
 
 message SelectedSensorListNotification {
-    repeated GDI.Proto.SimpleSetup.SensorType sensor_type = 1 [packed = false];
+    repeated GDI.Proto.SimpleSetup.SensorType sensor_type = 1;
 }
 
 enum SensorType {
@@ -56,6 +56,6 @@ message SupportedFeaturesListRequest {
 }
 
 message SupportedFeaturesListResponse {
-    repeated GDI.Proto.SimpleSetup.Feature feature = 1 [packed = false];
+    repeated GDI.Proto.SimpleSetup.Feature feature = 1;
 }
 

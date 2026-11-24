@@ -1,12 +1,8 @@
-plugins {
-    application
-    java
-}
+import tasks.BaseGeneratorTask
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+plugins {
+    id("gadgetbridge.jvm.common")
+    application
 }
 
 application {
@@ -18,48 +14,50 @@ dependencies {
     implementation(libs.gson)
 }
 
-abstract class JavaExecFit : JavaExec() {
-    @get:OutputDirectory
-    abstract val generatedSourceDirectory: DirectoryProperty
-}
-
-tasks.register<JavaExecFit>("genFit") {
+val genFit = tasks.register<BaseGeneratorTask>("genFit") {
     description = "Generate FitMessage source files from JSON"
 
-    val appProject = project(":app")
     val fitProfileJson = file("src/main/resources/fit_profile.json")
-    val manualDir = appProject.file("src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/garmin/fit/")
 
-    generatedSourceDirectory.set(appProject.layout.buildDirectory.dir("generated/sources/fit"))
+    inputDirectory.convention(layout.projectDirectory.dir("../app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/garmin/fit"))
+    generatedSourceDirectory.set(layout.buildDirectory.dir("generated/sources/fit"))
 
     inputs.file(fitProfileJson)
-    inputs.dir(manualDir)
-    outputs.dir(generatedSourceDirectory)
 
     mainClass = application.mainClass
-    args(
-        fitProfileJson.absolutePath,
-        generatedSourceDirectory.dir("nodomain/freeyourgadget/gadgetbridge/service/devices/garmin/fit/").get().asFile.absolutePath,
-        manualDir.absolutePath
-    )
-    classpath = sourceSets.main.get().runtimeClasspath
-    if (gradle.startParameter.logLevel <= LogLevel.INFO) {
-        jvmArgs("-Dverbose=true")
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            fitProfileJson.absolutePath,
+            generatedSourceDirectory.get().dir("nodomain/freeyourgadget/gadgetbridge/service/devices/garmin/fit").asFile.absolutePath,
+            inputDirectory.get().asFile.absolutePath
+        )
+    })
+    classpath(sourceSets.named("main").map { it.runtimeClasspath })
+}
+
+val generatedFit = configurations.create("generatedFit") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+
+artifacts {
+    add("generatedFit", layout.buildDirectory.dir("generated/sources/fit")) {
+        builtBy(genFit)
     }
 }
 
 tasks.register<JavaExec>("formatFitProfileJson") {
     description = "Reformat the JSON specification"
 
-    val outputFile = file("src/main/resources/fit_profile.json")
+    val profileFile = file("src/main/resources/fit_profile.json")
 
-    inputs.file(outputFile)
-    outputs.file(outputFile)
+    inputs.file(profileFile)
+    outputs.file(profileFile)
 
     mainClass = "nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.codegen.FormatFitProfileJson"
-    args(outputFile.absolutePath)
-    classpath = sourceSets.main.get().runtimeClasspath
-    if (gradle.startParameter.logLevel <= LogLevel.INFO) {
-        jvmArgs("-Dverbose=true")
-    }
+    args(profileFile.absolutePath)
+    classpath(sourceSets.named("main").map { it.runtimeClasspath })
+
+    val verboseP = providers.gradleProperty("verboseLogLevel").map { it.toBoolean() }.orElse(false)
+    jvmArguments.addAll(verboseP.map { if (it) listOf("-Dverbose=true") else emptyList() })
 }

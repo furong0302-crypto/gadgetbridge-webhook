@@ -32,7 +32,7 @@ message AlertMessage {
 }
 
 message AlertNotification {
-    repeated GDI.Proto.EventSharing.AlertType alert_type = 1 [packed = false];
+    repeated GDI.Proto.EventSharing.AlertType alert_type = 1;
     optional GDI.Proto.EventSharing.ActivityAlertDetails activity_details = 2;
 
     extensions 1000;
@@ -50,8 +50,8 @@ message AlertSupportRequest {
 }
 
 message AlertSupportResponse {
-    repeated GDI.Proto.EventSharing.AlertType supported_alerts = 1 [packed = false];
-    repeated uint32 version_num = 2 [packed = false];
+    repeated GDI.Proto.EventSharing.AlertType supported_alerts = 1;
+    repeated uint32 version_num = 2;
 }
 
 enum AlertType {
@@ -106,7 +106,7 @@ message Sport {
 }
 
 message SubscribeRequest {
-    repeated GDI.Proto.EventSharing.AlertMessage alerts = 1 [packed = false];
+    repeated GDI.Proto.EventSharing.AlertMessage alerts = 1;
     optional uint32 target_distance = 2;
 }
 
@@ -121,5 +121,5 @@ message SubscribeResponse {
         optional GDI.Proto.EventSharing.AlertMessage type = 2;
     }
 
-    repeated GDI.Proto.EventSharing.SubscribeResponse.AlertStatusMessage alert_status = 1 [packed = false];
+    repeated GDI.Proto.EventSharing.SubscribeResponse.AlertStatusMessage alert_status = 1;
 }

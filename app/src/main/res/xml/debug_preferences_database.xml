@@ -10,6 +10,12 @@
         android:selectable="false"
         android:title="Database version" />
 
+    <Preference
+        android:icon="@drawable/compress"
+        android:key="pref_debug_vacuum_database"
+        android:persistent="false"
+        android:title="Defragment database" />
+
     <SwitchPreferenceCompat
         android:defaultValue="false"
         android:icon="@drawable/ic_warning_gray"

@@ -61,7 +61,7 @@ class GBApplicationStartupTest : TestBase() {
         assertNull(GBApplication.getWidgetSharedPrefs(""))
 
         GBApplication.getDeviceSpecificSharedPrefs(MAC).edit(commit = true) { putBoolean("key", true) }
-        GBApplication.deleteDeviceSpecificSharedPrefs(MAC)
+        app.scopedPrefs.deleteDeviceSpecificSharedPrefs(MAC)
         assertFalse(app.scopedPrefs.getDeviceSpecificSharedPrefs(MAC).contains("key"))
     }
 

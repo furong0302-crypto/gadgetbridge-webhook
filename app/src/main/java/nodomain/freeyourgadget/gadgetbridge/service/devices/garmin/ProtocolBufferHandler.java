@@ -650,24 +650,24 @@ public class ProtocolBufferHandler implements MessageHandler {
     private boolean processProtobufSettingsService(final GdiRealtimeSettings.RealtimeSettingsService settingsService) {
         boolean processed = false;
 
-        if (settingsService.hasDefinitionResponse()) {
+        if (settingsService.hasCompositionResponse()) {
             processed = true;
             final Intent intent = new Intent(GarminRealtimeSettingsFragment.ACTION_SCREEN_DEFINITION);
-            intent.putExtra(GarminRealtimeSettingsFragment.EXTRA_PROTOBUF, settingsService.getDefinitionResponse().getDefinition().toByteArray());
+            intent.putExtra(GarminRealtimeSettingsFragment.EXTRA_PROTOBUF, settingsService.getCompositionResponse().getCompositions().toByteArray());
             LocalBroadcastManager.getInstance(deviceSupport.getContext()).sendBroadcast(intent);
         }
 
-        if (settingsService.hasStateResponse()) {
+        if (settingsService.hasSettingsResponse()) {
             processed = true;
             final Intent intent = new Intent(GarminRealtimeSettingsFragment.ACTION_SCREEN_STATE);
-            intent.putExtra(GarminRealtimeSettingsFragment.EXTRA_PROTOBUF, settingsService.getStateResponse().getState().toByteArray());
+            intent.putExtra(GarminRealtimeSettingsFragment.EXTRA_PROTOBUF, settingsService.getSettingsResponse().getSettings().toByteArray());
             LocalBroadcastManager.getInstance(deviceSupport.getContext()).sendBroadcast(intent);
         }
 
-        if (settingsService.hasChangeResponse()) {
+        if (settingsService.hasSettingsChangeResponse()) {
             processed = true;
             final Intent intent = new Intent(GarminRealtimeSettingsFragment.ACTION_CHANGE);
-            intent.putExtra(GarminRealtimeSettingsFragment.EXTRA_PROTOBUF, settingsService.getChangeResponse().toByteArray());
+            intent.putExtra(GarminRealtimeSettingsFragment.EXTRA_PROTOBUF, settingsService.getSettingsChangeResponse().toByteArray());
             LocalBroadcastManager.getInstance(deviceSupport.getContext()).sendBroadcast(intent);
         }
 

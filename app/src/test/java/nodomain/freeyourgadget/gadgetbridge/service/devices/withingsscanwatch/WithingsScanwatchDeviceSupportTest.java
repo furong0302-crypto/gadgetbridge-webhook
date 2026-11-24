@@ -23,13 +23,18 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingsscanwatch.WithingsScanwatchDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingsscanwatch.WithingsScanwatchLightDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ShortcutAction;
 
 public class WithingsScanwatchDeviceSupportTest {
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
+
     @Test
     public void lightFiltersUnsupportedScreensAndShortcuts() {
         final WithingsScanwatchLightDeviceCoordinator coordinator = new WithingsScanwatchLightDeviceCoordinator();

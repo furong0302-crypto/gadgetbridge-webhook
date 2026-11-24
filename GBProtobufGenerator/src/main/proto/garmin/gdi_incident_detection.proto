@@ -22,8 +22,8 @@ message CancelIncidentResponse {
 message Contact {
     required string id = 1;
     optional string name = 2;
-    repeated string telephone = 3 [packed = false];
-    repeated string email_address = 4 [packed = false];
+    repeated string telephone = 3;
+    repeated string email_address = 4;
 }
 
 message IncidentDetectedRequest {
@@ -91,7 +91,7 @@ message UpdateDeviceOwnerResponse {
 }
 
 message UpdateIncidentContactsRequest {
-    repeated GDI.Proto.IncidentDetection.Contact contact = 1 [packed = false];
+    repeated GDI.Proto.IncidentDetection.Contact contact = 1;
 }
 
 message UpdateIncidentContactsResponse {

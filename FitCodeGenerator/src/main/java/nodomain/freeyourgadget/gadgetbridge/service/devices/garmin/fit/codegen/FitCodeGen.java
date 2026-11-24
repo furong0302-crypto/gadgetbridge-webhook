@@ -710,7 +710,6 @@ public enum FitCodeGen {
                 "nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.RecordDefinition",
                 "nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.RecordHeader"
         ));
-        imports.addAll(getImports(outputFile));
 
         //
         // Add field-specific imports
@@ -974,25 +973,6 @@ public enum FitCodeGen {
 
     private static String capitalize(final String str) {
         return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
-    }
-
-    /**
-     * Get all the imports from an existing java file.
-     */
-    private static List<String> getImports(final File file) throws IOException {
-        if (file.exists()) {
-            final String fileContents = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-            final List<String> imports = new ArrayList<>();
-
-            final Matcher m = Pattern.compile("import (.+);")
-                    .matcher(fileContents);
-            while (m.find()) {
-                imports.add(m.group(1));
-            }
-            return imports;
-        }
-
-        return Collections.emptyList();
     }
 
     static void writeJSon(final Writer writer, final SortedSet<FitMessage> messages,

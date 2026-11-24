@@ -70,13 +70,13 @@ message PaceNotification {
 
 message Phrase {
     required uint32 phrase_id = 1;
-    repeated GDI.Proto.AudioPrompts.SlotValue slot_values = 2 [packed = false];
+    repeated GDI.Proto.AudioPrompts.SlotValue slot_values = 2;
 }
 
 message PhraseNotification {
     optional uint32 priority = 1;
-    repeated GDI.Proto.AudioPrompts.Phrase phrases = 2 [packed = false];
-    repeated GDI.Proto.AudioPrompts.GravelPhrase gravel_phrases = 3 [packed = false];
+    repeated GDI.Proto.AudioPrompts.Phrase phrases = 2;
+    repeated GDI.Proto.AudioPrompts.GravelPhrase gravel_phrases = 3;
 }
 
 message PowerNotification {
@@ -121,5 +121,5 @@ message SupportedLanguagesRequest {
 }
 
 message SupportedLanguagesResponse {
-    repeated GDI.Proto.AudioPrompts.Language languages = 1 [packed = false];
+    repeated GDI.Proto.AudioPrompts.Language languages = 1;
 }

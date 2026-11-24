@@ -17,15 +17,20 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.soundpeats
 
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 class SoundpeatsQ3ProCoordinatorTest {
-    private val coordinator = SoundpeatsQ3ProCoordinator()
+    @get:Rule
+    val coordinatorDependencies = MockCoordinatorDependencies()
+
+    private val coordinator by lazy { SoundpeatsQ3ProCoordinator() }
     private val device = GBDevice(
         "00:11:22:33:44:55",
         "SOUNDPEATS Q3 Pro",

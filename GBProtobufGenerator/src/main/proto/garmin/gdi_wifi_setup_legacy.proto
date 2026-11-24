@@ -42,8 +42,8 @@ message MobileCarrierInfoRequest {
 }
 
 message MobileCarrierInfoResponse {
-    repeated string mobile_country_code = 1 [packed = false];
-    repeated string iso_country_code = 2 [packed = false];
+    repeated string mobile_country_code = 1;
+    repeated string iso_country_code = 2;
 }
 
 message OAuthCredentialsRequest {

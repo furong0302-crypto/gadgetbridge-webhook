@@ -29,7 +29,7 @@ message AppStatusRequest {
 }
 
 message AppStatusResponse {
-    repeated GDI.Proto.GNCS.AppStatus apps = 1 [packed = false];
+    repeated GDI.Proto.GNCS.AppStatus apps = 1;
 }
 
 message BlockedAppsHashNotification {
@@ -59,7 +59,7 @@ message MediaRequest {
     optional uint32 notification_uid = 1;
     optional uint32 index = 2;
     optional GDI.Proto.GNCS.DisplayAttributes attributes = 3;
-    repeated GDI.Proto.GNCS.MediaType supported_types = 4 [packed = false];
+    repeated GDI.Proto.GNCS.MediaType supported_types = 4;
 }
 
 message MediaResponse {

@@ -1,14 +1,8 @@
-plugins {
-    application
-    java
-}
+import tasks.BaseGeneratorTask
 
-java {
-    toolchain {
-        // Setting sourceCompatibility and targetCompatibility isn't required as this module ships
-        // no compiled code.
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+plugins {
+    id("gadgetbridge.jvm.common")
+    application
 }
 
 application {
@@ -34,26 +28,28 @@ sourceSets {
     }
 }
 
-abstract class JavaExecDao : JavaExec() {
-    @get:OutputDirectory
-    abstract val generatedSourceDirectory: DirectoryProperty
-}
-
-tasks.register<JavaExecDao>("genSources") {
+val genSources = tasks.register<BaseGeneratorTask>("genSources") {
     description = "Generate DAO entity and session source files"
 
-    val appProject = project(":app")
-    generatedSourceDirectory.set(appProject.layout.buildDirectory.dir("generated/sources/gbdao"))
+    generatedSourceDirectory.set(layout.buildDirectory.dir("generated/sources/gbdao"))
 
     inputs.dir(file("src"))
     inputs.dir(file("src-template"))
-    outputs.dir(generatedSourceDirectory)
 
     mainClass = application.mainClass
-    args(generatedSourceDirectory.get().asFile.absolutePath)
-    classpath = sourceSets.main.get().runtimeClasspath
-    workingDir = file("../")
-    if (gradle.startParameter.logLevel <= LogLevel.INFO) {
-        jvmArgs("-Dverbose=true")
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(generatedSourceDirectory.get().asFile.absolutePath)
+    })
+    classpath(sourceSets.named("main").map { it.runtimeClasspath })
+}
+
+val generatedGbDao = configurations.create("generatedGbDao") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+
+artifacts {
+    add("generatedGbDao", layout.buildDirectory.dir("generated/sources/gbdao")) {
+        builtBy(genSources)
     }
 }

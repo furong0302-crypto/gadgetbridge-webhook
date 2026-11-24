@@ -102,14 +102,14 @@ message ItemListResponse {
     required GDI.Proto.GenericItemTransfer.ItemListResponse.Status status = 1;
     optional GDI.Proto.GenericItemTransfer.DataTypeStatus data_type_status = 2;
     optional uint32 session_id = 3;
-    repeated GDI.Proto.GenericItemTransfer.GenericItemReference items = 4 [packed = false];
+    repeated GDI.Proto.GenericItemTransfer.GenericItemReference items = 4;
     optional uint32 max_request_count = 5;
     optional uint32 next_list_offset = 6;
 }
 
 message ItemRequest {
     optional uint32 session_id = 1;
-    repeated GDI.Proto.GenericItemTransfer.GenericItemReference items = 6 [packed = false];
+    repeated GDI.Proto.GenericItemTransfer.GenericItemReference items = 6;
 }
 
 message ItemResponse {
@@ -126,8 +126,8 @@ message ItemResponse {
     required GDI.Proto.GenericItemTransfer.ItemResponse.Status status = 1;
     optional GDI.Proto.GenericItemTransfer.DataTypeStatus data_type_status = 2;
     optional uint32 session_id = 3;
-    repeated GDI.Proto.GenericItemTransfer.GenericItem items = 4 [packed = false];
-    repeated GDI.Proto.GenericItemTransfer.GenericItemReference invalid_items = 5 [packed = false];
+    repeated GDI.Proto.GenericItemTransfer.GenericItem items = 4;
+    repeated GDI.Proto.GenericItemTransfer.GenericItemReference invalid_items = 5;
     optional uint32 max_request_count = 6;
 }
 

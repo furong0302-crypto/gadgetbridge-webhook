@@ -238,7 +238,7 @@ public class HuaweiTruSleepParser {
                             throw new IllegalArgumentException("Not enough elements in buffer");
                         working = buffer.getShort();
                     } else {
-                        working += c;
+                        working += c & 0xff;
                     }
                     al.add(working);
                     countShort--;

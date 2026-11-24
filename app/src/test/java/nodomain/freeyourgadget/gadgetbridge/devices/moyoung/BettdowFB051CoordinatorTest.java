@@ -18,9 +18,15 @@ package nodomain.freeyourgadget.gadgetbridge.devices.moyoung;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Rule;
 import org.junit.Test;
 
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies;
+
 public class BettdowFB051CoordinatorTest {
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
+
     @Test
     public void exposesObservedMoyoungV2Parameters() {
         final BettdowFB051Coordinator coordinator = new BettdowFB051Coordinator();

@@ -72,6 +72,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.cards.DefaultDeviceCardItems
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.DeviceCardItem;
 import nodomain.freeyourgadget.gadgetbridge.devices.cards.QuickControl;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.di.RootEntryPoints;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
 import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
@@ -93,6 +94,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
 import nodomain.freeyourgadget.gadgetbridge.model.BloodPressureSample;
 import nodomain.freeyourgadget.gadgetbridge.model.BodyEnergySample;
 import nodomain.freeyourgadget.gadgetbridge.model.SolarChargeSample;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.GpxActivityTrackProvider;
 import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
@@ -119,12 +121,80 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.permissions.DevicePermission;
 import nodomain.freeyourgadget.gadgetbridge.util.permissions.GBPermission;
 import nodomain.freeyourgadget.gadgetbridge.util.preferences.DevicePrefs;
+import nodomain.freeyourgadget.gadgetbridge.util.preferences.ScopedPrefsProvider;
 import nodomain.freeyourgadget.gadgetbridge.widgets.DeviceWidgetsProvider;
 
+/**
+ * The base of every coordinator. It offers the dependencies every coordinator may use through protected getters, such as
+ * {@link #getDeviceService()}.
+ * <p>
+ * A coordinator built through the no-argument constructor looks these dependencies up through {@link RootEntryPoints}
+ * while it's built, so the application must already be registered there; a plain JUnit test stubs that lookup
+ * instead. The other constructor takes them directly. A coordinator never hands its dependencies to a DeviceSupport,
+ * which gets its own through {@code setContext}.
+ */
 public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDeviceCoordinator.class);
 
+    private final DeviceService deviceService;
+    private final ScopedPrefsProvider scopedPrefs;
+    private final DeviceManager deviceManager;
+
     protected Pattern supportedDeviceName = null;
+
+    /**
+     * For coordinators built with {@code new}, including every {@link DeviceType} recipe.
+     *
+     * @throws IllegalStateException if no application is registered with {@link RootEntryPoints}
+     */
+    protected AbstractDeviceCoordinator() {
+        this(lookUpDependencies());
+    }
+
+    private AbstractDeviceCoordinator(final AbstractDeviceCoordinatorEntryPoint dependencies) {
+        this(dependencies.deviceService(), dependencies.scopedPrefs(), dependencies.deviceManager());
+    }
+
+    protected AbstractDeviceCoordinator(@NonNull final DeviceService deviceService,
+                                        @NonNull final ScopedPrefsProvider scopedPrefs,
+                                        @NonNull final DeviceManager deviceManager) {
+        this.deviceService = deviceService;
+        this.scopedPrefs = scopedPrefs;
+        this.deviceManager = deviceManager;
+    }
+
+    private static AbstractDeviceCoordinatorEntryPoint lookUpDependencies() {
+        try {
+            return RootEntryPoints.INSTANCE.get(AbstractDeviceCoordinatorEntryPoint.class);
+        } catch (final IllegalStateException e) {
+            throw new IllegalStateException("A coordinator built with new needs an application registered with "
+                    + "RootEntryPoints; a plain JUnit test adds the MockCoordinatorDependencies rule", e);
+        }
+    }
+
+    /**
+     * The facade for talking to devices. Use {@link DeviceService#forDevice} for a single device.
+     */
+    @NonNull
+    protected DeviceService getDeviceService() {
+        return deviceService;
+    }
+
+    /**
+     * The preferences files scoped to a single device.
+     */
+    @NonNull
+    protected ScopedPrefsProvider getScopedPrefs() {
+        return scopedPrefs;
+    }
+
+    /**
+     * The devices the app knows about.
+     */
+    @NonNull
+    protected DeviceManager getDeviceManager() {
+        return deviceManager;
+    }
 
     /**
      * This method should return a Regexp pattern that will be matched against a found device
@@ -230,7 +300,7 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
         LOG.info("Will try to delete device: {}", gbDevice.getName());
         if (gbDevice.isConnected() || gbDevice.isConnecting()) {
             prepareDeviceForDeletion(gbDevice);
-            GBApplication.deviceService(gbDevice).disconnect();
+            getDeviceService().forDevice(gbDevice).disconnect();
         }
         Prefs prefs = getPrefs();
 
@@ -243,7 +313,7 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
         }
 
         LOG.debug("Deleting device shared preferences");
-        GBApplication.deleteDeviceSpecificSharedPrefs(gbDevice.getAddress());
+        getScopedPrefs().deleteDeviceSpecificSharedPrefs(gbDevice.getAddress());
 
         LOG.debug("Will delete devices data from database");
         try (DBHandler dbHandler = GBApplication.acquireDB()) {

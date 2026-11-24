@@ -28,6 +28,8 @@
 package nodomain.freeyourgadget.gadgetbridge.model;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinatorEntryPoint;
+import nodomain.freeyourgadget.gadgetbridge.di.RootEntryPoints;
 import nodomain.freeyourgadget.gadgetbridge.devices.UnknownDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.aawireless.AAWirelessCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.asteroidos.AsteroidOSDeviceCoordinator;
@@ -1385,8 +1387,6 @@ public enum DeviceType {
     INNOVO_IP900BP_B(InnovoPulseOximeterCoordinator::new),
     TEST(TestDeviceCoordinator::new);
 
-    private DeviceCoordinator coordinator;
-
     private final CoordinatorBuilder coordinatorBuilder;
 
     DeviceType(CoordinatorBuilder coordinatorBuilder) {
@@ -1416,9 +1416,8 @@ public enum DeviceType {
     }
 
     public DeviceCoordinator getDeviceCoordinator() {
-        if (coordinator == null) {
-            coordinator = coordinatorBuilder.build();
-        }
-        return coordinator;
+        return RootEntryPoints.INSTANCE.get(DeviceCoordinatorEntryPoint.class)
+                .deviceCoordinatorFactory()
+                .get(this, coordinatorBuilder::build);
     }
 }

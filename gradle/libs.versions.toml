@@ -51,6 +51,7 @@ logback-android = "3.0.0"
 mapsforge = "0.30.0"
 material = "1.14.0"
 mockito = "5.24.0"
+mockk = "1.14.11"
 mpandroidchart = "v4.0.1"
 msgpack = "0.9.12"
 okhttp = "5.5.1"
@@ -63,6 +64,9 @@ snakeyaml = "2.7"
 zxing = "3.5.4"
 
 [libraries]
+android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp" }
 ahocorasick = { group = "org.ahocorasick", name = "ahocorasick", version.ref = "ahocorasick" }
 android-emojify-contract = { group = "com.github.wax911.android-emojify", name = "contract", version.ref = "android-emojify" }
 android-emojify-emojify = { group = "com.github.wax911.android-emojify", name = "emojify", version.ref = "android-emojify" }
@@ -124,6 +128,7 @@ mapsforge-map-reader = { group = "com.github.mapsforge.mapsforge", name = "mapsf
 mapsforge-themes = { group = "com.github.mapsforge.mapsforge", name = "mapsforge-themes", version.ref = "mapsforge" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mpandroidchart = { group = "com.github.PhilJay.MPAndroidChart", name = "MPChartLib", version.ref = "mpandroidchart" }
 msgpack = { group = "org.msgpack", name = "msgpack-core", version.ref = "msgpack" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -153,6 +158,15 @@ mapsforge = [
     "mapsforge-map-android",
     "mapsforge-map-reader",
     "mapsforge-themes",
+]
+unit-test = [
+    "junit",
+    "mockito",
+    "mockk",
+    "robolectric",
+    "hamcrest",
+    "kotlinx-coroutines-test",
+    "json",
 ]
 
 [plugins]

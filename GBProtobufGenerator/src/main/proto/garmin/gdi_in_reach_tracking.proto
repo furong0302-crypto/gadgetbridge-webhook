@@ -61,12 +61,12 @@ message LegalUintListValuesRequest {
 message LegalUintListValuesResponse {
     required GDI.Proto.InReachTracking.SettingError status = 1;
     optional GDI.Proto.InReachTracking.UintListSetting setting = 2;
-    repeated uint32 legal_values = 3 [packed = false];
-    repeated GDI.Proto.InReachTracking.UintListSettingSpecialValue legal_special_values = 4 [packed = false];
+    repeated uint32 legal_values = 3;
+    repeated GDI.Proto.InReachTracking.UintListSettingSpecialValue legal_special_values = 4;
 }
 
 message LegalValuesChangedNotification {
-    repeated GDI.Proto.InReachTracking.UintListSetting changed_uint_lists = 1 [packed = false];
+    repeated GDI.Proto.InReachTracking.UintListSetting changed_uint_lists = 1;
 }
 
 enum SettingError {
@@ -138,7 +138,7 @@ message TrackingPointInfo {
 }
 
 message TrackingPointNotification {
-    repeated GDI.Proto.Core.LocationData points = 1 [packed = false];
+    repeated GDI.Proto.Core.LocationData points = 1;
 }
 
 message TrackingSessionInfo {
@@ -155,7 +155,7 @@ message TrackingSessionNotification {
 
 message TrackingSettings {
     required uint32 settings_version = 1;
-    repeated GDI.Proto.InReachTracking.UintListSettingValue uint_list_values = 2 [packed = false];
+    repeated GDI.Proto.InReachTracking.UintListSettingValue uint_list_values = 2;
 }
 
 enum TrackingState {

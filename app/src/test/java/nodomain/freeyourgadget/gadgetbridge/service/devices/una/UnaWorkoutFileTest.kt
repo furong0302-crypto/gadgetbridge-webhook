@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.una
 
 import android.content.Context
+import nodomain.freeyourgadget.gadgetbridge.devices.MockCoordinatorDependencies
 import nodomain.freeyourgadget.gadgetbridge.devices.una.UnaDeviceCoordinator
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary
 import nodomain.freeyourgadget.gadgetbridge.export.FitExporter
@@ -41,6 +42,9 @@ import java.io.File
 import java.io.IOException
 
 class UnaWorkoutFileTest {
+    @get:Rule
+    val coordinatorDependencies = MockCoordinatorDependencies()
+
     @get:Rule
     val temporaryFolder = TemporaryFolder()
 

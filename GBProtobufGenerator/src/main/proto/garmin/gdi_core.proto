@@ -13,13 +13,13 @@ import "garmin/gdi_device_status.proto";
 import "garmin/gdi_file_access.proto";
 import "garmin/gdi_garmin_connect.proto";
 import "garmin/gdi_gncs.proto";
-import "garmin/gdi_http.proto";
-import "garmin/gdi_installed_apps.proto";
+import "garmin/gdi_connect_iq_http.proto";
+import "garmin/gdi_connect_iq_installed_apps.proto";
 import "garmin/gdi_live_session.proto";
 import "garmin/gdi_live_track.proto";
 import "garmin/gdi_running.proto";
 import "garmin/gdi_sms_notification.proto";
-import "garmin/gdi_wifi_setup.proto";
+import "garmin/gdi_wifi_setup_legacy.proto";
 
 message CheckPendingSoftwareRequest {
     required bool apply_updates = 1;
@@ -226,7 +226,7 @@ message LocationData {
 }
 
 message LocationUpdatedNotification {
-    repeated GDI.Proto.Core.LocationData location_data = 1 [packed = false];
+    repeated GDI.Proto.Core.LocationData location_data = 1;
 }
 
 message LocationUpdatedSetEnabledRequest {
@@ -237,7 +237,7 @@ message LocationUpdatedSetEnabledRequest {
     }
 
     required bool enabled = 1;
-    repeated GDI.Proto.Core.LocationUpdatedSetEnabledRequest.Request requests = 2 [packed = false];
+    repeated GDI.Proto.Core.LocationUpdatedSetEnabledRequest.Request requests = 2;
 }
 
 message LocationUpdatedSetEnabledResponse {
@@ -259,7 +259,7 @@ message LocationUpdatedSetEnabledResponse {
     }
 
     required GDI.Proto.Core.LocationUpdatedSetEnabledResponse.Status status = 1;
-    repeated GDI.Proto.Core.LocationUpdatedSetEnabledResponse.RequestStatus requests = 2 [packed = false];
+    repeated GDI.Proto.Core.LocationUpdatedSetEnabledResponse.RequestStatus requests = 2;
 }
 
 enum NotificationDisabledReason {

@@ -383,6 +383,7 @@ object GarminWorkoutFitEncoder {
             WorkoutTargetType.PACE -> {
                 val speed = GarminWorkoutCodes.swimPaceMsPer100mToSpeedMmPerS(target.low)
                 builder.setSecondaryTargetType(WktStepTarget.SPEED)
+                builder.setSecondaryTargetValue(0L)
                 builder.setSecondaryCustomTargetValueLow(speed)
                 builder.setSecondaryCustomTargetValueHigh(speed)
                 return
@@ -477,6 +478,11 @@ object GarminWorkoutFitEncoder {
                 LOG.warn("Target type {} is not supported by the Garmin FIT workout encoder", t.type)
                 return
             }
+        }
+
+        // #7426 - set target_value=0 so that custom_target_low/custom_target_high are honored.
+        if (value == null && (low != null || high != null)) {
+            value = 0L
         }
 
         if (primary) {

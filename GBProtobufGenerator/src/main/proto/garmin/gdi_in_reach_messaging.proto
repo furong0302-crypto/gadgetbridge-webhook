@@ -1,0 +1,69 @@
+syntax = "proto2";
+package GDI.Proto.InReachMessaging;
+
+option java_package = "nodomain.freeyourgadget.gadgetbridge.proto.garmin";
+option java_outer_classname = "GdiInReachMessaging";
+
+import "garmin/gdi_data_types.proto";
+
+message InReachMessagingService {
+    message Message2 {
+        message Message1 {
+            message Message12 {
+                optional uint32 unk1 = 1;
+                optional uint32 unk3 = 3;
+                optional uint32 unk7 = 7;
+            }
+            optional uint32 unk1 = 1;
+            optional uint32 unk2 = 2;
+            optional uint32 unk3 = 3;
+            repeated Message12 unk12 = 12;
+        }
+        optional Message1 unk1 = 1;
+    }
+    message Message4 {
+        message Message4x {
+            optional uint32 unk1 = 1;
+        }
+        optional uint32 unk1 = 1;
+        optional Message4x unk4 = 4;
+        optional uint32 unk9 = 9;
+        optional uint32 unk10 = 10;
+        optional string unk11 = 11;
+        optional GDI.Proto.DataTypes.UUID unk12 = 12;
+        optional GDI.Proto.DataTypes.UUID unk13 = 13;
+        optional uint32 unk14 = 14;
+        optional uint32 unk15 = 15;
+        optional string unk17 = 17; // model?
+        optional uint64 unk18 = 18; // serial?
+    }
+    message Message6 {
+        optional uint32 unk1 = 1;
+    }
+    message Message14 {
+        optional uint32 unk1 = 1;
+    }
+    message Message18 {
+        optional uint32 unk1 = 1;
+    }
+    message Message25 {
+        optional uint32 unk1 = 1;
+    }
+    message Message41 {
+        optional uint32 unk1 = 1;
+    }
+    message Message43 {
+        optional uint32 unk1 = 1;
+    }
+    message Message45 {
+    }
+    optional Message2 unk2 = 2;
+    optional Message4 unk4 = 4;
+    optional Message6 unk6 = 6;
+    optional Message14 unk14 = 14;
+    optional Message18 unk18 = 18;
+    optional Message25 unk25 = 25;
+    optional Message41 unk41 = 41;
+    optional Message43 unk43 = 43;
+    optional Message45 unk45 = 45;
+}

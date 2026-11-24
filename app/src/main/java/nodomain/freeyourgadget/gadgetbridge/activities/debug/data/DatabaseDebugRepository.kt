@@ -31,4 +31,11 @@ interface DatabaseDebugRepository {
      * @return true on successful deletion
      */
     suspend fun deleteOldDatabase(): Boolean
+
+    /**
+     * Runs VACUUM and WAL checkpoint on the database to reclaim space.
+     *
+     * @return the exception that occurred, or null on success
+     */
+    suspend fun vacuumDatabase(): Exception?
 }

@@ -528,7 +528,7 @@ public class DeviceAlarmReceiverTest extends TestBase {
     }
 
     private static final class ThreeSlotTestDevice extends GBDevice {
-        private static final DeviceCoordinator COORDINATOR = new ThreeSlotTestCoordinator();
+        private final DeviceCoordinator coordinator = new ThreeSlotTestCoordinator();
 
         private ThreeSlotTestDevice(final String address) {
             super(address, "Testie", "Test Alias", "Test Folder", DeviceType.TEST);
@@ -536,7 +536,7 @@ public class DeviceAlarmReceiverTest extends TestBase {
 
         @Override
         public DeviceCoordinator getDeviceCoordinator() {
-            return COORDINATOR;
+            return coordinator;
         }
     }
 

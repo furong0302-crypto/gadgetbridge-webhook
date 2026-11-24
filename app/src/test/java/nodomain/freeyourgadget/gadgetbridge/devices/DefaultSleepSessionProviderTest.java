@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import androidx.annotation.NonNull;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.SleepSession;
 
 public class DefaultSleepSessionProviderTest {
+    @Rule
+    public final MockCoordinatorDependencies coordinatorDependencies = new MockCoordinatorDependencies();
 
     // From sleep-session-realistic-night.csv
     private static final int NIGHT_START = 1705356000; // first sample

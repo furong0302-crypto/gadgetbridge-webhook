@@ -43,7 +43,7 @@ message ContactLocation {
 }
 
 message ContactLocationsUpdatedNotification {
-    repeated GDI.Proto.InReachContactSync.ContactLocation contact_locations = 1 [packed = false];
+    repeated GDI.Proto.InReachContactSync.ContactLocation contact_locations = 1;
 }
 
 message ContactUpdatedNotification {
@@ -154,8 +154,8 @@ message PresetMessage {
     }
 
     optional uint32 code = 1;
-    repeated string addresses = 2 [packed = false];
-    repeated GDI.Proto.InReachContactSync.PresetMessage.SpecialAddress special_addresses = 3 [packed = false];
+    repeated string addresses = 2;
+    repeated GDI.Proto.InReachContactSync.PresetMessage.SpecialAddress special_addresses = 3;
     optional string text = 4;
 }
 
@@ -239,7 +239,7 @@ message TrustedContact {
 }
 
 message TrustedContactsUpdatedNotification {
-    repeated GDI.Proto.InReachContactSync.TrustedContact trusted_contacts = 1 [packed = false];
+    repeated GDI.Proto.InReachContactSync.TrustedContact trusted_contacts = 1;
 }
 
 message TrustingContact {
@@ -250,7 +250,7 @@ message TrustingContact {
 }
 
 message TrustingContactsUpdatedNotification {
-    repeated GDI.Proto.InReachContactSync.TrustingContact trusting_contacts = 1 [packed = false];
+    repeated GDI.Proto.InReachContactSync.TrustingContact trusting_contacts = 1;
 }
 
 message UserIdentifier {

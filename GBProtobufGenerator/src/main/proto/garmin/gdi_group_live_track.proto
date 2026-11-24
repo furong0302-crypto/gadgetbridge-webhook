@@ -23,13 +23,13 @@ message FitnessPointData {
 }
 
 message GetLastKnownLocationRequest {
-    repeated string session_id = 1 [packed = false];
+    repeated string session_id = 1;
     optional uint64 user_profile_pk = 2;
 }
 
 message GetLastKnownLocationResponse {
     required GDI.Proto.GroupLiveTrack.GroupTrackResponse group_track_response = 1;
-    repeated GDI.Proto.GroupLiveTrack.LiveConnectionTrackPoint track_points = 2 [packed = false];
+    repeated GDI.Proto.GroupLiveTrack.LiveConnectionTrackPoint track_points = 2;
     optional uint32 call_interval = 3;
     optional bool dirty = 4;
 }
@@ -37,12 +37,12 @@ message GetLastKnownLocationResponse {
 message GetLiveTrackConnectionsRequest {
     optional GDI.Proto.DataTypes.ScPoint position = 1;
     optional uint32 radius = 2;
-    repeated GDI.Proto.GroupLiveTrack.FitnessPointData.ActivityType activity_type = 3 [packed = false];
+    repeated GDI.Proto.GroupLiveTrack.FitnessPointData.ActivityType activity_type = 3;
 }
 
 message GetLiveTrackConnectionsResponse {
     required GDI.Proto.GroupLiveTrack.GroupTrackResponse group_track_response = 1;
-    repeated GDI.Proto.GroupLiveTrack.LiveConnectionUserTrackPoint track_points = 2 [packed = false];
+    repeated GDI.Proto.GroupLiveTrack.LiveConnectionUserTrackPoint track_points = 2;
     optional uint32 call_interval = 3;
 }
 

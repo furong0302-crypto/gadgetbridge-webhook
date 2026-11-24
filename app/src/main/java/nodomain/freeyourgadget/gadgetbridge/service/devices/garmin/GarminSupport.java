@@ -570,11 +570,11 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
                 sendProtobufRequest("init realtime settings", Smart.newBuilder()
                         .setRealtimeSettingsService(
                             GdiRealtimeSettings.RealtimeSettingsService.newBuilder()
-                                        .setInitRequest(
-                                            GdiRealtimeSettings.InitRequest.newBuilder()
-                                                        .setLanguage(localeString.length() == 5 ? localeString : "en_US")
-                                                        .setRegion("us") // FIXME choose region
-                                        )
+                                        .setStartUpDataRequest(
+                                             GdiRealtimeSettings.StartUpDataRequest.newBuilder()
+                                                         .setAppLocale(localeString.length() == 5 ? localeString : "en_US")
+                                                         .setAppConsentCountry("us") // FIXME choose region
+                                         )
                         )
                         .build());
             }
@@ -1826,21 +1826,21 @@ public class GarminSupport extends AbstractBTLESingleDeviceSupport implements IC
             sendProtobufRequest("get settings screen " + screenId,
                     Smart.newBuilder()
                             .setRealtimeSettingsService(GdiRealtimeSettings.RealtimeSettingsService.newBuilder()
-                                    .setDefinitionRequest(
-                                        GdiRealtimeSettings.ScreenDefinitionRequest.newBuilder()
-                                                    .setScreenId(screenId)
-                                                    .setUnk2(0)
-                                                    .setLocale(localeString.length() == 5 ? localeString : "en_US")
-                                    )
+                                    .setCompositionRequest(
+                                         GdiRealtimeSettings.CompositionRequest.newBuilder()
+                                                     .setCompositionId(screenId)
+                                                     .setDepth(0)
+                                                     .setAppLocale(localeString.length() == 5 ? localeString : "en_US")
+                                     )
                             ).build());
 
             sendProtobufRequest("get settings state " + screenId,
                     Smart.newBuilder()
                             .setRealtimeSettingsService(GdiRealtimeSettings.RealtimeSettingsService.newBuilder()
-                                    .setStateRequest(
-                                        GdiRealtimeSettings.ScreenStateRequest.newBuilder()
-                                                    .setScreenId(screenId)
-                                    )
+                                    .setSettingsRequest(
+                                         GdiRealtimeSettings.SettingsRequest.newBuilder()
+                                                     .setCompositionId(screenId)
+                                     )
                             ).build());
         }
     }
