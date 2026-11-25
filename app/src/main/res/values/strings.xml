@@ -2520,6 +2520,7 @@
     <string name="devicetype_polarh9" translatable="false">Polar H9</string>
     <string name="devicetype_polarh10" translatable="false">Polar H10</string>
     <string name="devicetype_sonyswr12" translatable="false">Sony SWR12</string>
+    <string name="devicetype_samsung_gear_fit" translatable="false">Samsung Gear Fit</string>
     <string name="devicetype_waspos" translatable="false">Wasp-OS</string>
     <string name="devicetype_smaq2oss" translatable="false">SMA-Q2 OSS</string>
     <string name="devicetype_fitpro" translatable="false">FitPro</string>

@@ -308,6 +308,10 @@ public class BluetoothNameTest extends TestBase {
             put("WF-1000XM4", DeviceType.SONY_WF_1000XM4); // #2925
             put("Xiaomi Smart Band 7 Pro", DeviceType.MIBAND7PRO); // #2781
             put("Galaxy Buds Pro (B352)", DeviceType.GALAXY_BUDS_PRO); // #2642
+            put("Gear Fit", DeviceType.SAMSUNG_GEAR_FIT);
+            put("Gear Fit (ABCD)", DeviceType.SAMSUNG_GEAR_FIT);
+            put("Gear Fit2", null); // Gear Fit 2 runs Tizen and is not supported
+            put("Gear Fit 2", null); // Gear Fit 2 runs Tizen and is not supported
             put("Redmi Watch 2 Lite 31A5", DeviceType.REDMIWATCH2LITE); // #2637
             put("honor Watch-7EE", DeviceType.HONORMAGICWATCH); // #5816
             put("HONOR Band 10-DEO", DeviceType.HONORBAND10); // #6027

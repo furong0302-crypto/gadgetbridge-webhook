@@ -338,7 +338,12 @@ class HealthConnectUtils {
 
 
                 val metadata = when (dataType) {
-                    HealthConnectPermissionManager.HealthConnectDataType.ACTIVITY -> Metadata.activelyRecorded(device)
+                    HealthConnectPermissionManager.HealthConnectDataType.HYDRATION -> Metadata.manualEntry(device)
+
+                    HealthConnectPermissionManager.HealthConnectDataType.BLOOD_GLUCOSE,
+                    HealthConnectPermissionManager.HealthConnectDataType.BLOOD_PRESSURE,
+                    HealthConnectPermissionManager.HealthConnectDataType.WEIGHT -> Metadata.activelyRecorded(device)
+
                     else -> Metadata.autoRecorded(device)
                 }
 

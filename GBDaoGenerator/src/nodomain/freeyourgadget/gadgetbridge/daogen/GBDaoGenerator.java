@@ -112,7 +112,7 @@ public class GBDaoGenerator {
             outputDir.mkdirs();
         }
 
-        final Schema schema = new Schema(162, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(163, MAIN_PACKAGE + ".entities");
 
         final List<Entity> sampleProvidersToGenerate = new LinkedList<>();
         final List<Entity> batterySampleProvidersToGenerate = new LinkedList<>();
@@ -183,6 +183,7 @@ public class GBDaoGenerator {
         addLefunBiometricSample(schema, user, device);
         addLefunSleepSample(schema, user, device);
         addSonySWR12Sample(schema, user, device);
+        addGearFitActivitySample(schema, user, device);
         addBangleJSActivitySample(schema, user, device);
         addCasioGBX100Sample(schema, user, device);
         addFitProActivitySample(schema, user, device);
@@ -1398,6 +1399,19 @@ public class GBDaoGenerator {
         activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
         activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);
         activitySample.addIntProperty(SAMPLE_RAW_INTENSITY).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        return activitySample;
+    }
+
+    private static Entity addGearFitActivitySample(Schema schema, Entity user, Entity device) {
+        Entity activitySample = addEntity(schema, "GearFitActivitySample");
+        activitySample.implementsSerializable();
+        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty("distanceCm").notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty("activeCalories").notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_RAW_INTENSITY).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        addHeartRateProperties(activitySample);
         return activitySample;
     }
 

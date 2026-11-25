@@ -40,6 +40,7 @@ internal fun clientRecordMetadata(
     val id = clientRecordId(device, type, idKey)
     return when (base.recordingMethod) {
         Metadata.RECORDING_METHOD_ACTIVELY_RECORDED -> Metadata.activelyRecorded(device, id, version)
+        Metadata.RECORDING_METHOD_MANUAL_ENTRY -> Metadata.manualEntry(id, version, device)
         else -> Metadata.autoRecorded(device, id, version)
     }
 }

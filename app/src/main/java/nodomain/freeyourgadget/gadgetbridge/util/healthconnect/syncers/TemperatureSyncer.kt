@@ -106,7 +106,7 @@ internal object TemperatureSyncer : HealthConnectSyncer {
                             zoneOffset = offset.rules.getOffset(timestamp),
                             temperature = Temperature.celsius(sampleTemp),
                             measurementLocation = sample.temperatureLocation,
-                            metadata = metadata
+                            metadata = Metadata.activelyRecorded(metadata.device!!)
                         )
                     )
                 } else {
