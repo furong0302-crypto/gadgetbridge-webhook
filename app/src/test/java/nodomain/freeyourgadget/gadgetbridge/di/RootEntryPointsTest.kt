@@ -5,18 +5,19 @@ import dagger.hilt.internal.GeneratedComponent
 import dagger.hilt.internal.GeneratedComponentManager
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Assert.assertSame
-import org.junit.Assert.assertThrows
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertContains
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertSame
 
 class RootEntryPointsTest {
     private interface SomeEntryPoint
 
     private val application = mockk<Application>(moreInterfaces = arrayOf(GeneratedComponentManager::class))
 
-    @After
+    @AfterEach
     fun unregister() {
         RootEntryPoints.unregister()
     }
@@ -32,11 +33,12 @@ class RootEntryPointsTest {
 
     @Test
     fun getWithoutARegisteredApplicationThrowsNamingTheEntryPoint() {
-        val e = assertThrows(IllegalStateException::class.java) {
+        val e = assertFailsWith<IllegalStateException> {
             RootEntryPoints.get(SomeEntryPoint::class.java)
         }
 
-        assertTrue(e.message!!.contains(SomeEntryPoint::class.java.name))
+        val message = assertNotNull(e.message)
+        assertContains(message, SomeEntryPoint::class.java.name)
     }
 
     @Test
@@ -44,7 +46,7 @@ class RootEntryPointsTest {
         RootEntryPoints.register(application)
         RootEntryPoints.unregister()
 
-        assertThrows(IllegalStateException::class.java) {
+        assertFailsWith<IllegalStateException> {
             RootEntryPoints.get(SomeEntryPoint::class.java)
         }
     }

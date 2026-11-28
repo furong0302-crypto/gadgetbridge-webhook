@@ -42,6 +42,7 @@ hilt = "2.60.1"
 json = "20260814"
 jsoup = "1.24.1"
 junit = "4.13.2"
+junit-bom = "6.1.3"
 kaitai-plugin = "0.2.0"
 kaitai-struct-runtime = "0.11"
 kotlin = "2.4.21"
@@ -118,7 +119,12 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 json = { group = "org.json", name = "json", version.ref = "json" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit-bom" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine" }
 kaitai-struct-runtime = { group = "io.kaitai", name = "kaitai-struct-runtime", version.ref = "kaitai-struct-runtime" }
+kotlin-test-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 logback-android = { group = "com.github.tony19", name = "logback-android", version.ref = "logback-android" }
 mapsforge-core = { group = "com.github.mapsforge.mapsforge", name = "mapsforge-core", version.ref = "mapsforge" }
@@ -161,6 +167,8 @@ mapsforge = [
 ]
 unit-test = [
     "junit",
+    "junit-jupiter",
+    "kotlin-test-junit5",
     "mockito",
     "mockk",
     "robolectric",
